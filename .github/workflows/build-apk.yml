@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -19,7 +19,10 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Install Android SDK
+      - name: Install npm packages
+        run: npm install --legacy-peer-deps
+
+      - name: Install Android SDK components
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y wget unzip
@@ -27,26 +30,28 @@ jobs:
           mkdir -p $HOME/android-sdk/cmdline-tools
           unzip -q cmdtools.zip -d $HOME/android-sdk/cmdline-tools
           mv $HOME/android-sdk/cmdline-tools/cmdline-tools $HOME/android-sdk/cmdline-tools/latest
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
-          yes | sdkmanager --licenses > /dev/null 2>&1
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
-      - name: Install npm packages
-        run: npm install
+      - name: Accept SDK licences and install platforms
+        run: |
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Capacitor sync
         run: npx cap sync android
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
-      - name: Build APK
+      - name: Build debug APK
         run: |
           chmod +x android/gradlew
           cd android && ./gradlew assembleDebug --stacktrace
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
-      - name: Upload APK
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: agribridge-debug-apk
