@@ -1,0 +1,28 @@
+{
+  "appId": "ug.agribridge.app",
+  "appName": "AgriBridge",
+  "webDir": "www",
+  "server": {
+    "url": "https://agribridge-1-og7a.onrender.com",
+    "cleartext": false,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#060f09",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#060f09"
+    }
+  }
+}
