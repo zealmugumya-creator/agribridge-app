@@ -38,14 +38,22 @@ jobs:
           yes | $HOME/android/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1
           $HOME/android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Copy web assets to Android
+      - name: Download web app from Render and prepare assets
         run: |
           mkdir -p android/app/src/main/assets/public
-          cp -r www/* android/app/src/main/assets/public/
+          # Download the live app from Render
+          wget -q "https://agribridge-1-og7a.onrender.com" -O android/app/src/main/assets/public/index.html
+          echo "Downloaded index.html: $(wc -c < android/app/src/main/assets/public/index.html) bytes"
+          # Create manifest.json
+          cat > android/app/src/main/assets/public/manifest.json << 'MANIFEST'
+          {"name":"AgriBridge","short_name":"AgriBridge","start_url":"/","display":"standalone","background_color":"#060f09","theme_color":"#1E5E3A"}
+          MANIFEST
+          # Create capacitor config
           cp capacitor.config.json android/app/src/main/assets/capacitor.config.json
+          # Create plugins json
           echo '{"plugins":{}}' > android/app/src/main/assets/capacitor.plugins.json
-          echo "Web assets copied successfully"
-          ls android/app/src/main/assets/public/ | head -5
+          echo "Assets prepared:"
+          ls android/app/src/main/assets/
 
       - name: Build debug APK
         run: |
