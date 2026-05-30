@@ -11,9 +11,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Show repo structure
-        run: find . -maxdepth 3 -name "package.json" -o -name "capacitor.config.json" | head -20
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -25,19 +22,8 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Find and install npm packages
-        run: |
-          if [ -f package.json ]; then
-            echo "package.json found at root"
-            npm install
-          elif [ -f agribridge-app/package.json ]; then
-            echo "package.json found in agribridge-app/"
-            cd agribridge-app && npm install
-          else
-            echo "ERROR: package.json not found anywhere"
-            find . -name "package.json" | head -10
-            exit 1
-          fi
+      - name: Install npm packages
+        run: npm install
 
       - name: Setup Android SDK
         run: |
@@ -52,28 +38,24 @@ jobs:
           yes | $HOME/android/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1
           $HOME/android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Find and run Capacitor sync
+      - name: Add Android platform and sync
         run: |
-          if [ -f package.json ]; then
-            npx cap sync android
-          else
-            cd agribridge-app && npx cap sync android
-          fi
+          npx cap add android || true
+          npx cap sync android
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
-      - name: Find and build APK
+      - name: Build debug APK
         run: |
-          if [ -f android/gradlew ]; then
-            chmod +x android/gradlew
-            cd android && ./gradlew assembleDebug --stacktrace
-          else
-            chmod +x agribridge-app/android/gradlew
-            cd agribridge-app/android && ./gradlew assembleDebug --stacktrace
-          fi
+          chmod +x android/gradlew
+          cd android
+          ./gradlew assembleDebug --stacktrace
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: agribridge-apk
-          path: |
-            **/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
