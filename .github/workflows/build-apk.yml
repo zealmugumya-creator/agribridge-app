@@ -38,12 +38,14 @@ jobs:
           yes | $HOME/android/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1
           $HOME/android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Add Android platform and sync
+      - name: Copy web assets to Android
         run: |
-          npx cap add android || true
-          npx cap sync android
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          mkdir -p android/app/src/main/assets/public
+          cp -r www/* android/app/src/main/assets/public/
+          cp capacitor.config.json android/app/src/main/assets/capacitor.config.json
+          echo '{"plugins":{}}' > android/app/src/main/assets/capacitor.plugins.json
+          echo "Web assets copied successfully"
+          ls android/app/src/main/assets/public/ | head -5
 
       - name: Build debug APK
         run: |
