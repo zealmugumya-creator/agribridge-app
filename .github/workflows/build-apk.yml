@@ -38,29 +38,17 @@ jobs:
           yes | $HOME/android/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1
           $HOME/android/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Add Android platform
-        run: |
-          export ANDROID_HOME=$HOME/android
-          npx cap add android
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
-
-      - name: Download web app from Render and prepare assets
+      - name: Download latest web app from Render
         run: |
           mkdir -p android/app/src/main/assets/public
           wget -q "https://agribridge-1-og7a.onrender.com" -O android/app/src/main/assets/public/index.html
           echo "Downloaded: $(wc -c < android/app/src/main/assets/public/index.html) bytes"
-          cat > android/app/src/main/assets/public/manifest.json << 'MANIFEST'
-          {"name":"AgriBridge","short_name":"AgriBridge","start_url":"/","display":"standalone","background_color":"#060f09","theme_color":"#1E5E3A"}
-          MANIFEST
-          cp capacitor.config.json android/app/src/main/assets/capacitor.config.json
-          echo '{"plugins":{}}' > android/app/src/main/assets/capacitor.plugins.json
 
       - name: Build debug APK
         run: |
           chmod +x android/gradlew
           cd android
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleDebug
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
