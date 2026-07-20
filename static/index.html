@@ -1439,6 +1439,11 @@ async function sbUpdate(t, d, col, val) { return sb(t, { method:'PATCH', body:d,
 
 // ── GLOBAL STATE ──────────────────────────────────────────────────
 let currentUser   = JSON.parse(localStorage.getItem('ab_user') || 'null');
+// Safety: if stored user has no email/id it's corrupted data - clear it
+if (currentUser && !currentUser.email && !currentUser.id) {
+  localStorage.removeItem('ab_user');
+  currentUser = null;
+}
 let allListings   = [];
 let allPrices     = [];
 let allTraining   = [];
@@ -3513,13 +3518,16 @@ window.showPage = function(name) {
 // ════════════════════════════════════════════════════════════
 
 // Pages each role can access
+// Pages always accessible regardless of role
+var PUBLIC_PAGES = ['home','about','contact','community','pitch','ussd','prices','market','doctor','animals','crops','training'];
+
 var ROLE_PAGES = {
-  guest:  ['home','market','prices','about','contact','ussd','doctor','animals','crops','training','community','delivery','dashboard','supply'],
+  guest:  ['home','market','prices','about','contact','ussd','doctor','animals','crops','training','community','delivery','dashboard','supply','pitch'],
   farmer: ['home','prices','crops','animals','training','delivery','ussd',
-           'doctor','supply','dashboard','community','finance','coldchain','about','contact'],
+           'doctor','supply','dashboard','community','finance','coldchain','about','contact','market','pitch'],
   vendor: ['home','market','prices','crops','animals','delivery','ussd',
-           'doctor','supply','community','about','contact'],
-  hotel:  ['home','market','b2b','delivery','community','about','contact'],
+           'doctor','supply','community','about','contact','dashboard','training','pitch'],
+  hotel:  ['home','market','b2b','delivery','community','about','contact','dashboard','pitch'],
 };
 // Bottom nav items each role sees
 var ROLE_NAV = {
@@ -3649,10 +3657,15 @@ function renderFarmerQuickLinks() {
 var _showPageOrig3 = window.showPage;
 window.showPage = function(name) {
   var role = getCurrentRole();
+  // Public pages are always accessible - never block these
+  if (typeof PUBLIC_PAGES !== 'undefined' && PUBLIC_PAGES.indexOf(name) >= 0) {
+    if (_showPageOrig3) _showPageOrig3(name);
+    return;
+  }
   var allowed = ROLE_PAGES[role] || ROLE_PAGES.guest;
   if (allowed.indexOf(name) === -1 && name !== 'home') {
-    // Page not allowed for this role
-    if (role === 'guest') {
+    // Private page gating
+    if (role === 'guest' || !currentUser) {
       showToast('🔒 Create a free account to access this section');
       openModal('registerModal');
     } else {
