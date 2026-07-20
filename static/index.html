@@ -3651,14 +3651,13 @@ window.showPage = function(name) {
   var role = getCurrentRole();
   var allowed = ROLE_PAGES[role] || ROLE_PAGES.guest;
   if (allowed.indexOf(name) === -1 && name !== 'home') {
-    // Guest trying to access gated page
+    // Page not allowed for this role
     if (role === 'guest') {
-      var guestOK = ['market','prices','about','contact','ussd','doctor','animals','crops','training','community'];
-      if (guestOK.indexOf(name) >= 0) { /* allow read-only */ }
-      else { showToast('🔒 Create a free account to access ' + name.charAt(0).toUpperCase() + name.slice(1)); openModal('registerModal'); return; }
+      showToast('🔒 Create a free account to access this section');
+      openModal('registerModal');
+    } else {
+      showToast('This section is not available for your account type');
     }
-    // Wrong role accessing wrong page
-    showToast('This section is not available for your account type');
     return;
   }
   if (_showPageOrig3) _showPageOrig3(name);
