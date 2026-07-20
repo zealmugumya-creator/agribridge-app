@@ -656,7 +656,7 @@ img{max-width:100%}
     <div class="value-prop-card"><div class="value-prop-icon">🌾</div><div class="value-prop-title">I am a Farmer</div><div class="value-prop-desc">List crops and animals free. Get fair prices. Access loans, insurance, and AI disease diagnosis.</div><button class="btn-sm" style="width:100%;margin-top:12px" onclick="openModal(&#39;registerModal&#39;)">Register as Farmer</button></div>
     <div class="value-prop-card"><div class="value-prop-icon">🛒</div><div class="value-prop-title">I am a Buyer</div><div class="value-prop-desc">Browse fresh produce from verified farmers. Order online, pay via MoMo, get delivery to your door.</div><button class="btn-sm" style="width:100%;margin-top:12px;background:#1565C0" onclick="openModal(&#39;registerModal&#39;)">Register as Buyer</button></div>
     <div class="value-prop-card"><div class="value-prop-icon">🏨</div><div class="value-prop-title">Hotel / Restaurant</div><div class="value-prop-desc">Pre-cut beef, dressed chicken, packaged produce delivered by 5:30AM. Weekly invoicing available.</div><button class="btn-sm" style="width:100%;margin-top:12px;background:var(--amber);color:#000" onclick="openModal(&#39;b2bApplyModal&#39;)">Apply for B2B Account</button></div>
-    <div class="value-prop-card"><div class="value-prop-icon">📱</div><div class="value-prop-title">No Internet? No Problem</div><div class="value-prop-desc">Dial <strong style="color:var(--amber)">*789#</strong> from any MTN or Airtel phone — no smartphone needed.</div><button class="btn-sm outline" style="width:100%;margin-top:12px" onclick="showPage(&#39;ussd&#39;)">Try USSD Simulator</button></div>
+    <div class="value-prop-card"><div class="value-prop-icon">📱</div><div class="value-prop-title">No Internet? No Problem</div><div class="value-prop-desc">Dial <strong style="color:var(--amber)">*789#</strong> from any MTN or Airtel phone — no smartphone needed.</div><button class="btn-sm outline" style="width:100%;margin-top:12px" onclick="showPage('ussd')">Try USSD Simulator</button></div>
   </div>
 </div>
 <div id="page-market" class="page">
@@ -1974,7 +1974,7 @@ function renderBasket() {
   const footer = document.getElementById('basketFooter');
   if (!body) return;
   if (!basketItems.length) {
-    body.innerHTML = '<div class="basket-empty"><div class="be-icon">??</div><p>Your basket is empty</p><button class="btn-sm" onclick="closeBasket();showPage(\'market\')" style="margin-top:12px">Browse Marketplace</button></div>';
+    body.innerHTML = '<div class="basket-empty"><div class="be-icon">??</div><p>Your basket is empty</p><button class="btn-sm" onclick="closeBasket();showPage('market')" style="margin-top:12px">Browse Marketplace</button></div>';
     if (footer) footer.style.display = 'none';
     return;
   }
@@ -2619,7 +2619,7 @@ async function loadAlerts() {
 function loadMyOrders() {
   const el=document.getElementById('myOrdersList'); if(!el) return;
   const orders=JSON.parse(localStorage.getItem('ab_orders')||'[]');
-  if(!orders.length){ el.innerHTML='<div style="color:var(--text2);font-size:0.88rem;padding:12px 0">No orders yet. <a href="#" onclick="showPage(\'market\')">Browse marketplace →</a></div>'; return; }
+  if(!orders.length){ el.innerHTML='<div style="color:var(--text2);font-size:0.88rem;padding:12px 0">No orders yet. <a href="#" onclick="showPage('market')">Browse marketplace →</a></div>'; return; }
   el.innerHTML=orders.map(o=>`<div style="background:var(--bg3);border-radius:10px;padding:12px;margin-bottom:10px;border:1px solid var(--border)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><div style="font-weight:700;font-size:0.9rem">${o.ref}</div><div style="color:var(--green);font-size:0.78rem;font-weight:700;text-transform:uppercase">${o.status}</div></div><div style="font-size:0.8rem;color:var(--text2)">${o.items.map(i=>i.name+'×'+i.qty).join(', ')}</div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:0.82rem"><span>Total: <strong style="color:var(--green)">UGX ${Number(o.total).toLocaleString()}</strong></span><button class="btn-sm" onclick="document.getElementById('trackingInput').value='${o.track}';trackDelivery()" style="font-size:0.72rem;padding:4px 10px">Track ??</button></div><div style="font-size:0.72rem;color:var(--text2);margin-top:4px">Track: <span style="color:var(--yellow);font-family:monospace">${o.track}</span> · ${new Date(o.date).toLocaleDateString('en-UG')}</div></div>`).join('');
 }
 async function saveAlert() {
@@ -3555,7 +3555,7 @@ function applyRoleUI() {
   if (nav) {
     var items = ROLE_NAV[role] || ROLE_NAV.guest;
     nav.innerHTML = items.map(function(item) {
-      return '<button class="nav-item" id="nav-' + item.page + '" onclick="showPage(\'' + item.page + '\')">'+
+      return '<button class="nav-item" id="nav-' + item.page + '" data-page="' + item.page + '" onclick="showPage(this.dataset.page)">' +
         '<span class="nav-icon">' + item.icon + '</span><span>' + item.label + '</span></button>';
     }).join('');
     // Mark current page active
@@ -3638,9 +3638,9 @@ function renderFarmerQuickLinks() {
     '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
     '<button class="btn-sm" onclick="openListProduceModal()">+ List Crop</button>' +
     '<button class="btn-sm outline" onclick="openListAnimalModal()">+ List Animal</button>' +
-    '<button class="btn-sm outline" onclick="showPage(&quot;doctor&quot;)">🩺 AI Doctor</button>' +
-    '<button class="btn-sm outline" onclick="showPage(&quot;finance&quot;)">💰 Get Loan</button>' +
-    '<button class="btn-sm outline" onclick="showPage(&quot;dashboard&quot;)">📊 Dashboard</button>' +
+    '<button class="btn-sm outline" onclick="showPage('doctor')">🩺 AI Doctor</button>' +
+    '<button class="btn-sm outline" onclick="showPage('finance')">💰 Get Loan</button>' +
+    '<button class="btn-sm outline" onclick="showPage('dashboard')">📊 Dashboard</button>' +
     '</div>';
   home.insertBefore(div, home.firstChild);
 }
