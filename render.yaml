@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: agribridge-1
+    runtime: python
+    pythonVersion: "3.12.7"
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SUPABASE_URL
+        value: https://vyrctsiyaihsysgpozdm.supabase.co
+      - key: SUPABASE_KEY
+        sync: false
+      - key: AT_USERNAME
+        sync: false
+      - key: AT_API_KEY
+        sync: false
+      - key: AT_SMS_SENDER
+        value: AgriBridge
