@@ -1,13 +1,5 @@
 flask==3.1.0
 flask-cors==5.0.0
-<<<<<<< HEAD
-PyJWT==2.10.1
-requests==2.32.3
-gunicorn==23.0.0
-Werkzeug==3.1.3
-python-dotenv==1.0.1
-africastalking==1.2.9
-=======
 flask-sqlalchemy==3.1.1
 sqlalchemy==2.0.36
 bcrypt==4.2.1
@@ -30,4 +22,3 @@ redis==5.2.1
 # Optional: Web Push / VAPID (OS-level push to Android notification bar).
 # App runs fine without it — push silently skips when pywebpush is absent.
 pywebpush==2.0.0
->>>>>>> upstream/main
