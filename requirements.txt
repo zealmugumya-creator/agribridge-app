@@ -1,8 +1,33 @@
 flask==3.1.0
 flask-cors==5.0.0
+<<<<<<< HEAD
 PyJWT==2.10.1
 requests==2.32.3
 gunicorn==23.0.0
 Werkzeug==3.1.3
 python-dotenv==1.0.1
 africastalking==1.2.9
+=======
+flask-sqlalchemy==3.1.1
+sqlalchemy==2.0.36
+bcrypt==4.2.1
+PyJWT==2.10.1
+python-dotenv==1.0.1
+requests==2.32.3
+gunicorn==23.0.0
+psycopg2-binary==2.9.10
+Werkzeug==3.1.3
+africastalking==1.2.9
+# Optional: error monitoring (Phase 8). Imported lazily; app runs without it and
+# Sentry stays a no-op unless SENTRY_DSN is set.
+sentry-sdk[flask]==2.19.2
+# Optional: FCM admin push (Phase 6). PyJWT needs `cryptography` to sign the RS256
+# service-account assertion. Push stays a safe no-op until FCM credentials are set.
+cryptography==44.0.0
+# Optional: Redis-backed rate limiting (Phase 11). Falls back to in-process
+# limiter when REDIS_URL is not set — app runs fine without Redis.
+redis==5.2.1
+# Optional: Web Push / VAPID (OS-level push to Android notification bar).
+# App runs fine without it — push silently skips when pywebpush is absent.
+pywebpush==2.0.0
+>>>>>>> upstream/main

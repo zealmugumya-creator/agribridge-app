@@ -1,0 +1,55 @@
+---
+doc_type: farmer-terms
+title: Farmer and Producer Terms
+version: 1.0.0
+effective_date: 2026-10-09
+material: true
+requires_acceptance: accept
+applies_to_roles: farmer
+summary: First published version of the extra terms for farmers and producers.
+---
+# AgriBridge Farmer and Producer Terms
+
+**Version 1.0.0 · Effective 9 October 2026**
+
+These terms apply in addition to the AgriBridge Terms of Use if you register as a farmer or producer. They have not yet been reviewed by a Ugandan advocate.
+
+## 1. Accurate listings
+
+Describe your produce or livestock truthfully: type, variety, grade, quantity, unit, price in {{CURRENCY}}, district and photos. Use your own photos or ones you have the right to use. Do not claim organic, certified, vaccinated or inspected status unless it is true and you can show proof if asked.
+
+## 2. Stock and availability
+
+Keep your available quantity and status up to date. You may mark a product available, low stock, unavailable or temporarily unavailable. You must not accept orders for more than you can supply. If your stock changes after you accepted an order, tell the buyer and AgriBridge straight away. Stock that has not been confirmed for a long time may be treated as possibly unavailable.
+
+## 3. Harvest estimates
+
+If you list produce that is not yet harvested, say so and give an honest expected date. Tell the buyer promptly if the harvest is late or smaller than expected.
+
+## 4. Quality, certification and legal compliance
+
+Goods must match your listing and be fit to eat or use. You must follow the Ugandan rules that apply to what you sell, including rules on livestock health and movement, food safety, packaging and labelling. Do not sell goods treated with chemicals contrary to the label or the law.
+
+## 5. Offers and orders
+
+When AgriBridge sends you an offer or an order, respond within the time shown. Accepting is a commitment to supply the stated product, quantity and quality. If you decline or do not respond in time, the offer may go to another farmer. Repeated acceptance followed by failure to deliver may lead to a warning, limits on your account, or suspension.
+
+## 6. Fulfilment and communication
+
+Prepare, hand over or deliver goods as agreed. Be polite and responsive. Do not use buyer details for anything other than the order.
+
+## 7. Verification and your account
+
+We may ask you to verify your identity, location or produce. We may approve, pause or suspend a farmer account while we check, giving reasons where we can. You may pause your own availability at any time.
+
+## 8. Payment, fees and payouts
+
+AgriBridge may deduct a service fee or commission, which will be shown to you before you accept an order. Payouts are made after the order conditions are met. Payout timing and conditions are to be confirmed.
+
+## 9. Cancellations, complaints, refunds
+
+If an order is cancelled, goods rejected, or a complaint upheld, the order records will be used to decide what is fair, and you may need to refund or replace goods. You may give your side of the story. Nothing here limits any right you have under the law.
+
+## 10. Contact
+
+Questions: [{{EMAIL}}](mailto:{{EMAIL}}) · {{PHONE}}.

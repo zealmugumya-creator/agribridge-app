@@ -1,0 +1,25 @@
+{
+  "appId": "com.agribridge.app",
+  "appName": "AgriBridge",
+  "webDir": "www",
+  "backgroundColor": "#050B08",
+  "ios": {
+    "backgroundColor": "#050B08",
+    "contentInset": "always"
+  },
+  "android": {
+    "backgroundColor": "#050B08",
+    "minWebViewVersion": 80
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#050B08",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#050B08"
+    }
+  }
+}

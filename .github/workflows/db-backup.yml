@@ -1,0 +1,63 @@
+# Copyright (C) 2026 Mugumya Zeal. All rights reserved.
+
+name: Database backup
+
+# Free, self-hosted backups for the Supabase database (no paid plan required).
+# Runs weekly, dumps the whole database with pg_dump, encrypts the dump with GPG,
+# and stores it as a downloadable workflow artifact. The artifact is encrypted, so
+# it is safe even though this repository is public.
+#
+# One-time setup (GitHub -> repo Settings -> Secrets and variables -> Actions):
+#   1. SUPABASE_DB_URL  -> the "Session pooler" connection string from Supabase
+#      (Dashboard -> Project Settings -> Database -> Connection string ->
+#       "Session pooler", port 5432). Do NOT use the Transaction pooler (6543) or
+#       the direct connection (IPv6-only; GitHub runners can't reach it).
+#   2. BACKUP_PASSPHRASE -> any strong passphrase you keep somewhere safe. You need
+#      it to decrypt a backup later:  gpg -d agribridge-YYYY-MM-DD.dump.gpg > out.dump
+#
+# Restore (locally, with the passphrase):
+#   gpg -o agribridge.dump -d agribridge-<date>.dump.gpg
+#   pg_restore --clean --no-owner --no-privileges -d "<target-db-url>" agribridge.dump
+
+on:
+  schedule:
+    - cron: "0 2 * * 0"   # every Sunday at 02:00 UTC
+  workflow_dispatch:        # allow manual "Run workflow" from the Actions tab
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PostgreSQL 17 client
+        run: |
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+
+      - name: Dump, encrypt, and name the backup
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_DB_URL:-}" ] || [ -z "${BACKUP_PASSPHRASE:-}" ]; then
+            echo "::error::Missing SUPABASE_DB_URL or BACKUP_PASSPHRASE secret. See the setup notes at the top of this workflow."
+            exit 1
+          fi
+          STAMP=$(date -u +%Y-%m-%d)
+          # -F c = compressed custom format (restorable with pg_restore)
+          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges -F c -f "agribridge-$STAMP.dump"
+          gpg --batch --yes --symmetric --cipher-algo AES256 \
+              --passphrase "$BACKUP_PASSPHRASE" \
+              -o "agribridge-$STAMP.dump.gpg" "agribridge-$STAMP.dump"
+          rm -f "agribridge-$STAMP.dump"
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+          ls -lh "agribridge-$STAMP.dump.gpg"
+
+      - name: Upload encrypted backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agribridge-db-backup-${{ env.STAMP }}
+          path: agribridge-*.dump.gpg
+          retention-days: 90

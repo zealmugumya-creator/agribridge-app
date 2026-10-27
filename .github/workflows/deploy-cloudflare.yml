@@ -1,0 +1,66 @@
+# Copyright (C) 2026 Mugumya Zeal. All rights reserved.
+
+name: Deploy public web app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'static/**'
+      - 'wrangler.jsonc'
+      - '.github/workflows/deploy-cloudflare.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy Worker static assets
+        # A deploy that did not happen must never look like a passing release.
+        # The previous version guarded the deploy on `CLOUDFLARE_API_TOKEN != ''`
+        # and only warned on the empty path, so the run finished green while
+        # publishing nothing — that silently stranded SPA releases (verified live
+        # on push 6077883, where the bank checkout never reached the site).
+        # We now fail loudly until the owner adds the deployment secrets.
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Cloudflare SPA deploy FAILED: CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID are not set in GitHub Actions secrets. NOTHING was published — this is a real failure, not a no-op."
+            {
+              echo "## Cloudflare SPA deploy failed: missing secrets"
+              echo ""
+              echo "No files were published. A green \`Deploy public web app\` run is the only signal that a \`static/\` change actually shipped."
+              echo ""
+              echo "Add these under GitHub Settings > Secrets and variables > Actions, then re-run this workflow:"
+              echo "- \`CLOUDFLARE_API_TOKEN\`"
+              echo "- \`CLOUDFLARE_ACCOUNT_ID\`"
+              echo ""
+              echo "Until then, publish manually from an authenticated workstation: \`npx --yes wrangler@4 deploy\`."
+              echo "See \`docs/OPERATIONS_SETUP.md\` section 11."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          status=0
+          npx --yes wrangler@4 deploy >/tmp/wrangler.log 2>&1 || status=$?
+          cat /tmp/wrangler.log
+          if [ "$status" -ne 0 ]; then
+            # Job logs are only readable by the repo owner, so also publish the
+            # reason as an annotation and in the run summary. Actions masks
+            # secret values in log output automatically.
+            reason="$(tr '\r\n' '  ' < /tmp/wrangler.log | tail -c 700)"
+            echo "::error::wrangler deploy failed (exit $status): $reason"
+            {
+              echo "## Cloudflare SPA deploy failed (wrangler exit $status)"
+              echo ""
+              echo '```'
+              tail -n 30 /tmp/wrangler.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit "$status"
+          fi

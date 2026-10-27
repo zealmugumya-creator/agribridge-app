@@ -1,0 +1,13 @@
+# Installed dependencies
+node_modules/
+
+# Generated web bundle (rebuilt from ../static by scripts/copy-web.mjs)
+www/
+
+# Native projects generated on the Mac/PC by `npx cap add ios` / `add android`.
+# Safe to delete and regenerate. Commit them later if you want to track native
+# tweaks (signing, Info.plist changes, etc.).
+ios/
+android/
+
+.DS_Store

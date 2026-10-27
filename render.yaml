@@ -5,6 +5,7 @@ services:
     pythonVersion: "3.12.7"
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+<<<<<<< HEAD
     envVars:
       - key: FLASK_ENV
         value: production
@@ -22,3 +23,21 @@ services:
         sync: false
       - key: AT_SMS_SENDER
         value: AgriBridge
+=======
+    healthCheckPath: /health/live
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      # Required by services.config. Render creates this once for a new
+      # blueprint service; never replace an existing production value casually.
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SUPABASE_URL
+        value: https://lvloaweijidgcuezdnmu.supabase.co
+      # Set this in Render from Supabase's service-role/secret key. It must
+      # never be committed or exposed to the browser.
+      - key: SUPABASE_KEY
+        sync: false
+      - key: PUBLIC_BASE_URL
+        value: https://agribrige.com
+>>>>>>> upstream/main

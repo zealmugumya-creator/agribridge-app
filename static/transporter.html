@@ -1,0 +1,274 @@
+<!-- Copyright (C) 2026 Mugumya Zeal. All rights reserved. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriBridge — Transporter Portal</title>
+<style>
+  :root{--bg:#0f1310;--bg2:#171c18;--bg3:#1e2620;--border:#2c352b;--text:#e8efe8;--text2:#9fb0a2;--green:#2ecc71;--green-dim:#123821;--amber:#f0a020;--red:#e05555}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+  header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg2);border-bottom:1px solid var(--border)}
+  header h1{font-size:1.05rem;font-weight:800}
+  .wrap{max-width:500px;margin:0 auto;padding:24px 16px}
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px}
+  .card h2{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+  .card p{color:var(--text2);font-size:.88rem;margin-bottom:16px}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:10px;font-weight:700;font-size:1rem;padding:14px 20px;width:100%}
+  .btn-avail{background:var(--green);color:#04210f;transition:background .2s}
+  .btn-avail.off{background:var(--bg3);border:2px solid var(--border);color:var(--text2)}
+  .toggle-wrap{display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .toggle-label{font-weight:800;font-size:1rem}
+  .toggle-sub{color:var(--text2);font-size:.82rem;margin-top:2px}
+  .toggle{position:relative;width:56px;height:30px;flex-shrink:0}
+  .toggle input{opacity:0;width:0;height:0}
+  .slider{position:absolute;inset:0;background:var(--bg);border:2px solid var(--border);border-radius:30px;cursor:pointer;transition:.3s}
+  .slider:before{content:'';position:absolute;width:22px;height:22px;left:2px;bottom:2px;background:var(--text2);border-radius:50%;transition:.3s}
+  input:checked + .slider{background:var(--green-dim);border-color:var(--green)}
+  input:checked + .slider:before{transform:translateX(26px);background:var(--green)}
+  .status-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:.82rem;font-weight:700}
+  .status-pill.on{background:rgba(46,204,113,.15);color:var(--green)}
+  .status-pill.off{background:rgba(155,176,162,.1);color:var(--text2)}
+  .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+  .profile-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.88rem}
+  .profile-row:last-child{border-bottom:none}
+  .profile-row .lbl{color:var(--text2)}
+  .err{color:var(--red);font-size:.85rem;margin-top:8px;min-height:1.2em}
+  input,select{font-family:inherit;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;width:100%;font-size:.95rem;margin-bottom:10px}
+  label{display:block;font-size:.8rem;color:var(--text2);margin:8px 0 3px}
+  .hidden{display:none}
+  .muted{color:var(--text2);font-size:.82rem}
+  .spin{display:inline-block;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loginSection{margin-top:10vh}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚛 AgriBridge Transporter</h1>
+  <div id="headerStatus"></div>
+</header>
+
+<div class="wrap">
+
+  <!-- LOGIN -->
+  <div id="loginSection" class="card">
+    <h2>Sign In</h2>
+    <p>Use your AgriBridge transporter account to sign in.</p>
+    <label>Email</label>
+    <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+    <button class="btn-avail" onclick="doLogin()" style="margin-top:4px">Sign In</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+
+  <!-- DASHBOARD (hidden until logged in) -->
+  <div id="dashboard" class="hidden">
+
+    <!-- Availability toggle -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <h2>My Availability</h2>
+        <span id="statusPill" class="status-pill off"><span class="dot"></span> Offline</span>
+      </div>
+      <p>Toggle this when you are ready to take deliveries. Admin can see your status in real time.</p>
+      <div class="toggle-wrap">
+        <div>
+          <div class="toggle-label" id="toggleLabel">I'm Offline</div>
+          <div class="toggle-sub" id="toggleSub">Toggle to accept jobs</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="availToggle" onchange="setAvailability(this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="err" id="toggleErr"></div>
+    </div>
+
+    <!-- Profile -->
+    <div class="card">
+      <h2>My Profile</h2>
+      <p>Contact admin to update your details or vehicle information.</p>
+      <div id="profileRows"><div class="muted">Loading…</div></div>
+    </div>
+
+    <!-- Info -->
+    <div class="card">
+      <h2>How it works</h2>
+      <div style="font-size:.88rem;color:var(--text2);line-height:1.7">
+        <p>1. <strong style="color:var(--text)">Mark yourself available</strong> when your vehicle is free.</p>
+        <p>2. Admin matches you to nearby orders and contacts you via SMS.</p>
+        <p>3. Collect the produce from the farmer and deliver to the buyer.</p>
+        <p>4. Mark yourself offline when your vehicle is busy or unavailable.</p>
+      </div>
+    </div>
+
+    <button class="btn-avail off" onclick="doLogout()" style="width:auto;padding:10px 20px;font-size:.88rem">Sign Out</button>
+  </div>
+
+</div>
+
+<script>
+  var API = 'https://agribridge-1-og7a.onrender.com';
+  var SUPA_URL = 'https://lvloaweijidgcuezdnmu.supabase.co';
+  var SUPA_KEY = 'sb_publishable_lzjlixcVLCUVg9MDy5adFw_pgxTz03y';
+  var session = null; // Supabase session object
+
+  // ── Supabase Auth helpers ────────────────────────────────────────────────────
+  async function supaFetch(path, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({'Content-Type':'application/json','apikey':SUPA_KEY}, opts.headers||{});
+    if(session && session.access_token){
+      opts.headers['Authorization'] = 'Bearer ' + session.access_token;
+    }
+    var res = await fetch(SUPA_URL + path, opts);
+    var body = await res.json().catch(function(){ return {}; });
+    return { ok: res.ok, status: res.status, data: body };
+  }
+
+  async function apiFetch(path, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+    if(session && session.access_token){
+      opts.headers['Authorization'] = 'Bearer ' + session.access_token;
+    }
+    var res = await fetch(API + path, opts);
+    var body = await res.json().catch(function(){ return {}; });
+    return { ok: res.ok, status: res.status, data: body };
+  }
+
+  // ── Login ────────────────────────────────────────────────────────────────────
+  async function doLogin(){
+    var email = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
+    var errEl = document.getElementById('loginErr');
+    errEl.textContent = '';
+    if(!email || !password){ errEl.textContent = 'Enter email and password.'; return; }
+    try {
+      var r = await supaFetch('/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        body: JSON.stringify({ email: email, password: password })
+      });
+      if(!r.ok || !r.data.access_token){
+        errEl.textContent = (r.data && r.data.error_description) || 'Login failed. Check your credentials.';
+        return;
+      }
+      session = r.data; // {access_token, refresh_token, user, …}
+      sessionStorage.setItem('ab_transporter_session', JSON.stringify(session));
+      showDashboard();
+    } catch(e) {
+      errEl.textContent = 'Could not reach the server. Try again.';
+    }
+  }
+
+  function doLogout(){
+    session = null;
+    sessionStorage.removeItem('ab_transporter_session');
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('loginSection').classList.remove('hidden');
+    document.getElementById('headerStatus').innerHTML = '';
+  }
+
+  // ── Dashboard ────────────────────────────────────────────────────────────────
+  async function showDashboard(){
+    document.getElementById('loginSection').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    await loadProfile();
+  }
+
+  async function loadProfile(){
+    try {
+      var r = await apiFetch('/api/transporter/me');
+      if(!r.ok){
+        if(r.status === 404){
+          document.getElementById('profileRows').innerHTML =
+            '<div class="muted">⚠ Your account is not linked to a transporter profile yet. Contact admin to set this up.</div>';
+          return;
+        }
+        document.getElementById('profileRows').innerHTML = '<div class="muted">Could not load profile.</div>';
+        return;
+      }
+      var p = r.data;
+      var avail = p.is_available || false;
+      document.getElementById('availToggle').checked = avail;
+      updateToggleUI(avail);
+
+      var fields = [
+        ['Name', p.full_name],
+        ['Phone', p.phone],
+        ['Vehicle', p.vehicle_type],
+        ['Plate', p.plate_number],
+        ['District', p.district],
+        ['Capacity', p.capacity_kg ? p.capacity_kg + ' kg' : '—'],
+        ['Status', p.status || 'active'],
+        ['Notes', p.notes],
+      ];
+      document.getElementById('profileRows').innerHTML = fields.map(function(f){
+        return '<div class="profile-row"><span class="lbl">'+h(f[0])+'</span><span>'+h(f[1]||'—')+'</span></div>';
+      }).join('');
+
+      var name = p.full_name || 'Transporter';
+      document.getElementById('headerStatus').innerHTML = '<span class="muted" style="font-size:.82rem">'+h(name)+'</span>';
+    } catch(e) {
+      document.getElementById('profileRows').innerHTML = '<div class="muted">Error loading profile.</div>';
+    }
+  }
+
+  async function setAvailability(isAvailable){
+    var errEl = document.getElementById('toggleErr');
+    errEl.textContent = '';
+    updateToggleUI(isAvailable); // optimistic
+    try {
+      var r = await apiFetch('/api/transporter/availability', {
+        method: 'POST',
+        body: JSON.stringify({ is_available: isAvailable })
+      });
+      if(!r.ok){
+        errEl.textContent = (r.data && r.data.error) || 'Could not update. Try again.';
+        // revert
+        document.getElementById('availToggle').checked = !isAvailable;
+        updateToggleUI(!isAvailable);
+        return;
+      }
+    } catch(e) {
+      errEl.textContent = 'Connection error. Check internet and retry.';
+      document.getElementById('availToggle').checked = !isAvailable;
+      updateToggleUI(!isAvailable);
+    }
+  }
+
+  function updateToggleUI(avail){
+    var pill = document.getElementById('statusPill');
+    var lbl = document.getElementById('toggleLabel');
+    var sub = document.getElementById('toggleSub');
+    if(avail){
+      pill.className = 'status-pill on';
+      pill.innerHTML = '<span class="dot"></span> Available';
+      lbl.textContent = "I'm Available";
+      sub.textContent = 'Admin can assign you delivery jobs';
+    } else {
+      pill.className = 'status-pill off';
+      pill.innerHTML = '<span class="dot"></span> Offline';
+      lbl.textContent = "I'm Offline";
+      sub.textContent = 'Toggle to accept jobs';
+    }
+  }
+
+  function h(s){ return String(s==null?'':s).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];}); }
+
+  // ── Auto-restore session ─────────────────────────────────────────────────────
+  (function init(){
+    var saved = sessionStorage.getItem('ab_transporter_session');
+    if(saved){
+      try {
+        session = JSON.parse(saved);
+        if(session && session.access_token){ showDashboard(); return; }
+      } catch(e){}
+    }
+  })();
+</script>
+</body>
+</html>

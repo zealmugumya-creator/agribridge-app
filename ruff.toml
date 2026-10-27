@@ -1,0 +1,22 @@
+# Copyright (C) 2026 zealmugumya-creator. All rights reserved.
+
+line-length = 100
+target-version = "py312"
+
+[lint]
+# Keep the gate meaningful but not noisy on a legacy single-file backend.
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = [
+    "E501",   # line length: legacy file has long lines; handled by formatter
+    "B008",   # function call in default arg (Flask patterns)
+    "UP015",  # redundant open modes
+]
+
+[lint.per-file-ignores]
+# app.py is the legacy single-file backend. E402/F401/B006/B023/UP are structural
+# to its module-level wiring. E741 (ambiguous `l` in USSD formatting) and B005
+# (`.lstrip('```json')` in the Gemini JSON parse) are PRE-EXISTING behaviors left
+# intact per Rule 1 (don't rewrite working code during a lint pass); both are
+# tracked for a dedicated cleanup, not silently changed here.
+"app.py" = ["E402", "F401", "B006", "B023", "UP", "E741", "B005"]
+"tests/*" = ["B011", "B017"]

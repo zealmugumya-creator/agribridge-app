@@ -1,0 +1,24 @@
+{
+  "name": "agribridge-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Capacitor native shell that packages the AgriBridge web app for the iOS App Store and Google Play. Wraps the same static/index.html — no rewrite.",
+  "scripts": {
+    "build": "node scripts/copy-web.mjs",
+    "sync": "npm run build && cap sync",
+    "ios": "npm run build && cap sync ios && cap open ios",
+    "android": "npm run build && cap sync android && cap open android",
+    "icons": "capacitor-assets generate --assetPath assets"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
+    "@capacitor/splash-screen": "^6.0.2",
+    "@capacitor/status-bar": "^6.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.1.2"
+  }
+}

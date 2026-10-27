@@ -1,0 +1,27 @@
+/**
+ * Copyright (C) 2026 Mugumya Zeal. All rights reserved.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Safe area insets for Android notch/navbar */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Prevent overscroll bounce on mobile */
+html, body {
+  overscroll-behavior: none;
+  background-color: #030712; /* gray-950 */
+}
+
+/* Smooth scrolling */
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}

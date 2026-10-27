@@ -1,0 +1,108 @@
+{
+  "documents": {
+    "buyer-terms": {
+      "applies_to_roles": [
+        "vendor",
+        "hotel"
+      ],
+      "doc_type": "buyer-terms",
+      "effective_date": "2026-10-09",
+      "last_material_version": "1.0.0",
+      "material": true,
+      "requires_acceptance": "accept",
+      "sha256": "b2613c051bbc30cf00b046d8c2a7987e1d61550483633ba4461f4a98a0338f1f",
+      "summary": "First published version of the extra terms for buyers, hotels and restaurants.",
+      "title": "Buyer Terms",
+      "url": "legal/buyer-terms.html",
+      "version": "1.0.0",
+      "versioned_url": "legal/buyer-terms-1.0.0.html"
+    },
+    "farmer-terms": {
+      "applies_to_roles": [
+        "farmer"
+      ],
+      "doc_type": "farmer-terms",
+      "effective_date": "2026-10-09",
+      "last_material_version": "1.0.0",
+      "material": true,
+      "requires_acceptance": "accept",
+      "sha256": "d61cf51cb0c1bf7552604da778b47150ff0a57356edc5e9e060f317e6c21c0dd",
+      "summary": "First published version of the extra terms for farmers and producers.",
+      "title": "Farmer and Producer Terms",
+      "url": "legal/farmer-terms.html",
+      "version": "1.0.0",
+      "versioned_url": "legal/farmer-terms-1.0.0.html"
+    },
+    "privacy-policy": {
+      "applies_to_roles": [
+        "all"
+      ],
+      "doc_type": "privacy-policy",
+      "effective_date": "2026-10-09",
+      "last_material_version": "1.0.0",
+      "material": true,
+      "requires_acceptance": "acknowledge",
+      "sha256": "d8fcace8d4c7c495d517488d2f84f50eac33c07a4eaab896a4831d393a4f52ec",
+      "summary": "First published version of the AgriBridge Privacy Policy and Data Protection Notice.",
+      "title": "Privacy Policy and Data Protection Notice",
+      "url": "legal/privacy-policy.html",
+      "version": "1.0.0",
+      "versioned_url": "legal/privacy-policy-1.0.0.html"
+    },
+    "supplier-terms": {
+      "applies_to_roles": [
+        "supplier"
+      ],
+      "doc_type": "supplier-terms",
+      "effective_date": "2026-10-09",
+      "last_material_version": "1.0.0",
+      "material": true,
+      "requires_acceptance": "accept",
+      "sha256": "020005d67ffede0664fcf041794fa8ef88ca5a3a8f5f4c985b8a8321dd6ec459",
+      "summary": "First published version of the extra terms for farm-input suppliers and vendors.",
+      "title": "Supplier Terms",
+      "url": "legal/supplier-terms.html",
+      "version": "1.0.0",
+      "versioned_url": "legal/supplier-terms-1.0.0.html"
+    },
+    "terms-of-use": {
+      "applies_to_roles": [
+        "all"
+      ],
+      "doc_type": "terms-of-use",
+      "effective_date": "2026-10-09",
+      "last_material_version": "1.0.0",
+      "material": true,
+      "requires_acceptance": "accept",
+      "sha256": "ae100b3413f1a05a9db23a2e24c3a1d3f1e995f6bc612718e8df969851834e5e",
+      "summary": "First published version of the AgriBridge Terms of Use and Marketplace Agreement.",
+      "title": "Terms of Use and Marketplace Agreement",
+      "url": "legal/terms-of-use.html",
+      "version": "1.0.0",
+      "versioned_url": "legal/terms-of-use-1.0.0.html"
+    }
+  },
+  "role_documents": {
+    "farmer": [
+      "farmer-terms",
+      "privacy-policy",
+      "terms-of-use"
+    ],
+    "hotel": [
+      "buyer-terms",
+      "privacy-policy",
+      "terms-of-use"
+    ],
+    "supplier": [
+      "privacy-policy",
+      "supplier-terms",
+      "terms-of-use"
+    ],
+    "vendor": [
+      "buyer-terms",
+      "privacy-policy",
+      "terms-of-use"
+    ]
+  },
+  "schema": 1
+}

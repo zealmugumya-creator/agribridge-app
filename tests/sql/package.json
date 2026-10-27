@@ -1,0 +1,8 @@
+{
+  "name": "agribridge-sql-tests",
+  "private": true,
+  "type": "module",
+  "description": "Runs the Supabase migrations against a real in-process PostgreSQL (PGlite) with stubbed Supabase roles.",
+  "scripts": { "test": "node legal_consent.test.mjs && node ledger.test.mjs && node security_lockdown.test.mjs && node category_orders.test.mjs && node settlements.test.mjs && node pesapal.test.mjs && node farmer_ratings.test.mjs && node order_write_lockdown.test.mjs" },
+  "devDependencies": { "@electric-sql/pglite": "0.5.8" }
+}

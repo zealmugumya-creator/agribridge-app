@@ -1,0 +1,5 @@
+-- Deprecated compatibility entry point.
+--
+-- Apply supabase/migrations/0012_uploads_bucket.up.sql instead. It creates the
+-- bucket idempotently and removes all browser-write policies. Media is uploaded
+-- only through POST /api/uploads with a verified user session.

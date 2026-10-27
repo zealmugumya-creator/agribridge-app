@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Capacitor native projects (generated — don't commit android/ unless you want to)
+android/
+ios/
+
+# Environment — local secrets stay local
+.env.local
+.env.*.local
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.swp
+.DS_Store
+
+# TypeScript build info
+*.tsbuildinfo

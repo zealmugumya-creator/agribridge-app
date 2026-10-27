@@ -1,0 +1,6 @@
+# Development / CI dependencies (not installed in the Render runtime image).
+-r requirements.txt
+pytest==8.3.4
+ruff==0.8.4
+mypy==1.14.1
+playwright==1.56.0

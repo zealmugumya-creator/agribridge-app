@@ -1,0 +1,1019 @@
+<!-- Copyright (C) 2026 Mugumya Zeal. All rights reserved. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AgriBridge · Logistics Command Center</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚚</text></svg>">
+<style>
+  :root {
+    --bg:#0d1117;--bg2:#161b22;--bg3:#1c2128;--card:#1e2530;
+    --border:#30363d;--green:#2ec471;--green-dim:rgba(46,196,113,.12);
+    --yellow:#f5a623;--red:#f87171;--blue:#58a6ff;--purple:#a78bfa;
+    --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
+    --radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+  a{color:var(--green);text-decoration:none}
+
+  /* ── TOPBAR ── */
+  .topbar{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--bg2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+  .topbar-logo{font-weight:800;font-size:1.1rem;color:var(--green)}
+  .topbar-title{font-size:.95rem;color:var(--text2)}
+  .topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .badge{background:var(--green-dim);color:var(--green);border-radius:20px;padding:3px 10px;font-size:.78rem;font-weight:700}
+  .badge.red{background:rgba(248,113,113,.15);color:var(--red)}
+  .badge.yellow{background:rgba(245,166,35,.15);color:var(--yellow)}
+
+  /* ── LAYOUT ── */
+  .layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 49px)}
+  .sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:16px 0}
+  .main{padding:20px;overflow-x:auto}
+
+  /* ── SIDEBAR NAV ── */
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:var(--text2);transition:.15s;border-left:3px solid transparent;font-size:.88rem}
+  .nav-item:hover{background:var(--bg3);color:var(--text)}
+  .nav-item.active{color:var(--green);background:var(--green-dim);border-left-color:var(--green)}
+  .nav-icon{font-size:1.1rem;width:22px;text-align:center}
+  .nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:.72rem;font-weight:700}
+  .nav-sep{height:1px;background:var(--border);margin:10px 14px}
+
+  /* ── STAT TILES ── */
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+  .stat-tile{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+  .stat-label{font-size:.74rem;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+  .stat-val{font-size:1.6rem;font-weight:800;color:var(--text)}
+  .stat-val.green{color:var(--green)}
+  .stat-val.yellow{color:var(--yellow)}
+  .stat-val.red{color:var(--red)}
+  .stat-val.blue{color:var(--blue)}
+  .stat-sub{font-size:.75rem;color:var(--text3);margin-top:3px}
+
+  /* ── SECTION HEADER ── */
+  .section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .section-title{font-size:1rem;font-weight:700}
+  .section-actions{margin-left:auto;display:flex;gap:8px}
+
+  /* ── FILTER BAR ── */
+  .filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+  .filter-bar select,.filter-bar input{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font-size:.82rem;min-width:130px}
+  .filter-bar input[type=text]{min-width:200px}
+  .filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:var(--green)}
+  .filter-bar label{font-size:.78rem;color:var(--text2);align-self:center}
+
+  /* ── TABLE ── */
+  .tbl-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:.83rem;min-width:900px}
+  thead th{background:var(--bg3);padding:10px 12px;text-align:left;color:var(--text2);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid var(--border)}
+  tbody tr{border-bottom:1px solid var(--border);transition:.1s}
+  tbody tr:hover{background:var(--bg3);cursor:pointer}
+  tbody td{padding:9px 12px;vertical-align:middle}
+  .mono{font-family:monospace;font-size:.82rem}
+
+  /* ── STATUS PILLS ── */
+  .pill{display:inline-block;border-radius:20px;padding:2px 10px;font-size:.74rem;font-weight:700;white-space:nowrap}
+  .pill-pending{background:rgba(245,166,35,.15);color:var(--yellow)}
+  .pill-confirmed{background:rgba(46,196,113,.15);color:var(--green)}
+  .pill-in_transit{background:rgba(88,166,255,.15);color:var(--blue)}
+  .pill-delivered{background:rgba(46,196,113,.25);color:#4ade80}
+  .pill-cancelled{background:rgba(248,113,113,.15);color:var(--red)}
+  .pill-unpaid{background:rgba(248,113,113,.12);color:var(--red)}
+  .pill-paid{background:rgba(46,196,113,.12);color:var(--green)}
+  .pill-na{background:var(--bg3);color:var(--text3)}
+
+  /* ── MAP ── */
+  #mapWrap{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);height:420px;background:var(--bg3);position:relative}
+  #map{height:100%;width:100%}
+  .map-legend{position:absolute;bottom:12px;left:12px;background:rgba(22,27,34,.9);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.78rem;z-index:1000;line-height:1.8}
+  .map-unavail{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text2);gap:8px;font-size:.9rem}
+  .map-unavail .big{font-size:2.5rem}
+
+  /* ── DETAIL PANEL ── */
+  .detail-panel{position:fixed;top:0;right:0;bottom:0;width:420px;background:var(--bg2);border-left:1px solid var(--border);z-index:500;transform:translateX(100%);transition:.25s;overflow-y:auto;display:flex;flex-direction:column}
+  .detail-panel.open{transform:none}
+  .detail-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg3);position:sticky;top:0}
+  .detail-body{padding:18px 20px;flex:1}
+  .detail-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+  .detail-row:last-child{border:none}
+  .detail-key{color:var(--text2)}
+  .detail-val{font-weight:600;text-align:right;max-width:60%;word-break:break-all}
+  .detail-section{font-size:.74rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px}
+  .action-bar{padding:14px 20px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;background:var(--bg3);position:sticky;bottom:0}
+
+  /* ── BUTTONS ── */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:.83rem;font-weight:600;cursor:pointer;border:none;transition:.15s}
+  .btn-green{background:var(--green);color:#000}
+  .btn-green:hover{opacity:.88}
+  .btn-red{background:rgba(248,113,113,.2);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+  .btn-red:hover{background:rgba(248,113,113,.35)}
+  .btn-blue{background:rgba(88,166,255,.2);color:var(--blue);border:1px solid rgba(88,166,255,.3)}
+  .btn-blue:hover{background:rgba(88,166,255,.35)}
+  .btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+  .btn-ghost:hover{background:var(--bg3);color:var(--text)}
+  .btn-row{display:flex;gap:8px;flex-wrap:wrap}
+  .btn-full{width:100%;justify-content:center}
+
+  /* ── ACTION QUEUE ── */
+  .queue-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.15s}
+  .queue-item:hover{border-color:var(--green)}
+  .queue-item-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .queue-item-title{font-weight:700;font-size:.88rem}
+  .queue-item-meta{font-size:.78rem;color:var(--text2)}
+  .queue-urgency-high{border-left:3px solid var(--red)}
+  .queue-urgency-med{border-left:3px solid var(--yellow)}
+  .queue-urgency-low{border-left:3px solid var(--blue)}
+
+  /* ── RECEIPT ── */
+  .receipt-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;font-size:.85rem}
+  .receipt-hdr{display:flex;justify-content:space-between;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:12px}
+  .receipt-logo{font-weight:800;font-size:1.1rem;color:var(--green)}
+  .receipt-table{width:100%;border-collapse:collapse;margin:12px 0}
+  .receipt-table td{padding:5px 0}
+  .receipt-table .lbl{color:var(--text2);font-size:.82rem}
+  .receipt-total{border-top:1px solid var(--border);padding-top:10px;margin-top:6px;display:flex;justify-content:space-between;font-weight:800;font-size:1rem}
+
+  /* ── SECTIONS (tab pages) ── */
+  .section{display:none}
+  .section.active{display:block}
+
+  /* ── TOAST ── */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;padding:10px 22px;border-radius:30px;font-weight:700;font-size:.88rem;opacity:0;pointer-events:none;transition:.3s;z-index:9999}
+
+  /* ── LOADING ── */
+  .spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading-row{padding:32px;text-align:center;color:var(--text2)}
+
+  /* ── EMPTY STATE ── */
+  .empty{padding:40px;text-align:center;color:var(--text3)}
+  .empty big{font-size:2.5rem;display:block;margin-bottom:8px}
+
+  /* ── CONFIRM DIALOG ── */
+  .confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:800;display:none;align-items:center;justify-content:center}
+  .confirm-overlay.open{display:flex}
+  .confirm-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:360px;max-width:95vw}
+  .confirm-title{font-weight:700;margin-bottom:8px}
+  .confirm-msg{color:var(--text2);font-size:.88rem;margin-bottom:14px}
+  .confirm-input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px;font-size:.85rem;margin-bottom:12px}
+  .confirm-input:focus{outline:none;border-color:var(--green)}
+
+  @media(max-width:768px){
+    .layout{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .detail-panel{width:100%;border-left:none;border-top:1px solid var(--border)}
+  }
+</style>
+</head>
+<body>
+
+<!-- Admin password gate: Logistics is part of the admin console and shares its login -->
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0b0f14;display:flex;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#121923;border:1px solid #243041;border-radius:14px;padding:28px;width:100%;max-width:340px;color:#e6edf3;font-family:inherit">
+    <div style="font-weight:700;font-size:1.1rem;margin-bottom:4px">🌿 Logistics Command Center</div>
+    <div style="font-size:.82rem;color:#8b98a8;margin-bottom:16px">Admin only. Enter the admin password.</div>
+    <input id="gatePwd" type="password" placeholder="Admin password" autocomplete="current-password" style="width:100%;padding:10px 12px;border-radius:8px;border:1px solid #243041;background:#0b0f14;color:#e6edf3;box-sizing:border-box" onkeydown="if(event.key==='Enter')gateLogin()">
+    <div id="gateErr" style="color:#f87171;font-size:.8rem;min-height:18px;margin:8px 0"></div>
+    <button onclick="gateLogin()" style="width:100%;padding:10px;border:0;border-radius:8px;background:#2ec471;color:#04210f;font-weight:700;cursor:pointer">Unlock</button>
+    <a href="/admin.html" style="display:block;text-align:center;margin-top:12px;font-size:.8rem;color:#8b98a8">← Back to Admin</a>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">🌿 AgriBridge</div>
+  <div class="topbar-title">Logistics Command Center</div>
+  <div class="topbar-right">
+    <span class="badge" id="liveTag">⬤ Live</span>
+    <a href="/admin.html" class="btn btn-ghost" style="padding:5px 12px;font-size:.8rem">← Admin</a>
+    <button class="btn btn-ghost" style="padding:5px 12px;font-size:.8rem" onclick="refreshAll()">↻ Refresh</button>
+    <button class="btn btn-ghost" style="padding:5px 12px;font-size:.8rem" onclick="logoutAdmin()">Log out</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-item active" onclick="showSection('overview',this)"><span class="nav-icon">📊</span>Overview</div>
+    <div class="nav-item" onclick="showSection('orders',this)"><span class="nav-icon">📋</span>All Orders<span class="nav-badge" id="pendingBadge" style="display:none">0</span></div>
+    <div class="nav-item" onclick="showSection('active',this)"><span class="nav-icon">🚚</span>Active Deliveries</div>
+    <div class="nav-item" onclick="showSection('queue',this)"><span class="nav-icon">⚡</span>Action Queue<span class="nav-badge" id="queueBadge" style="display:none">0</span></div>
+    <div class="nav-item" onclick="showSection('map',this)"><span class="nav-icon">🗺</span>Live Map</div>
+    <div class="nav-sep"></div>
+    <div class="nav-item" onclick="showSection('receipts',this)"><span class="nav-icon">🧾</span>Receipts</div>
+    <div class="nav-item" onclick="showSection('transporters',this)"><span class="nav-icon">🚛</span>Transporters</div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="section active" id="sec-overview">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-tile"><div class="stat-label">All Orders</div><div class="stat-val blue" id="st-total">—</div></div>
+        <div class="stat-tile"><div class="stat-label">Pending</div><div class="stat-val yellow" id="st-pending">—</div></div>
+        <div class="stat-tile"><div class="stat-label">In Transit</div><div class="stat-val blue" id="st-transit">—</div></div>
+        <div class="stat-tile"><div class="stat-label">Delivered</div><div class="stat-val green" id="st-delivered">—</div></div>
+        <div class="stat-tile"><div class="stat-label">Cancelled</div><div class="stat-val red" id="st-cancelled">—</div></div>
+        <div class="stat-tile"><div class="stat-label">Unpaid</div><div class="stat-val red" id="st-unpaid">—</div><div class="stat-sub">awaiting payment</div></div>
+      </div>
+      <div class="section-header"><div class="section-title">Recent Orders</div></div>
+      <div class="tbl-wrap" id="recentTbl"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+    </div>
+
+    <!-- ── ALL ORDERS ── -->
+    <div class="section" id="sec-orders">
+      <div class="section-header">
+        <div class="section-title">All Orders</div>
+        <div class="section-actions">
+          <button class="btn btn-ghost" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <label>Status</label>
+        <select id="fStatus" onchange="loadOrders()">
+          <option value="">All</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="in_transit">In Transit</option>
+          <option value="delivered">Delivered</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <label>Payment</label>
+        <select id="fPayment" onchange="loadOrders()">
+          <option value="">All</option>
+          <option value="unpaid">Unpaid</option>
+          <option value="paid">Paid</option>
+        </select>
+        <label>From</label>
+        <input type="date" id="fFrom" onchange="loadOrders()">
+        <label>To</label>
+        <input type="date" id="fTo" onchange="loadOrders()">
+        <input type="text" id="fSearch" placeholder="Search ref / tracking / address…" oninput="debounceSearch()">
+      </div>
+      <div class="tbl-wrap" id="ordersTbl"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+    </div>
+
+    <!-- ── ACTIVE DELIVERIES ── -->
+    <div class="section" id="sec-active">
+      <div class="section-header">
+        <div class="section-title">Active Deliveries</div>
+        <div class="section-actions">
+          <button class="btn btn-ghost" onclick="loadActive()">↻ Refresh</button>
+        </div>
+      </div>
+      <div class="tbl-wrap" id="activeTbl"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+    </div>
+
+    <!-- ── ACTION QUEUE ── -->
+    <div class="section" id="sec-queue">
+      <div class="section-header"><div class="section-title">⚡ Action Queue — Orders Needing Attention</div></div>
+      <div id="queueList"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+    </div>
+
+    <!-- ── LIVE MAP ── -->
+    <div class="section" id="sec-map">
+      <div class="section-header">
+        <div class="section-title">Live Transporter Map</div>
+        <div class="section-actions">
+          <button class="btn btn-ghost" onclick="refreshMap()">↻ Refresh</button>
+        </div>
+      </div>
+      <div id="mapWrap">
+        <div id="map"></div>
+        <div class="map-legend">
+          🟢 Live GPS &nbsp;|&nbsp; 🟡 Stale (&gt;15 min) &nbsp;|&nbsp; 🔴 No location
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="section-header"><div class="section-title" style="font-size:.9rem">Active deliveries without GPS</div></div>
+        <div id="mapFallbackList"></div>
+      </div>
+    </div>
+
+    <!-- ── RECEIPTS ── -->
+    <div class="section" id="sec-receipts">
+      <div class="section-header"><div class="section-title">🧾 Order Receipts</div></div>
+      <div class="filter-bar">
+        <input type="text" id="receiptSearch" placeholder="Enter order ref (AB-XXXXX) or order ID…" style="min-width:300px">
+        <button class="btn btn-green" onclick="fetchReceipt()">Fetch Receipt</button>
+      </div>
+      <div id="receiptOut"></div>
+    </div>
+
+    <!-- ── TRANSPORTERS ── -->
+    <div class="section" id="sec-transporters">
+      <div class="section-header"><div class="section-title">🚛 Transporter Fleet</div></div>
+      <div class="tbl-wrap" id="transportersTbl"><div class="loading-row"><span class="spinner"></span> Loading…</div></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ORDER DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-hdr">
+    <span style="font-size:1.2rem">📋</span>
+    <div>
+      <div style="font-weight:700" id="dpRef">Order Details</div>
+      <div style="font-size:.78rem;color:var(--text2)" id="dpTracking"></div>
+    </div>
+    <button class="btn btn-ghost" style="margin-left:auto;padding:4px 10px" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="detail-body" id="dpBody"></div>
+  <div class="action-bar" id="dpActions"></div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <input type="text" class="confirm-input" id="confirmInput" placeholder="Add a reason / note…">
+    <div class="btn-row">
+      <button class="btn btn-red btn-full" id="confirmOk" onclick="doConfirm()">Confirm</button>
+      <button class="btn btn-ghost btn-full" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- LEAFLET MAP -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+var API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:5000' : 'https://agribridge-1-og7a.onrender.com';
+// Same session as admin.html (sessionStorage). Old persistent copy is removed.
+try { localStorage.removeItem('ab_admin_token'); } catch(e) {}
+var TOKEN = sessionStorage.getItem('ab_admin_token') || '';
+var allOrders = [];
+var activeDeliveries = [];
+var leafletMap = null;
+var mapMarkers = [];
+var confirmCallback = null;
+var currentOrder = null;
+var searchTimer = null;
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+function authHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN };
+}
+async function api(path, opts) {
+  var res = await fetch(API + path, Object.assign({ headers: authHeaders() }, opts || {}));
+  if (res.status === 401 || res.status === 403) { clearToken(); showGate('Session expired. Please log in again.'); throw new Error('Unauthorized'); }
+  return res.json().catch(function() { return {}; });
+}
+function clearToken() { TOKEN = ''; try { sessionStorage.removeItem('ab_admin_token'); } catch(e) {} }
+function showGate(msg) {
+  document.getElementById('gate').style.display = 'flex';
+  document.getElementById('gateErr').textContent = msg || '';
+  setTimeout(function() { document.getElementById('gatePwd').focus(); }, 50);
+}
+function hideGate() { document.getElementById('gate').style.display = 'none'; }
+function logoutAdmin() { clearToken(); allOrders = []; showGate(''); }
+async function gateLogin() {
+  var pwd = document.getElementById('gatePwd').value, err = document.getElementById('gateErr');
+  err.textContent = '';
+  if (!pwd) { err.textContent = 'Enter the password.'; return; }
+  try {
+    var r = await fetch(API + '/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) });
+    var j = await r.json().catch(function() { return null; });
+    if (r.ok && j && j.token) {
+      TOKEN = j.token; sessionStorage.setItem('ab_admin_token', TOKEN);
+      document.getElementById('gatePwd').value = '';
+      hideGate(); refreshAll();
+    } else { err.textContent = (j && j.error) || 'Wrong password.'; }
+  } catch (e) { err.textContent = 'Could not reach the server. It may be waking up, wait 30s and retry.'; }
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.background = type === 'error' ? '#f87171' : type === 'warn' ? '#f5a623' : '#2ec471';
+  el.style.opacity = '1';
+  setTimeout(function() { el.style.opacity = '0'; }, 3000);
+}
+
+// ─── SECTION NAV ──────────────────────────────────────────────────────────────
+function showSection(name, node) {
+  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var sec = document.getElementById('sec-' + name);
+  if (sec) sec.classList.add('active');
+  if (node) node.classList.add('active');
+  if (name === 'orders') loadOrders();
+  if (name === 'active') loadActive();
+  if (name === 'queue') loadQueue();
+  if (name === 'map') initMap();
+  if (name === 'transporters') loadTransporters();
+}
+
+// ─── STATUS HELPERS ───────────────────────────────────────────────────────────
+function pill(status, type) {
+  var cls = 'pill pill-' + (status || 'na').toLowerCase().replace(' ', '_');
+  return '<span class="' + cls + '">' + (status || '—') + '</span>';
+}
+function fmtDate(s) {
+  if (!s) return '—';
+  var d = new Date(s);
+  return d.toLocaleDateString('en-UG', { day:'2-digit', month:'short' }) + ' ' +
+    d.toLocaleTimeString('en-UG', { hour:'2-digit', minute:'2-digit' });
+}
+function fmtMoney(v) {
+  if (!v) return '—';
+  return 'UGX ' + Number(v).toLocaleString();
+}
+function h(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function gpsAge(ts) {
+  if (!ts) return null;
+  return (Date.now() - new Date(ts).getTime()) / 60000; // minutes
+}
+
+// ─── REFRESH ALL ──────────────────────────────────────────────────────────────
+async function refreshAll() {
+  try {
+    var orders = await api('/api/admin/orders-full');
+    allOrders = Array.isArray(orders) ? orders : [];
+    updateStats();
+    renderRecentTable();
+    updateBadges();
+  } catch(e) { toast('Failed to load orders', 'error'); }
+  try {
+    var active = await api('/api/admin/active-deliveries');
+    activeDeliveries = Array.isArray(active) ? active : [];
+  } catch(e) {}
+}
+
+function updateStats() {
+  var counts = { pending:0, confirmed:0, in_transit:0, delivered:0, cancelled:0, unpaid:0 };
+  allOrders.forEach(function(o) {
+    var s = o.status || 'pending';
+    if (counts[s] !== undefined) counts[s]++;
+    if (o.payment_status === 'unpaid' && s !== 'cancelled') counts.unpaid++;
+  });
+  document.getElementById('st-total').textContent = allOrders.length;
+  document.getElementById('st-pending').textContent = counts.pending + counts.confirmed;
+  document.getElementById('st-transit').textContent = counts.in_transit;
+  document.getElementById('st-delivered').textContent = counts.delivered;
+  document.getElementById('st-cancelled').textContent = counts.cancelled;
+  document.getElementById('st-unpaid').textContent = counts.unpaid;
+}
+
+function updateBadges() {
+  var pending = allOrders.filter(function(o) { return o.status === 'pending'; }).length;
+  var pb = document.getElementById('pendingBadge');
+  pb.textContent = pending; pb.style.display = pending ? '' : 'none';
+  var queue = allOrders.filter(function(o) {
+    return o.status === 'pending' || (o.payment_status === 'unpaid' && o.status === 'delivered');
+  }).length;
+  var qb = document.getElementById('queueBadge');
+  qb.textContent = queue; qb.style.display = queue ? '' : 'none';
+}
+
+// ─── RECENT TABLE (Overview) ──────────────────────────────────────────────────
+function renderRecentTable() {
+  var recent = allOrders.slice(0, 20);
+  document.getElementById('recentTbl').innerHTML = recent.length ? ordersTableHTML(recent) : '<div class="empty"><big>📭</big>No orders yet</div>';
+}
+
+function ordersTableHTML(rows) {
+  var head = '<table><thead><tr><th>Order Ref</th><th>Date</th><th>Delivery Address</th><th>Amount</th><th>Payment</th><th>Status</th><th>Pay Status</th><th></th></tr></thead><tbody>';
+  var body = rows.map(function(o) {
+    return '<tr onclick="openDetail(\'' + h(o.id) + '\')">' +
+      '<td class="mono">' + h(o.order_ref || '—') + '</td>' +
+      '<td>' + fmtDate(o.created_at) + '</td>' +
+      '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + h(o.delivery_address || '—') + '</td>' +
+      '<td>' + fmtMoney(o.total_price) + '</td>' +
+      '<td><span style="font-size:.8rem">' + h(o.payment_method || '—') + '</span></td>' +
+      '<td>' + pill(o.status) + '</td>' +
+      '<td>' + pill(o.payment_status) + '</td>' +
+      '<td><button class="btn btn-ghost" style="padding:3px 9px;font-size:.78rem" onclick="event.stopPropagation();openDetail(\'' + h(o.id) + '\')">View</button></td>' +
+      '</tr>';
+  }).join('');
+  return head + body + '</tbody></table>';
+}
+
+// ─── ALL ORDERS ───────────────────────────────────────────────────────────────
+async function loadOrders() {
+  var tbl = document.getElementById('ordersTbl');
+  tbl.innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading…</div>';
+  var params = new URLSearchParams();
+  var s = document.getElementById('fStatus').value;
+  var p = document.getElementById('fPayment').value;
+  var f = document.getElementById('fFrom').value;
+  var t = document.getElementById('fTo').value;
+  var q = document.getElementById('fSearch').value.trim();
+  if (s) params.set('status', s);
+  if (p) params.set('payment_status', p);
+  if (f) params.set('date_from', f);
+  if (t) params.set('date_to', t);
+  if (q) params.set('q', q);
+  try {
+    var rows = await api('/api/admin/orders-full?' + params.toString());
+    tbl.innerHTML = rows && rows.length ? ordersTableHTML(rows) : '<div class="empty"><big>📭</big>No orders match filters</div>';
+  } catch(e) { tbl.innerHTML = '<div class="empty">Failed to load</div>'; }
+}
+function debounceSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(loadOrders, 400); }
+
+// ─── ACTIVE DELIVERIES ────────────────────────────────────────────────────────
+async function loadActive() {
+  var tbl = document.getElementById('activeTbl');
+  tbl.innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading…</div>';
+  try {
+    var rows = await api('/api/admin/active-deliveries');
+    activeDeliveries = Array.isArray(rows) ? rows : [];
+    if (!rows.length) { tbl.innerHTML = '<div class="empty"><big>🚚</big>No active deliveries</div>'; return; }
+    var now = Date.now();
+    var head = '<table><thead><tr><th>Order Ref</th><th>Destination</th><th>Transporter</th><th>Vehicle</th><th>GPS</th><th>Last Update</th><th>Pay Status</th><th></th></tr></thead><tbody>';
+    var body = rows.map(function(d) {
+      var age = gpsAge(d.location_updated_at);
+      var gpsLabel = d.lat ? (age > 15 ? '🟡 Stale' : '🟢 Live') : '🔴 None';
+      return '<tr onclick="openDetail(\'' + h(d.order_id) + '\')">' +
+        '<td class="mono">' + h(d.order_ref || '—') + '</td>' +
+        '<td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + h(d.delivery_address || '—') + '</td>' +
+        '<td>' + h(d.transporter_name || '—') + (d.transporter_phone ? '<br><span style="color:var(--text2);font-size:.77rem">' + h(d.transporter_phone) + '</span>' : '') + '</td>' +
+        '<td>' + h(d.transporter_vehicle || '—') + '</td>' +
+        '<td>' + gpsLabel + '</td>' +
+        '<td>' + fmtDate(d.location_updated_at) + '</td>' +
+        '<td>' + pill(d.payment_status) + '</td>' +
+        '<td><button class="btn btn-blue" style="padding:3px 9px;font-size:.78rem" onclick="event.stopPropagation();openDetail(\'' + h(d.order_id) + '\')">Manage</button></td>' +
+        '</tr>';
+    }).join('');
+    tbl.innerHTML = head + body + '</tbody></table>';
+  } catch(e) { tbl.innerHTML = '<div class="empty">Failed to load</div>'; }
+}
+
+// ─── ACTION QUEUE ─────────────────────────────────────────────────────────────
+async function loadQueue() {
+  var list = document.getElementById('queueList');
+  list.innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading…</div>';
+  if (!allOrders.length) await refreshAll();
+  var items = [];
+
+  allOrders.forEach(function(o) {
+    if (o.status === 'pending') {
+      var age = (Date.now() - new Date(o.created_at).getTime()) / 60000;
+      items.push({
+        urgency: age > 60 ? 'high' : 'med',
+        icon: '🆕', title: 'New Order — ' + (o.order_ref || o.id.slice(0,8)),
+        meta: 'Placed ' + fmtDate(o.created_at) + ' · ' + fmtMoney(o.total_price) + ' · ' + (o.payment_method || '—'),
+        id: o.id, action: 'Approve or reject this order'
+      });
+    }
+    if (o.payment_status === 'unpaid' && o.status === 'delivered') {
+      items.push({
+        urgency: 'high', icon: '💳',
+        title: 'Unpaid — Delivery Completed — ' + (o.order_ref || o.id.slice(0,8)),
+        meta: 'Delivered but payment not confirmed · ' + fmtMoney(o.total_price),
+        id: o.id, action: 'Reconcile payment'
+      });
+    }
+    if (o.status === 'confirmed' && !o.transporter_assigned) {
+      items.push({
+        urgency: 'med', icon: '🚚',
+        title: 'Needs Transporter — ' + (o.order_ref || o.id.slice(0,8)),
+        meta: 'Confirmed but no transporter assigned · ' + (o.delivery_address || '—'),
+        id: o.id, action: 'Assign a transporter'
+      });
+    }
+  });
+
+  activeDeliveries.forEach(function(d) {
+    var age = gpsAge(d.location_updated_at);
+    if (age !== null && age > 30) {
+      items.push({
+        urgency: 'med', icon: '📡',
+        title: 'GPS Stale — ' + (d.order_ref || ''),
+        meta: 'Last GPS update ' + Math.round(age) + ' min ago · ' + (d.transporter_name || 'Unknown transporter'),
+        id: d.order_id, action: 'Check on transporter'
+      });
+    }
+  });
+
+  if (!items.length) {
+    list.innerHTML = '<div class="empty"><big>✅</big>No actions needed right now</div>';
+    return;
+  }
+
+  // Sort: high first
+  items.sort(function(a, b) { return a.urgency === 'high' ? -1 : b.urgency === 'high' ? 1 : 0; });
+  list.innerHTML = items.map(function(item) {
+    return '<div class="queue-item queue-urgency-' + item.urgency + '" onclick="openDetail(\'' + h(item.id) + '\')">' +
+      '<div class="queue-item-top"><span style="font-size:1.2rem">' + item.icon + '</span><div class="queue-item-title">' + h(item.title) + '</div></div>' +
+      '<div class="queue-item-meta">' + h(item.meta) + '</div>' +
+      '<div style="margin-top:6px"><span class="btn btn-blue" style="padding:3px 10px;font-size:.78rem;cursor:pointer">→ ' + h(item.action) + '</span></div>' +
+      '</div>';
+  }).join('');
+}
+
+// ─── LIVE MAP ─────────────────────────────────────────────────────────────────
+function initMap() {
+  var wrap = document.getElementById('mapWrap');
+  if (!leafletMap) {
+    try {
+      leafletMap = L.map('map').setView([0.3476, 32.5825], 8); // Uganda centre
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors', maxZoom: 19,
+      }).addTo(leafletMap);
+    } catch(e) {
+      wrap.innerHTML = '<div class="map-unavail"><div class="big">🗺</div><div>Map unavailable</div><div style="font-size:.78rem">Check network connection</div></div>';
+      return;
+    }
+  }
+  refreshMap();
+}
+
+async function refreshMap() {
+  if (!leafletMap) return initMap();
+  // Clear old markers
+  mapMarkers.forEach(function(m) { leafletMap.removeLayer(m); });
+  mapMarkers = [];
+  var fallback = document.getElementById('mapFallbackList');
+  fallback.innerHTML = '';
+
+  var rows = activeDeliveries.length ? activeDeliveries : (await api('/api/admin/active-deliveries').catch(function(){return[];}));
+  activeDeliveries = Array.isArray(rows) ? rows : [];
+
+  var noGPS = [];
+  rows.forEach(function(d) {
+    if (d.lat && d.lng) {
+      var age = gpsAge(d.location_updated_at);
+      var color = age > 15 ? '#f5a623' : '#2ec471';
+      var icon = L.divIcon({
+        html: '<div style="background:' + color + ';width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.5)"></div>',
+        className: '', iconSize: [14, 14], iconAnchor: [7, 7]
+      });
+      var m = L.marker([d.lat, d.lng], { icon: icon }).addTo(leafletMap);
+      m.bindPopup(
+        '<b>' + h(d.order_ref || d.order_id.slice(0,8)) + '</b><br>' +
+        '🚚 ' + h(d.transporter_name || 'Unknown') + '<br>' +
+        '📍 ' + h(d.delivery_address || '—') + '<br>' +
+        (age !== null ? '🕐 ' + Math.round(age) + ' min ago' : '') +
+        '<br><a href="javascript:openDetail(\'' + h(d.order_id) + '\')">View Order →</a>'
+      );
+      mapMarkers.push(m);
+    } else {
+      noGPS.push(d);
+    }
+  });
+
+  if (mapMarkers.length) {
+    var group = new L.featureGroup(mapMarkers);
+    leafletMap.fitBounds(group.getBounds().pad(0.3));
+  }
+
+  // Fallback list for no-GPS deliveries
+  if (noGPS.length) {
+    fallback.innerHTML = noGPS.map(function(d) {
+      return '<div class="queue-item queue-urgency-low" onclick="openDetail(\'' + h(d.order_id) + '\')" style="margin-bottom:8px">' +
+        '<div class="queue-item-top"><span>🔴</span><div class="queue-item-title">' + h(d.order_ref || '—') + '</div></div>' +
+        '<div class="queue-item-meta">Transporter: ' + h(d.transporter_name || 'Unassigned') + ' · Destination: ' + h(d.delivery_address || '—') + '</div>' +
+        '</div>';
+    }).join('');
+  }
+}
+
+// ─── TRANSPORTERS ─────────────────────────────────────────────────────────────
+async function loadTransporters() {
+  var tbl = document.getElementById('transportersTbl');
+  tbl.innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading…</div>';
+  try {
+    var rows = await api('/api/admin/transporters');
+    if (!rows.length) { tbl.innerHTML = '<div class="empty"><big>🚛</big>No transporters registered</div>'; return; }
+    var head = '<table><thead><tr><th>Name</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>District</th><th>Capacity</th><th>Available</th><th>Last GPS</th><th>Status</th></tr></thead><tbody>';
+    var body = rows.map(function(t) {
+      var age = gpsAge(t.last_location_at);
+      var gps = t.last_lat ? (age > 15 ? '🟡 ' + Math.round(age) + 'm ago' : '🟢 ' + Math.round(age) + 'm ago') : '🔴 No GPS';
+      return '<tr>' +
+        '<td><b>' + h(t.full_name || '—') + '</b></td>' +
+        '<td>' + h(t.phone || '—') + '</td>' +
+        '<td>' + h(t.vehicle_type || '—') + '</td>' +
+        '<td class="mono">' + h(t.plate_number || '—') + '</td>' +
+        '<td>' + h(t.district || '—') + '</td>' +
+        '<td>' + (t.capacity_kg ? t.capacity_kg + ' kg' : '—') + '</td>' +
+        '<td>' + (t.is_available ? '<span class="pill pill-confirmed">✓ Available</span>' : '<span class="pill pill-cancelled">Unavailable</span>') + '</td>' +
+        '<td style="font-size:.8rem">' + gps + '</td>' +
+        '<td>' + pill(t.status) + '</td>' +
+        '</tr>';
+    }).join('');
+    tbl.innerHTML = head + body + '</tbody></table>';
+  } catch(e) { tbl.innerHTML = '<div class="empty">Failed to load</div>'; }
+}
+
+// ─── ORDER DETAIL PANEL ───────────────────────────────────────────────────────
+async function openDetail(orderId) {
+  var panel = document.getElementById('detailPanel');
+  var body = document.getElementById('dpBody');
+  body.innerHTML = '<div class="loading-row"><span class="spinner"></span> Loading…</div>';
+  panel.classList.add('open');
+
+  // Find order in cache or fetch
+  var o = allOrders.find(function(x){ return x.id === orderId; });
+  if (!o) {
+    try {
+      var rows = await api('/api/admin/orders-full?q=' + encodeURIComponent(orderId));
+      o = Array.isArray(rows) ? rows.find(function(x){ return x.id === orderId; }) : null;
+    } catch(e) {}
+  }
+  if (!o) { body.innerHTML = '<div class="empty">Order not found</div>'; return; }
+  currentOrder = o;
+
+  document.getElementById('dpRef').textContent = o.order_ref || o.id.slice(0,12);
+  document.getElementById('dpTracking').textContent = o.tracking_code || '';
+
+  // Find delivery info
+  var d = activeDeliveries.find(function(x){ return x.order_id === orderId; }) || {};
+
+  body.innerHTML =
+    '<div class="detail-section">Order Info</div>' +
+    detailRow('Order Ref', o.order_ref || '—') +
+    detailRow('Tracking', o.tracking_code || '—') +
+    detailRow('Date', fmtDate(o.created_at)) +
+    detailRow('Status', pill(o.status)) +
+    detailRow('Last Update', fmtDate(o.updated_at)) +
+    '<div class="detail-section">Buyer & Delivery</div>' +
+    detailRow('Buyer ID', '<span class="mono" style="font-size:.78rem">' + h((o.buyer_id||'').slice(0,16)) + '…</span>') +
+    detailRow('Delivery Address', h(o.delivery_address || '—')) +
+    '<div class="detail-section">Payment</div>' +
+    detailRow('Method', h(o.payment_method || '—')) +
+    detailRow('Payment Status', pill(o.payment_status)) +
+    detailRow('Total', '<b>' + fmtMoney(o.total_price) + '</b>') +
+    '<div class="detail-section">Farmer Assignment</div>' +
+    detailRow('Assigned Farmer', o.farmer_id
+      ? '<span style="color:var(--green)">✔ ' + h(o.farmer_id.slice(0,12)) + '…</span>'
+      : '<span style="color:#f59e0b">⚠ Not yet assigned</span>') +
+    '<div id="farmerPanel" style="margin-top:8px"></div>' +
+    '<div class="detail-section">Transporter</div>' +
+    detailRow('Name', h(d.transporter_name || '—')) +
+    detailRow('Phone', h(d.transporter_phone || '—')) +
+    detailRow('Vehicle', h(d.transporter_vehicle || '—')) +
+    detailRow('GPS', d.lat ? ('🟢 ' + d.lat.toFixed(4) + ', ' + d.lng.toFixed(4)) : '🔴 No location') +
+    detailRow('Last GPS', fmtDate(d.location_updated_at)) +
+    (o.admin_note ? '<div class="detail-section">Admin Note</div><div style="background:var(--bg3);border-radius:8px;padding:10px;font-size:.83rem;color:var(--text2)">' + h(o.admin_note) + '</div>' : '');
+
+  renderDetailActions(o);
+
+  // Load suggested farmers for pending orders
+  if (o.status === 'pending') {
+    loadSuggestedFarmers(o.id);
+  }
+}
+
+function detailRow(k, v) {
+  return '<div class="detail-row"><span class="detail-key">' + k + '</span><span class="detail-val">' + v + '</span></div>';
+}
+
+function renderDetailActions(o) {
+  var bar = document.getElementById('dpActions');
+  bar.innerHTML = '';
+  var btns = [];
+
+  if (o.status === 'pending') {
+    btns.push('<button class="btn btn-green btn-full" onclick="adminAction(\'approve\',\'' + h(o.id) + '\')">✅ Approve Order</button>');
+    btns.push('<button class="btn btn-red btn-full" onclick="adminAction(\'reject\',\'' + h(o.id) + '\')">❌ Reject / Cancel</button>');
+  }
+  if (o.status === 'confirmed') {
+    btns.push('<button class="btn btn-blue btn-full" onclick="showAssignTransporter(\'' + h(o.id) + '\')">🚚 Assign Transporter</button>');
+    btns.push('<button class="btn btn-red btn-full" onclick="adminAction(\'reject\',\'' + h(o.id) + '\')">❌ Cancel Order</button>');
+  }
+  if (o.status === 'in_transit') {
+    btns.push('<button class="btn btn-green btn-full" onclick="adminAction(\'deliver\',\'' + h(o.id) + '\')">📦 Confirm Delivery</button>');
+  }
+  btns.push('<button class="btn btn-ghost btn-full" onclick="generateReceipt(\'' + h(o.id) + '\')">🧾 View Receipt</button>');
+
+  bar.innerHTML = btns.join('');
+}
+
+function closeDetail() { document.getElementById('detailPanel').classList.remove('open'); currentOrder = null; }
+
+// ─── ADMIN ACTIONS ────────────────────────────────────────────────────────────
+function adminAction(type, orderId) {
+  var titles = { approve:'Approve Order', reject:'Cancel / Reject Order', deliver:'Confirm Delivery' };
+  var msgs = {
+    approve: 'This will confirm the order and notify the farmer.',
+    reject: 'This will cancel the order. This cannot be easily undone.',
+    deliver: 'Mark this order as delivered and payment as received.'
+  };
+  showConfirm(titles[type], msgs[type], function(reason) {
+    var endpoints = {
+      approve: '/api/admin/orders/' + orderId + '/approve',
+      reject:  '/api/admin/orders/' + orderId + '/reject',
+      deliver: '/api/admin/orders/' + orderId + '/confirm-delivery',
+    };
+    api(endpoints[type], {
+      method: 'POST',
+      body: JSON.stringify({ reason: reason || '', note: reason || '' })
+    }).then(function(j) {
+      if (j.ok) {
+        toast('✅ Done!');
+        closeDetail();
+        refreshAll();
+      } else { toast(j.error || 'Failed', 'error'); }
+    }).catch(function() { toast('Request failed', 'error'); });
+  });
+}
+
+// ─── SUGGESTED FARMERS ────────────────────────────────────────────────────────
+async function loadSuggestedFarmers(orderId) {
+  var panel = document.getElementById('farmerPanel');
+  if (!panel) return;
+  panel.innerHTML = '<div style="color:var(--text2);font-size:.8rem;padding:4px 0">Loading suggested farmers…</div>';
+  var farmers = await api('/api/admin/orders/' + orderId + '/suggested-farmers').catch(function(){return[];});
+  if (!Array.isArray(farmers) || !farmers.length) {
+    panel.innerHTML = '<div style="color:var(--text2);font-size:.8rem;padding:4px 0">No farmers found — all active farmers shown below may be contacted.</div>';
+    return;
+  }
+  var rows = farmers.map(function(f) {
+    var crops = (f.listings||[]).map(function(l){ return h(l.crop_name||'?') + (l.quantity_available ? ' ('+l.quantity_available+')' : ''); }).join(', ');
+    return '<div style="background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:8px;">' +
+      '<div style="font-weight:600;font-size:.88rem;color:var(--text)">' + h(f.farmer_name||'Farmer') + '</div>' +
+      '<div style="font-size:.82rem;color:#2ec471;margin:2px 0">📞 ' + h(f.farmer_phone||'No phone') + '</div>' +
+      '<div style="font-size:.78rem;color:var(--text2);margin-bottom:8px">🌿 ' + (crops || 'Active listings') + '</div>' +
+      '<button class="btn btn-green" style="font-size:.78rem;padding:5px 12px" ' +
+        'onclick="assignFarmer(\'' + h(orderId) + '\',\'' + h(f.farmer_id) + '\',\'' + h(f.farmer_name||'Farmer') + '\')">' +
+        '✔ Assign This Farmer' +
+      '</button>' +
+    '</div>';
+  });
+  panel.innerHTML =
+    '<div style="font-size:.8rem;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">👨‍🌾 Farmers Who Can Handle This Order</div>' +
+    rows.join('') +
+    '<div style="font-size:.75rem;color:var(--text2);margin-top:4px">Call to confirm availability, then assign. Only one farmer per order.</div>';
+}
+
+function assignFarmer(orderId, farmerId, farmerName) {
+  if (!confirm('Assign ' + farmerName + ' to this order?\n\nMake sure you have called them and confirmed availability.')) return;
+  api('/api/admin/orders/' + orderId + '/assign-farmer', {
+    method: 'POST',
+    body: JSON.stringify({ farmer_id: farmerId, note: 'Assigned by admin after call confirmation' })
+  }).then(function(j) {
+    if (j.ok) {
+      toast('✔ ' + farmerName + ' assigned to order');
+      // Refresh the order detail
+      if (currentOrder && currentOrder.id === orderId) {
+        currentOrder.farmer_id = farmerId;
+        openOrder(orderId);
+      }
+      refreshAll();
+    } else { toast(j.error || 'Failed to assign farmer', 'error'); }
+  }).catch(function(){ toast('Request failed', 'error'); });
+}
+
+// ─── ASSIGN TRANSPORTER ───────────────────────────────────────────────────────
+async function showAssignTransporter(orderId) {
+  var transporters = await api('/api/admin/transporters').catch(function(){return[];});
+  var avail = transporters.filter(function(t){ return t.is_available && t.status === 'active'; });
+  if (!avail.length) { toast('No available transporters right now', 'warn'); return; }
+
+  // Build a simple modal-style picker inside the detail panel
+  var overlay = document.getElementById('transporterPickerOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'transporterPickerOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px';
+    document.body.appendChild(overlay);
+  }
+
+  var items = avail.map(function(t) {
+    return '<div style="background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:8px;cursor:pointer" ' +
+      'onclick="confirmAssignTransporter(\'' + h(orderId) + '\',\'' + h(t.id) + '\',\'' + h(t.full_name||'Transporter') + '\')">' +
+      '<b style="font-size:.9rem">' + h(t.full_name||'?') + '</b>' +
+      '<div style="font-size:.8rem;color:#2ec471">📞 ' + h(t.phone||'—') + '</div>' +
+      '<div style="font-size:.78rem;color:var(--text2)">🚛 ' + h(t.vehicle_type||'?') + ' · ' + h(t.district||'?') + '</div>' +
+    '</div>';
+  }).join('');
+
+  overlay.innerHTML =
+    '<div style="background:var(--bg2);border-radius:14px;padding:20px;width:100%;max-width:360px;max-height:80vh;overflow-y:auto">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">' +
+    '<b>🚚 Select Transporter</b>' +
+    '<button onclick="document.getElementById(\'transporterPickerOverlay\').remove()" style="background:none;border:none;color:var(--text2);font-size:1.3rem;cursor:pointer">✕</button>' +
+    '</div>' +
+    items +
+    '</div>';
+}
+
+function confirmAssignTransporter(orderId, transporterId, transporterName) {
+  document.getElementById('transporterPickerOverlay')?.remove();
+  api('/api/admin/orders/' + orderId + '/assign-transporter', {
+    method: 'POST', body: JSON.stringify({ transporter_id: transporterId })
+  }).then(function(j) {
+    if (j.ok) { toast('🚚 ' + transporterName + ' assigned — order is now in transit!'); closeDetail(); refreshAll(); }
+    else { toast(j.error || 'Failed', 'error'); }
+  }).catch(function(){ toast('Request failed', 'error'); });
+}
+
+// ─── CONFIRM DIALOG ───────────────────────────────────────────────────────────
+function showConfirm(title, msg, cb) {
+  confirmCallback = cb;
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmInput').value = '';
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function doConfirm() {
+  var reason = document.getElementById('confirmInput').value.trim();
+  document.getElementById('confirmOverlay').classList.remove('open');
+  if (confirmCallback) { confirmCallback(reason); confirmCallback = null; }
+}
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); confirmCallback = null; }
+
+// ─── RECEIPTS ─────────────────────────────────────────────────────────────────
+async function fetchReceipt() {
+  var q = document.getElementById('receiptSearch').value.trim();
+  if (!q) return;
+  var out = document.getElementById('receiptOut');
+  out.innerHTML = '<div class="loading-row"><span class="spinner"></span> Fetching…</div>';
+
+  // Try to find the order by ref or ID
+  var rows = await api('/api/admin/orders-full?q=' + encodeURIComponent(q)).catch(function(){return[];});
+  if (!rows.length) { out.innerHTML = '<div class="empty"><big>🔍</big>No order found for: ' + h(q) + '</div>'; return; }
+  var o = rows[0];
+  out.innerHTML = renderReceiptHTML(o);
+}
+
+function generateReceipt(orderId) {
+  showSection('receipts', document.querySelector('.nav-item:nth-child(6)'));
+  document.getElementById('receiptSearch').value = orderId;
+  fetchReceipt();
+}
+
+function renderReceiptHTML(o) {
+  var isPaid = o.payment_status === 'paid';
+  var docType = isPaid ? 'PAYMENT RECEIPT' : 'ORDER CONFIRMATION';
+  var docNum = 'AB-RCP-' + (o.order_ref || o.id.slice(0,8)).replace('AB-', '');
+  return '<div class="receipt-box">' +
+    '<div class="receipt-hdr">' +
+      '<div>' +
+        '<div class="receipt-logo">🌿 AgriBridge</div>' +
+        '<div style="color:var(--text2);font-size:.8rem">Uganda\'s Farm-to-Table Platform</div>' +
+        '<div style="font-size:.78rem;margin-top:4px">agribrige.com · agribrige@gmail.com</div>' +
+      '</div>' +
+      '<div style="text-align:right">' +
+        '<div style="font-weight:700">' + docType + '</div>' +
+        '<div style="font-family:monospace;color:var(--green)">' + docNum + '</div>' +
+        '<div style="font-size:.8rem;color:var(--text2)">' + fmtDate(o.created_at) + '</div>' +
+      '</div>' +
+    '</div>' +
+    (isPaid ? '' : '<div style="background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);border-radius:8px;padding:8px 12px;margin-bottom:12px;color:var(--yellow);font-size:.82rem">⚠️ This is an <b>order confirmation only</b>. Payment has NOT been verified.</div>') +
+    '<table class="receipt-table">' +
+      '<tr><td class="lbl">Order Reference</td><td style="text-align:right;font-family:monospace;color:var(--green)">' + h(o.order_ref || '—') + '</td></tr>' +
+      '<tr><td class="lbl">Tracking Code</td><td style="text-align:right;font-family:monospace">' + h(o.tracking_code || '—') + '</td></tr>' +
+      '<tr><td class="lbl">Order Date</td><td style="text-align:right">' + fmtDate(o.created_at) + '</td></tr>' +
+      '<tr><td class="lbl">Delivery Address</td><td style="text-align:right">' + h(o.delivery_address || '—') + '</td></tr>' +
+      '<tr><td class="lbl">Payment Method</td><td style="text-align:right">' + h(o.payment_method || '—') + '</td></tr>' +
+      '<tr><td class="lbl">Order Status</td><td style="text-align:right">' + pill(o.status) + '</td></tr>' +
+    '</table>' +
+    '<div class="receipt-total">' +
+      '<span>Total Amount</span>' +
+      '<span style="color:var(--green)">' + fmtMoney(o.total_price) + '</span>' +
+    '</div>' +
+    '<div style="color:var(--text3);font-size:.76rem;margin-top:14px;border-top:1px solid var(--border);padding-top:10px">' +
+      'Payment Status: <b style="color:' + (isPaid ? 'var(--green)' : 'var(--red)') + '">' + (isPaid ? 'PAID ✓' : 'UNPAID — pending verification') + '</b><br>' +
+      'For queries: agribrige@gmail.com · +256 755 966 690' +
+    '</div>' +
+    '<div style="margin-top:14px;display:flex;gap:8px">' +
+      '<button class="btn btn-ghost" onclick="window.print()">🖨 Print</button>' +
+    '</div>' +
+    '</div>';
+}
+
+// ─── EXPORT CSV ───────────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!allOrders.length) { toast('No orders to export', 'warn'); return; }
+  var headers = ['order_ref','tracking_code','created_at','status','payment_status','payment_method','total_price','delivery_address','buyer_id'];
+  var rows = [headers.join(',')].concat(allOrders.map(function(o) {
+    return headers.map(function(h) { return '"' + String(o[h]||'').replace(/"/g,'""') + '"'; }).join(',');
+  }));
+  var blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'agribridge-orders-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+// ─── AUTO REFRESH ─────────────────────────────────────────────────────────────
+// Refresh every 60 seconds (only while unlocked)
+setInterval(function() { if (TOKEN) refreshAll(); }, 60000);
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(function init() {
+  if (!TOKEN) { showGate(''); return; }
+  // Verify the saved token before showing anything.
+  fetch(API + '/api/admin/verify', { headers: authHeaders() })
+    .then(function(r) { return r.json().catch(function() { return null; }); })
+    .then(function(v) {
+      if (v && v.valid) { hideGate(); refreshAll(); }
+      else { clearToken(); showGate('Please log in.'); }
+    })
+    .catch(function() { showGate('Could not reach the server. Wait 30s and retry.'); });
+})();
+</script>
+</body>
+</html>
