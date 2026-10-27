@@ -1,0 +1,1057 @@
+<!-- Copyright (C) 2026 Mugumya Zeal. All rights reserved. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>AgriBridge — Admin</title>
+<style>
+  :root{--bg:#0f1310;--bg2:#171c18;--bg3:#1e2620;--border:#2c352b;--text:#e8efe8;--text2:#9fb0a2;--green:#2ecc71;--green-dim:#123821;--amber:#f0a020;--red:#e05555}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+  a{color:var(--green)}
+  .wrap{max-width:1150px;margin:0 auto;padding:20px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--bg2);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
+  header h1{font-size:1.1rem;font-weight:800}
+  header .sub{color:var(--text2);font-size:.8rem}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;font-weight:700}
+  .btn{background:var(--green);color:#04210f;padding:10px 16px}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text2);padding:8px 12px}
+  .btn.amber{background:var(--amber);color:#3a2600}
+  .btn.red{background:transparent;border:1px solid var(--red);color:var(--red)}
+  .btn.sm{padding:5px 10px;font-size:.78rem}
+  input,select,textarea{font-family:inherit;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;width:100%;font-size:.95rem}
+  label{display:block;font-size:.8rem;color:var(--text2);margin:10px 0 4px}
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:16px}
+  #login{max-width:380px;margin:8vh auto}
+  #login h2{font-size:1.3rem;margin-bottom:6px}
+  #login p{color:var(--text2);font-size:.85rem;margin-bottom:18px}
+  .err{color:var(--red);font-size:.85rem;min-height:1.2em;margin-top:8px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+  .stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .stat .n{font-size:1.6rem;font-weight:800;color:var(--green)}
+  .stat .l{color:var(--text2);font-size:.74rem;text-transform:uppercase;letter-spacing:.03em}
+  #overviewExtras{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:18px}
+  @media(min-width:760px){ #overviewExtras{grid-template-columns:1.5fr 1fr} }
+  .ov-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px}
+  .ov-head{font-weight:800;font-size:.95rem;margin-bottom:16px}
+  .ov-head small{color:var(--text2);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;margin-left:6px}
+  .ov-chart{display:flex;align-items:flex-end;gap:10px;height:150px}
+  .ov-bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
+  .ov-bar-fill{width:100%;max-width:34px;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,#4be08a,var(--green));min-height:4px;transition:height .4s}
+  .ov-bar-val{font-size:.72rem;font-weight:700;color:var(--text)}
+  .ov-bar-lbl{font-size:.7rem;color:var(--text2)}
+  .ov-qa{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .ov-qa button{display:flex;align-items:center;gap:8px;justify-content:flex-start;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:10px;font-size:.85rem;font-weight:700}
+  .ov-qa button:hover{border-color:var(--green);color:var(--green)}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .tab{background:var(--bg3);color:var(--text2);padding:8px 14px;border-radius:20px;font-size:.85rem}
+  .tab.active{background:var(--green-dim);color:var(--green)}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+  .toolbar input{max-width:260px}
+  .tblwrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:640px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border);vertical-align:middle}
+  th{color:var(--text2);font-weight:700;font-size:.72rem;text-transform:uppercase}
+  td .thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--bg3)}
+  .badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.72rem;font-weight:700;text-transform:capitalize;background:var(--bg3);color:var(--text2)}
+  .badge.pending{background:rgba(240,180,40,.15);color:#e0a91e}
+  .badge.confirmed{background:rgba(70,140,240,.15);color:#5b9bff}
+  .badge.in_transit{background:rgba(120,110,240,.15);color:#8f86ff}
+  .badge.delivered,.badge.available,.badge.active,.badge.paid{background:rgba(40,190,110,.15);color:var(--green)}
+  .badge.cancelled,.badge.failed,.badge.sold,.badge.rejected{background:rgba(224,85,85,.15);color:var(--red)}
+  .badge.completed,.badge.posted{background:rgba(40,190,110,.15);color:var(--green)}
+  .badge.reversed,.badge.not_captured{background:rgba(240,160,32,.15);color:var(--amber)}
+  .cnt{background:var(--amber);color:#3a2600;border-radius:999px;padding:0 7px;font-size:.7rem;font-weight:800;margin-left:4px}
+  .cnt:empty{display:none}
+  select.svc-st{width:auto;padding:5px 8px;font-size:.78rem}
+  .muted{color:var(--text2)}
+  .hidden{display:none}
+  .loading{color:var(--text2);padding:20px;text-align:center}
+  .rowbtns{display:flex;gap:6px;white-space:nowrap}
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:flex-start;justify-content:center;padding:24px;z-index:100;overflow-y:auto}
+  .overlay.open{display:flex}
+  .modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;width:100%;max-width:520px;margin-top:2vh}
+  .modal h3{font-size:1.1rem;margin-bottom:4px}
+  .modal .close{float:right;background:none;color:var(--text2);font-size:1.2rem}
+  .media-preview{margin-top:6px}
+  .media-preview img,.media-preview video{max-width:100%;max-height:160px;border-radius:8px}
+  .savebar{display:flex;gap:8px;margin-top:16px}
+  .up-status{font-size:.75rem;color:var(--text2);margin-top:4px}
+  /* Financial Control Center */
+  .fin-subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .fin-sub{background:var(--bg3);color:var(--text2);padding:6px 12px;border-radius:16px;font-size:.8rem;font-weight:700;border:1px solid var(--border)}
+  .fin-sub.active{background:var(--green-dim);color:var(--green);border-color:var(--green)}
+  .fin-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+  .fin-kpi{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px}
+  .fin-kpi .l{font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.03em}
+  .fin-kpi .v{font-size:1.15rem;font-weight:800;margin-top:4px}
+  .fin-kpi .s{font-size:.68rem;color:var(--text2);margin-top:2px}
+  .fin-note{background:rgba(240,160,32,.08);border:1px solid rgba(240,160,32,.35);color:#f0c060;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:.82rem}
+  .fin-note.ok{background:rgba(46,204,113,.08);border-color:rgba(46,204,113,.35);color:var(--green)}
+  .fin-note code{background:rgba(0,0,0,.25);padding:1px 5px;border-radius:4px}
+  .fin-section{font-weight:800;font-size:.9rem;margin:16px 0 8px}
+  .fin-good{color:var(--green)}
+  .fin-bad{color:var(--red)}
+  .fin-table td.num,.fin-table th.num{text-align:right}
+  .fin-range{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:12px}
+  .fin-range label{margin:0 0 4px}
+  .fin-range input{width:auto;padding:7px 10px}
+</style>
+</head>
+<body>
+
+<div id="login" class="card">
+  <h2>🌾 AgriBridge Admin</h2>
+  <p>Enter the admin password to continue.</p>
+  <input type="password" id="pwd" placeholder="Admin password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+  <button class="btn" style="width:100%;margin-top:12px" onclick="doLogin()">Log In</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<div id="dash" class="hidden">
+  <header>
+    <div><h1>🌾 AgriBridge Admin</h1><div class="sub">Full management console</div></div>
+    <div style="display:flex;gap:8px"><button class="btn ghost sm" onclick="refreshAll()">↻ Refresh</button><button class="btn ghost sm" onclick="logout()">Log out</button></div>
+  </header>
+  <div class="wrap">
+    <div class="stats" id="stats"></div>
+    <div id="overviewExtras"></div>
+    <div class="tabs">
+      <div class="tab active" data-tab="orders"   onclick="showTab('orders',this)">Orders</div>
+      <div class="tab" data-tab="finance"        onclick="showTab('finance',this)">💵 Finance</div>
+      <div class="tab" data-tab="cold_storage"   onclick="showTab('cold_storage',this)">❄️ Cold Storage<span class="cnt" id="cnt_cold_storage"></span></div>
+      <div class="tab" data-tab="cold_transport" onclick="showTab('cold_transport',this)">🚚 Refrigerated Transport<span class="cnt" id="cnt_cold_transport"></span></div>
+      <div class="tab" data-tab="loans"          onclick="showTab('loans',this)">💰 Loan Requests<span class="cnt" id="cnt_loans"></span></div>
+      <div class="tab" data-tab="listings" onclick="showTab('listings',this)">Crop Listings</div>
+      <div class="tab" data-tab="animals"  onclick="showTab('animals',this)">Animals</div>
+      <div class="tab" data-tab="deliveries" onclick="showTab('deliveries',this)">Deliveries</div>
+      <div class="tab" data-tab="supplies" onclick="showTab('supplies',this)">Supplies</div>
+      <div class="tab" data-tab="farmers"  onclick="showTab('farmers',this)">Users</div>
+      <div class="tab" data-tab="requests" onclick="showTab('requests',this)">Requests</div>
+      <div class="tab" data-tab="offers"   onclick="showTab('offers',this)">Offers</div>
+      <div class="tab" data-tab="transporters" onclick="showTab('transporters',this)">🚛 Transporters</div>
+      <div class="tab" data-tab="matching"     onclick="showTab('matching',this)" style="color:#60d090;">🔗 Matching</div>
+      <div class="tab" data-tab="scans"        onclick="showTab('scans',this)" style="color:#60b0d0;">🌿 Scans</div>
+      <div class="tab" data-tab="inbox"        onclick="showTab('inbox',this)" style="color:#f0c060;">📥 Inbox</div>
+      <div class="tab" data-tab="activity"     onclick="showTab('activity',this)" style="color:#c0a0e0;">📊 Activity</div>
+      <div class="tab" data-tab="errors"       onclick="showTab('errors',this)" style="color:#f87171;">⚠ Errors</div>
+      <a href="/logistics.html" class="tab" style="color:#2ec471;text-decoration:none;border-left:2px solid #2ec471;margin-left:8px;" title="Logistics Command Center">🗺 Logistics</a>
+    </div>
+    <div class="card">
+      <div class="toolbar">
+        <input id="search" placeholder="Filter…" oninput="renderCurrent()">
+        <button class="btn sm amber" id="addBtn" onclick="openCreate()">+ Add</button>
+      </div>
+      <div id="panel" class="tblwrap"><div class="loading">Loading…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit / create modal -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <button class="close" onclick="closeEdit()">✕</button>
+    <h3 id="editTitle">Edit</h3>
+    <div id="editFields"></div>
+    <div class="savebar">
+      <button class="btn" style="flex:1" id="saveBtn" onclick="saveEdit()">Save</button>
+    </div>
+    <div class="err" id="editErr"></div>
+  </div>
+</div>
+
+<script>
+  var API = 'https://agribridge-1-og7a.onrender.com';
+  var SUPA_URL = 'https://lvloaweijidgcuezdnmu.supabase.co';
+  var SUPA_KEY = 'sb_publishable_lzjlixcVLCUVg9MDy5adFw_pgxTz03y';
+  var TOKEN = sessionStorage.getItem('ab_admin_token') || '';
+  var currentTab = 'orders';
+  var DATA = { orders:[], listings:[], animals:[], farmers:[], requests:[], offers:[], transporters:[], matching:[], errors:[], cold_storage:[], cold_transport:[], loans:[], inbox:[] };
+  var DATA_ERR = {}; // tab -> error, so a failed load is never shown as "no requests"
+  var INBOX_TABLES={account_deletion_requests:'Account deletions',privacy_requests:'Privacy requests',contact_messages:'Contact messages',disease_reports:'Disease reports',vet_bookings:'Vet bookings',purchase_requests:'Purchase requests',supply_orders:'Supply orders',payouts:'Payouts',fraud_flags:'Fraud flags',admin_devices:'Admin devices',user_roles:'User roles',reviews:'Reviews',community_posts:'Community posts',transporters:'Transporters',farmers:'Farmers',buyers:'Buyers',order_offers:'Match offers'};
+  var inboxTable='contact_messages';
+  // Admin tab -> service_requests.kind (cold storage, refrigerated transport and loan requests)
+  var SVC_TABS = { cold_storage:'cold_storage', cold_transport:'refrigerated_transport', loans:'loan' };
+  var SVC_STATUSES = ['pending','confirmed','completed','rejected','cancelled'];
+  var editState = null; // {table, id, isNew}
+  var FIN = { view:'overview', cache:{}, errors:{}, loading:false, report:{ from:'', to:'' } };
+  var FIN_VIEWS = [['overview','Overview'],['ledger','Ledger'],['farmers','Farmer settlements'],['transporters','Transporter settlements'],['reconciliation','Reconciliation'],['recurring','Recurring'],['reports','Reports']];
+
+  function h(s){return String(s==null?'':s).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});}
+  function fmt(n){return 'UGX '+(Number(n)||0).toLocaleString('en-UG');}
+  function api(path, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{}, TOKEN?{'Authorization':'Bearer '+TOKEN}:{});
+    return fetch(API+path, opts).then(function(r){ if(r.status===401){ logout(); throw new Error('unauthorized'); } return r.json().catch(function(){return null;}); });
+  }
+
+  // ── Field definitions per table ─────────────────────────────────
+  var FIELDS = {
+    listings: [
+      {k:'crop_name',label:'Crop name',t:'text'},
+      {k:'category',label:'Category',t:'select',opts:['staples','vegetables','fruits','cash crops']},
+      {k:'price_per_kg',label:'Price (UGX/kg)',t:'number'},
+      {k:'quantity_kg',label:'Quantity (kg)',t:'number'},
+      {k:'unit',label:'Unit',t:'text'},
+      {k:'district',label:'District',t:'text'},
+      {k:'description',label:'Description',t:'textarea'},
+      {k:'discount_pct',label:'Discount %',t:'number'},
+      {k:'is_available',label:'Available (shown in market)',t:'check'},
+      {k:'is_organic',label:'Organic',t:'check'},
+      {k:'is_verified',label:'Verified',t:'check'},
+      {k:'farmer_phone',label:'Seller phone',t:'text'},
+      {k:'image_url',label:'Photo',t:'image'},
+      {k:'video_url',label:'Video',t:'video'}
+    ],
+    animal_listings: [
+      {k:'name',label:'Animal / listing name',t:'text'},
+      {k:'species',label:'Species',t:'text'},
+      {k:'category',label:'Category',t:'select',opts:['livestock','poultry','dairy','aqua','apiary','pigs']},
+      {k:'price',label:'Price (UGX)',t:'number'},
+      {k:'qty',label:'Quantity available',t:'number'},
+      {k:'unit',label:'Unit',t:'text'},
+      {k:'district',label:'District',t:'text'},
+      {k:'description',label:'Description',t:'textarea'},
+      {k:'status',label:'Status',t:'select',opts:['active','sold','hidden']},
+      {k:'health_cert',label:'Health certificate',t:'check'},
+      {k:'maaif_certified',label:'MAAIF certified',t:'check'},
+      {k:'farmer_name',label:'Seller name',t:'text'},
+      {k:'farmer_phone',label:'Seller phone',t:'text'},
+      {k:'image_url',label:'Photo',t:'image'},
+      {k:'video_url',label:'Video',t:'video'}
+    ],
+    farmers: [
+      {k:'full_name',label:'Name',t:'text'},
+      {k:'phone',label:'Phone',t:'text'},
+      {k:'email',label:'Email',t:'text'},
+      {k:'district',label:'District',t:'text'},
+      {k:'is_verified',label:'Verified',t:'check'},
+      {k:'is_premium',label:'Premium',t:'check'}
+    ],
+    orders: [
+      {k:'delivery_address',label:'Delivery address',t:'text'},
+      {k:'notes',label:'Notes',t:'textarea'}
+    ],
+    deliveries: [
+      {k:'tracking_code',label:'Tracking code',t:'text'},
+      {k:'status',label:'Delivery status',t:'select',opts:['scheduled','picked_up','in_transit','at_checkpoint','delivered','failed']},
+      {k:'driver_name',label:'Driver name',t:'text'},
+      {k:'driver_phone',label:'Driver phone',t:'text'},
+      {k:'pickup_location',label:'Pickup location',t:'text'},
+      {k:'delivery_location',label:'Delivery location',t:'text'},
+      {k:'estimated_arrival',label:'Estimated arrival',t:'text'},
+      {k:'notes',label:'Notes',t:'textarea'}
+    ],
+    transporters: [
+      {k:'full_name',label:'Full name',t:'text'},
+      {k:'phone',label:'Phone (07…)',t:'text'},
+      {k:'email',label:'Email',t:'text'},
+      {k:'vehicle_type',label:'Vehicle type',t:'select',opts:['pickup','lorry','motorcycle','minibus','van','tractor']},
+      {k:'plate_number',label:'Number plate',t:'text'},
+      {k:'district',label:'District',t:'text'},
+      {k:'capacity_kg',label:'Capacity (kg)',t:'number'},
+      {k:'notes',label:'Notes / MOU ref',t:'textarea'},
+      {k:'status',label:'Account status',t:'select',opts:['active','inactive']},
+      {k:'is_available',label:'Available now',t:'check'}
+    ],
+    supplier_products: [
+      {k:'name',label:'Product name',t:'text'},
+      {k:'category',label:'Category',t:'select',opts:['seeds','fertilizer','pesticide','tool','animal_supply']},
+      {k:'brand',label:'Brand',t:'text'},
+      {k:'price',label:'Price (UGX)',t:'number'},
+      {k:'unit',label:'Unit',t:'text'},
+      {k:'badge',label:'Badge / tag',t:'text'},
+      {k:'description',label:'Description',t:'textarea'},
+      {k:'image_id',label:'Unsplash photo id',t:'text'},
+      {k:'in_stock',label:'In stock (shown in app)',t:'check'}
+    ]
+  };
+  var TABLE_OF = { orders:'orders', listings:'listings', animals:'animal_listings', deliveries:'deliveries', supplies:'supplier_products', farmers:'farmers', requests:'purchase_requests', offers:'offers', transporters:'transporters' };
+
+  // ── Auth ────────────────────────────────────────────────────────
+  async function doLogin(){
+    var pwd=document.getElementById('pwd').value, e=document.getElementById('loginErr'); e.textContent='';
+    if(!pwd){ e.textContent='Enter the password.'; return; }
+    try{
+      var res=await fetch(API+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pwd})});
+      var j=await res.json().catch(function(){return null;});
+      if(res.ok&&j&&j.token){ TOKEN=j.token; sessionStorage.setItem('ab_admin_token',TOKEN); showDash(); }
+      else e.textContent=(j&&j.error)?j.error:'Login failed.';
+    }catch(err){ e.textContent='Could not reach the server. Wait ~30s (it may be waking up) and retry.'; }
+  }
+  function showDash(){ document.getElementById('login').classList.add('hidden'); document.getElementById('dash').classList.remove('hidden'); refreshAll(); }
+  function logout(){ TOKEN=''; sessionStorage.removeItem('ab_admin_token'); document.getElementById('dash').classList.add('hidden'); document.getElementById('login').classList.remove('hidden'); }
+
+  async function refreshAll(){ await loadStats(); await Promise.all([load('orders'),load('listings'),load('animals'),load('deliveries'),load('supplies'),load('farmers'),load('requests'),load('offers'),load('transporters'),load('cold_storage'),load('cold_transport'),load('loans')]); renderOverviewExtras(); if(currentTab==='finance'){ loadFinance(FIN.view); } else { renderCurrent(); } }
+
+  function showTabByName(t){ var node=document.querySelector('.tab[data-tab="'+t+'"]'); showTab(t,node||undefined); if(node) node.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+  function retryTab(tab){ load(tab).then(renderCurrent); }
+
+  // ── Financial Control Center (read-only) ────────────────────────
+  function finMoney(v){ return (v===null||v===undefined)?'—':fmt(v); }
+  function finKpi(label,value,sub){
+    return '<div class="fin-kpi"><div class="l">'+h(label)+'</div><div class="v">'+value+'</div>'+
+      (sub?'<div class="s">'+h(sub)+'</div>':'')+'</div>';
+  }
+  function finBadge(status){
+    var s=String(status||'unknown');
+    return '<span class="badge '+h(s)+'">'+h(s.replace(/_/g,' '))+'</span>';
+  }
+  function finDate(v){
+    if(!v) return '—';
+    var d=new Date(v); return isNaN(d)?h(v):d.toLocaleString('en-UG');
+  }
+  function finShortId(v){ return v?String(v).slice(0,8):'—'; }
+
+  async function loadFinance(view){
+    if(!FIN_VIEWS.some(function(v){return v[0]===view;})) view='overview';
+    FIN.view=view; FIN.loading=true; FIN.errors[view]=null;
+    renderFinance();
+    var paths={overview:'/api/admin/finance/overview',ledger:'/api/admin/finance/journals?limit=100',farmers:'/api/admin/finance/farmer-settlements',transporters:'/api/admin/finance/transporter-settlements',reconciliation:'/api/admin/finance/reconciliation',recurring:'/api/admin/finance/recurring',reports:'/api/admin/finance/reports'};
+    var path=paths[view];
+    if(view==='reports'){
+      var q=[];
+      if(FIN.report.from) q.push('from='+encodeURIComponent(FIN.report.from));
+      if(FIN.report.to) q.push('to='+encodeURIComponent(FIN.report.to));
+      if(q.length) path+='?'+q.join('&');
+    }
+    try{
+      var d=await api(path);
+      if(!d) throw new Error('The server returned no data.');
+      if(d.error) throw new Error(d.error+(d.fix?' — '+d.fix:''));
+      FIN.cache[view]=d;
+    }catch(e){ FIN.errors[view]=(e&&e.message)?e.message:'Could not load finance data.'; }
+    FIN.loading=false;
+    if(currentTab==='finance') renderFinance();
+  }
+
+  function renderFinance(){
+    if(currentTab!=='finance') return;
+    var v=FIN.view, d=FIN.cache[v], err=FIN.errors[v];
+    var html='<div class="fin-subnav">'+FIN_VIEWS.map(function(p){
+      return '<button class="fin-sub'+(p[0]===v?' active':'')+'" onclick="loadFinance(\''+p[0]+'\')">'+h(p[1])+'</button>';
+    }).join('')+'</div>';
+    if(err){
+      html+='<div class="fin-note"><strong>Could not load this view.</strong><br>'+h(err)+'</div>'+
+        '<button class="btn sm" onclick="loadFinance(\''+v+'\')">Retry</button>';
+      setPanel(html); return;
+    }
+    if(!d){ setPanel(html+'<div class="loading">Loading…</div>'); return; }
+    if(v==='overview') html+=finOverview(d);
+    else if(v==='ledger') html+=finLedger(d);
+    else if(v==='farmers') html+=finFarmers(d);
+    else if(v==='transporters') html+=finTransporters(d);
+    else if(v==='reconciliation') html+=finReconciliation(d);
+    else if(v==='recurring') html+=finRecurring(d);
+    else if(v==='reports') html+=finReports(d);
+    if(d.warnings&&d.warnings.length){
+      html+='<div class="fin-note">'+d.warnings.map(h).join('<br>')+'</div>';
+    }
+    setPanel(html);
+  }
+
+  function finOverview(d){
+    var cp=d.customer_payments||{}, fp=d.farmer_payables||{};
+    var cr=d.commission_revenue||{}, rf=d.refunds||{}, os=d.outstanding_settlements||{};
+    var l=d.ledger||{};
+    var html='<div class="fin-kpis">'+
+      finKpi('Customer payments received', finMoney(cp.received), (cp.count||0)+' paid order(s)')+
+      finKpi('Farmer payables outstanding', finMoney(fp.outstanding), (fp.count||0)+' unpaid payout(s)')+
+      finKpi('Commission revenue', finMoney(cr.recognized), 'Pending '+finMoney(cr.pending))+
+      finKpi('Refunds', finMoney(rf.amount), (rf.count||0)+' refunded order(s)')+
+      finKpi('Outstanding settlements', finMoney(os.amount), (os.count||0)+' settlement(s)')+
+      finKpi('Transporter payables', 'Not captured', 'No agreed charge stored')+
+      finKpi('Delivery revenue', 'Not captured', 'No separate fee stored')+
+      '</div>';
+    html+='<div class="fin-section">Ledger position</div>';
+    if(!l.ready){
+      html+='<div class="fin-note"><strong>Ledger not initialized.</strong> The double-entry tables from migration 0013 are not in this database, so ledger balances and reconciliation are unavailable. The payment and payout figures above come from orders and payouts — not from the ledger.<br>'+
+        'Run <code>supabase/migrations/0013_ledger_core.up.sql</code> in Supabase → SQL Editor, then reload this page.</div>';
+    }else{
+      html+='<div class="fin-note '+(l.balanced?'ok':'')+'">Debits '+finMoney(l.total_debits)+' · Credits '+finMoney(l.total_credits)+' · '+
+        (l.balanced?'<strong>Balanced</strong>':'<strong class="fin-bad">NOT balanced — investigate before paying out</strong>')+'</div>';
+      var body=(l.accounts||[]).map(function(a){
+        return '<tr><td><code>'+h(a.code)+'</code></td><td>'+h(a.name)+'</td><td>'+h(a.type)+'</td>'+
+          '<td class="num">'+finMoney(a.total_debits)+'</td><td class="num">'+finMoney(a.total_credits)+'</td>'+
+          '<td class="num">'+finMoney(a.balance)+'</td></tr>';
+      }).join('');
+      html+='<div class="tblwrap"><table class="fin-table"><thead><tr><th>Account</th><th>Name</th><th>Type</th><th class="num">Debits</th><th class="num">Credits</th><th class="num">Balance</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+    }
+    html+='<div class="fin-note" style="margin-top:12px">Transporter payables and delivery revenue stay blank until the database stores an agreed transporter charge and a separate delivery fee. They are not zero.</div>';
+    return html;
+  }
+
+  function finLedger(d){
+    if(!d.rows||!d.rows.length){
+      return '<div class="fin-note ok">The ledger is initialized but no journals have been posted yet. Verified payments and settlements are not wired to it so far.</div>';
+    }
+    var body=d.rows.map(function(j){
+      var lines=(j.lines||[]).map(function(ln){
+        return '<div class="muted" style="font-size:.74rem">'+h(ln.account_code)+' · '+h(ln.side)+' · '+finMoney(ln.amount)+(ln.memo?' · '+h(ln.memo):'')+'</div>';
+      }).join('');
+      return '<tr><td>'+finDate(j.posted_at)+'</td>'+
+        '<td><code>'+h(j.reference)+'</code>'+(j.payment_ref?'<div class="muted" style="font-size:.72rem">pay '+h(j.payment_ref)+'</div>':'')+'</td>'+
+        '<td>'+h(j.kind)+'</td><td>'+h(j.description||'—')+'</td>'+
+        '<td class="num">'+finMoney(j.amount)+'</td><td>'+finBadge(j.status)+'</td><td>'+lines+'</td></tr>';
+    }).join('');
+    return '<div class="fin-section">'+d.count+' most recent journal(s)</div>'+
+      '<div class="tblwrap"><table class="fin-table"><thead><tr><th>Posted</th><th>Reference</th><th>Kind</th><th>Description</th><th class="num">Total</th><th>Status</th><th>Entries</th></tr></thead><tbody>'+body+'</tbody></table></div>'+
+      '<div class="fin-note" style="margin-top:12px">Posted entries are immutable. A correction must be a reversing journal, never an edit.</div>';
+  }
+
+  function finFarmers(d){
+    var s=d.summary||{};
+    var html='<div class="fin-kpis">'+
+      finKpi('Completed sales', finMoney(s.completed_sales_value), (s.completed_sales_count||0)+' delivered order(s)')+
+      finKpi('Outstanding', finMoney(s.outstanding), 'Net owed to farmers')+
+      finKpi('Paid to date', finMoney((s.paid||{}).amount), ((s.paid||{}).count||0)+' paid')+
+      finKpi('Pending', finMoney((s.pending||{}).amount), ((s.pending||{}).count||0)+' payout(s)')+
+      finKpi('Failed', finMoney((s.failed||{}).amount), ((s.failed||{}).count||0)+' payout(s)')+
+      finKpi('Disputed', finMoney((s.disputed||{}).amount), ((s.disputed||{}).count||0)+' payout(s)')+
+      '</div>';
+    if(!d.rows||!d.rows.length){
+      return html+'<div class="fin-note ok">No farmer payouts have been created yet.</div>';
+    }
+    FIN.farmerRows={};
+    (d.rows||[]).forEach(function(r){ FIN.farmerRows[String(r.id)]=r; });
+    var body=d.rows.map(function(r){
+      var action='';
+      if(r.status==='pending'){
+        action=(r.order_status==='delivered' && r.order_payment_status==='paid')
+          ? '<button class="btn sm" onclick="settlePayout(\''+h(r.id)+'\')">Settle</button>'
+          : '<span class="muted" style="font-size:.72rem">Order not settleable</span>';
+      } else if(r.status==='paid'){
+        action='<span class="muted" style="font-size:.72rem">'+finDate(r.paid_at)+'</span>';
+      }
+      return '<tr><td>'+finDate(r.created_at)+'</td><td>'+h(finShortId(r.order_id))+'</td>'+
+        '<td>'+h(r.farmer_name)+'</td><td class="num">'+finMoney(r.gross_amount)+'</td>'+
+        '<td class="num">'+finMoney(r.commission_amount)+'<div class="muted" style="font-size:.72rem">'+h(r.commission_pct)+'%</div></td>'+
+        '<td class="num">'+finMoney(r.net_amount)+'</td><td>'+finBadge(r.status)+'</td>'+
+        '<td>'+h(r.provider_ref||'—')+'</td><td>'+action+'</td></tr>';
+    }).join('');
+    return html+'<div class="tblwrap"><table class="fin-table"><thead><tr><th>Created</th><th>Order</th><th>Farmer</th><th class="num">Gross</th><th class="num">Commission</th><th class="num">Net</th><th>Status</th><th>Payment ref</th><th>Action</th></tr></thead><tbody>'+body+'</tbody></table></div>'+
+      '<div class="fin-note" style="margin-top:12px">Settling posts an immutable journal: debit FARMER_PAYABLE, credit COMMISSION_REVENUE and the account the customer paid into. The provider reference is recorded as proof the money moved.</div>';
+  }
+
+  async function settlePayout(id){
+    var r=(FIN.farmerRows||{})[String(id)];
+    if(!r) return;
+    var provider=prompt('Payment channel (e.g. MTN MoMo, Airtel Money, bank):','MTN MoMo');
+    if(provider===null) return;
+    var ref=prompt('Provider / bank transaction reference (proof the money moved):');
+    if(ref===null) return;
+    ref=(ref||'').trim();
+    if(!ref){ alert('A provider reference is required.'); return; }
+    if(!confirm('Settle '+finMoney(r.net_amount)+' to '+r.farmer_name+'?\n\nThis posts an immutable settlement journal and marks the payout paid.')) return;
+    try{
+      var res=await api('/api/admin/payouts/'+encodeURIComponent(id)+'/settle',{
+        method:'POST',
+        body:JSON.stringify({provider:provider,provider_ref:ref})
+      });
+      if(res&&res.ok){
+        alert(res.already_settled?'This payout was already settled.':'Settlement posted.');
+        await loadFinance(FIN.view);
+      } else {
+        alert((res&&(res.error||res.detail))||'Settlement failed.');
+      }
+    }catch(e){ alert('Settlement request failed.'); }
+  }
+
+  function finTransporters(d){
+    var s=d.summary||{};
+    var html='<div class="fin-note"><strong>Transporter payables are not available.</strong> '+h(d.reason||'')+'</div>';
+    html+='<div class="fin-kpis">'+
+      finKpi('Deliveries', s.deliveries_total||0, 'All records')+
+      finKpi('Delivered', s.delivered_count||0, 'Completion recorded')+
+      finKpi('Failed', s.failed_count||0, 'Needs follow-up')+
+      finKpi('Payable', 'Not captured', 'No agreed charge')+
+      '</div>';
+    if(!d.rows||!d.rows.length){
+      return html+'<div class="fin-note ok">No deliveries have been recorded yet.</div>';
+    }
+    var body=d.rows.map(function(r){
+      return '<tr><td>'+h(finShortId(r.order_id))+'</td><td>'+h(r.driver_name||'Unassigned')+'</td>'+
+        '<td>'+finBadge(r.status)+'</td><td>'+finDate(r.delivered_at)+'</td>'+
+        '<td class="num">—</td><td>'+finBadge('not_captured')+'</td></tr>';
+    }).join('');
+    return html+'<div class="tblwrap"><table class="fin-table"><thead><tr><th>Order</th><th>Driver</th><th>Status</th><th>Delivered</th><th class="num">Agreed charge</th><th>Payable</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+  }
+
+  function finReconciliation(d){
+    var s=d.summary||{}, c=d.checked||{};
+    var html='<div class="fin-kpis">'+
+      finKpi('Paid orders checked', c.paid_orders||0, (c.payment_refs||0)+' payment ref(s)')+
+      finKpi('Issues', s.issues_total||0, (s.errors||0)+' error(s) · '+(s.warnings||0)+' warning(s)')+
+      finKpi('Active journals', c.active_journals||0, 'Posted, non-reversal')+
+      '</div>';
+    if(!d.issues||!d.issues.length){
+      return html+'<div class="fin-note ok">No discrepancies found between paid orders and the ledger.</div>';
+    }
+    var body=d.issues.map(function(i){
+      var sev=i.severity==='error'?'cancelled':'pending';
+      return '<tr><td><span class="badge '+sev+'">'+h(i.severity)+'</span></td><td>'+h(i.type.replace(/_/g,' '))+'</td>'+
+        '<td>'+h(i.payment_ref||'—')+'</td><td class="num">'+finMoney(i.amount)+'</td>'+
+        '<td style="max-width:320px">'+h(i.detail)+(i.order_ids&&i.order_ids.length?'<div class="muted" style="font-size:.72rem">Orders: '+h(i.order_ids.map(finShortId).join(', '))+'</div>':'')+'</td></tr>';
+    }).join('');
+    return html+'<div class="tblwrap"><table class="fin-table"><thead><tr><th>Severity</th><th>Type</th><th>Payment ref</th><th class="num">Amount</th><th>Detail</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+  }
+
+  function finRecurring(d){
+    var s=d.summary||{};
+    var html='<div class="fin-kpis">'+
+      finKpi('Subscriptions', s.subscriptions||0, (s.active_subscriptions||0)+' active')+
+      finKpi('Charges', s.charges||0, (s.paid_charges||0)+' paid')+
+      finKpi('Total charged', finMoney(s.total_charged), 'Recurring cycles')+
+      '</div>';
+    html+='<div class="fin-note">Recurring money is held in <code>SUSPENSE_OVERPAYMENT</code> until operations allocate it to a real order. It is never credited to a farmer automatically.</div>';
+    if(s.paid_amount_without_ledger>0){
+      html+='<div class="fin-note"><strong class="fin-bad">'+finMoney(s.paid_amount_without_ledger)+'</strong> of paid recurring charges have no ledger reference. Investigate the ledger and re-deliver the IPN.</div>';
+    }
+    if(!d.subscriptions||!d.subscriptions.length){
+      html+='<div class="fin-note ok">No recurring subscriptions have been created yet.</div>';
+    }else{
+      var subs=d.subscriptions.map(function(r){
+        return '<tr><td>'+h(r.account_ref||'—')+'</td><td><code>'+h(r.provider_correlation_id||'—')+'</code></td>'+
+          '<td class="num">'+finMoney(r.amount)+'</td><td>'+finBadge(r.status)+'</td>'+
+          '<td>'+finDate(r.last_charged_at)+'</td><td>'+finDate(r.created_at)+'</td></tr>';
+      }).join('');
+      html+='<div class="fin-section">Subscriptions</div><div class="tblwrap"><table class="fin-table"><thead><tr><th>Account / order</th><th>Pesapal correlation</th><th class="num">Amount</th><th>Status</th><th>Last charged</th><th>Created</th></tr></thead><tbody>'+subs+'</tbody></table></div>';
+    }
+    if(d.charges&&d.charges.length){
+      var body=d.charges.map(function(r){
+        return '<tr><td>'+finDate(r.created_at)+'</td><td><code>'+h(r.provider_tracking_id||'—')+'</code></td>'+
+          '<td>'+h(r.account_ref||'—')+'</td><td class="num">'+finMoney(r.amount)+'</td>'+
+          '<td>'+finBadge(r.status)+'</td><td>'+h(r.ledger_reference||'not posted')+'</td></tr>';
+      }).join('');
+      html+='<div class="fin-section">Charges</div><div class="tblwrap"><table class="fin-table"><thead><tr><th>Received</th><th>Pesapal tracking</th><th>Account / order</th><th class="num">Amount</th><th>Status</th><th>Ledger</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+    }
+    return html;
+  }
+
+  function finReports(d){
+    var r=d.range||{}, o=d.orders||{}, st=d.settlements||{}, li=d.liabilities||{}, l=d.ledger||{};
+    var html='<div class="fin-range">'+
+      '<div><label>From</label><input type="date" id="finFrom" value="'+h(FIN.report.from||r.from||'')+'"></div>'+
+      '<div><label>To</label><input type="date" id="finTo" value="'+h(FIN.report.to||r.to||'')+'"></div>'+
+      '<button class="btn sm" onclick="applyFinanceReport()">Apply</button>'+
+      '</div>';
+    html+='<div class="fin-kpis">'+
+      finKpi('Orders', finMoney(o.value), (o.count||0)+' order(s)')+
+      finKpi('Paid orders', finMoney(o.paid_value), (o.paid_count||0)+' order(s)')+
+      finKpi('Refunded', finMoney(o.refunded_value), (o.refunded_count||0)+' order(s)')+
+      finKpi('Gross settlements', finMoney(st.gross), (st.payouts_count||0)+' payout(s)')+
+      finKpi('Commission', finMoney(st.commission), 'In period')+
+      finKpi('Net settlements', finMoney(st.net), 'In period')+
+      finKpi('Unpaid liability', finMoney(li.unpaid_net), (li.unpaid_count||0)+' payout(s), all time')+
+      finKpi('Journals', l.journals_count||0, 'Posted in period')+
+      '</div>';
+    if(l.account_activity&&l.account_activity.length){
+      var body=l.account_activity.map(function(a){
+        return '<tr><td><code>'+h(a.account_code)+'</code></td><td class="num">'+finMoney(a.debits)+'</td><td class="num">'+finMoney(a.credits)+'</td><td class="num">'+finMoney(a.net)+'</td></tr>';
+      }).join('');
+      html+='<div class="fin-section">Ledger account activity</div><div class="tblwrap"><table class="fin-table"><thead><tr><th>Account</th><th class="num">Debits</th><th class="num">Credits</th><th class="num">Net</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+    }else{
+      html+='<div class="fin-note">No ledger activity in this period'+(l.ready===false?' (ledger not initialized)':'')+'. Order and payout totals above do not depend on the ledger.</div>';
+    }
+    return html;
+  }
+
+  function applyFinanceReport(){
+    var f=document.getElementById('finFrom'), t=document.getElementById('finTo');
+    var from=f?f.value:'', to=t?t.value:'';
+    if(from&&to&&from>to){ alert('From must be on or before To.'); return; }
+    FIN.report.from=from; FIN.report.to=to; loadFinance('reports');
+  }
+
+  // Platform Overview chart (real orders/month) + Quick Actions, mockup style.
+  function renderOverviewExtras(){
+    var el=document.getElementById('overviewExtras'); if(!el) return;
+    var orders=DATA.orders||[];
+    var now=new Date(), months=[], idx={};
+    for(var k=6;k>=0;k--){ var d=new Date(now.getFullYear(), now.getMonth()-k, 1);
+      var key=d.getFullYear()+'-'+d.getMonth();
+      idx[key]=months.length;
+      months.push({label:d.toLocaleString('en-US',{month:'short'}), count:0}); }
+    for(var i=0;i<orders.length;i++){ var o=orders[i]; if(!o.created_at) continue;
+      var od=new Date(o.created_at); var ky=od.getFullYear()+'-'+od.getMonth();
+      if(ky in idx) months[idx[ky]].count++; }
+    var counts=months.map(function(m){return m.count;});
+    var max=Math.max.apply(null, counts.concat([1]));
+    var bars=months.map(function(m){ var hp=Math.round(m.count/max*100);
+      return '<div class="ov-bar"><div class="ov-bar-val">'+m.count+'</div><div class="ov-bar-fill" style="height:'+Math.max(4,hp)+'%"></div><div class="ov-bar-lbl">'+m.label+'</div></div>';
+    }).join('');
+    el.innerHTML=
+      '<div class="ov-card"><div class="ov-head">Platform Overview<small>orders / month</small></div><div class="ov-chart">'+bars+'</div></div>'+
+      '<div class="ov-card"><div class="ov-head">Quick Actions</div><div class="ov-qa">'+
+        '<button onclick="showTabByName(\'farmers\')">👤 Verify Users</button>'+
+        '<button onclick="showTabByName(\'orders\')">📦 Manage Orders</button>'+
+        '<button onclick="showTabByName(\'deliveries\')">🚚 Deliveries</button>'+
+        '<button onclick="showTabByName(\'supplies\')">🏪 Supplies</button>'+
+        '<button onclick="showTabByName(\'requests\')">📋 Requests</button>'+
+        '<button onclick="showTabByName(\'transporters\')">🚛 Transporters</button>'+
+        '<button onclick="showTabByName(\'matching\')">🔗 Match Orders</button>'+
+      '</div></div>'+
+      '<div class="ov-card"><div class="ov-head">Bookings &amp; loans<small>pending</small></div><div class="ov-qa">'+
+        '<button onclick="showTabByName(\'cold_storage\')">❄️ Cold Storage <span class="cnt" id="ov_cnt_cold_storage"></span></button>'+
+        '<button onclick="showTabByName(\'cold_transport\')">🚚 Refrigerated Transport <span class="cnt" id="ov_cnt_cold_transport"></span></button>'+
+        '<button onclick="showTabByName(\'loans\')">💰 Loan Requests <span class="cnt" id="ov_cnt_loans"></span></button>'+
+      '</div></div>';
+    updateSvcCounts();
+  }
+
+  async function loadStats(){
+    try{
+      var s=await api('/api/admin/stats'); if(!s) return;
+      var cards=[['Total Users',s.farmers],['Crop Listings',s.listings],['Animals',s.animals],['Total Orders',s.orders],['Transporters',s.transporters||0],['Total Revenue',fmt(s.revenue_ugx)]];
+      document.getElementById('stats').innerHTML=cards.map(function(c){return '<div class="stat"><div class="n">'+(typeof c[1]==='number'?c[1]:h(c[1]))+'</div><div class="l">'+c[0]+'</div></div>';}).join('');
+    }catch(e){}
+  }
+  async function load(tab, isRetry){
+    var pathMap = {orders:'/api/admin/orders',listings:'/api/admin/listings',animals:'/api/admin/animals',deliveries:'/api/admin/deliveries',supplies:'/api/admin/supplies',farmers:'/api/admin/farmers',requests:'/api/admin/purchase-requests',offers:'/api/admin/offers',transporters:'/api/admin/transporters',cold_storage:'/api/admin/service-requests?kind=cold_storage',cold_transport:'/api/admin/service-requests?kind=refrigerated_transport',loans:'/api/admin/service-requests?kind=loan',matching:'/api/admin/match-candidates',errors:'/api/admin/events',scans:'/api/admin/events?event_type=scan',activity:'/api/admin/events?severity=info'};
+    var path = tab==='inbox' ? ('/api/admin/inbox?table='+encodeURIComponent(inboxTable)) : (pathMap[tab] || ('/api/admin/'+tab));
+    try{
+      var rows=await api(path);
+      if(rows && !Array.isArray(rows) && rows.error) throw new Error(rows.error);
+      DATA[tab]=Array.isArray(rows)?rows:[];
+      DATA_ERR[tab]=null;
+    }catch(e){
+      // Render may be waking up: retry once before telling the admin the tab failed.
+      if(!isRetry && (!e || e.message!=='unauthorized')){
+        await new Promise(function(r){ setTimeout(r,1200); });
+        return load(tab, true);
+      }
+      DATA[tab]=[];
+      DATA_ERR[tab]=e || new Error('load failed');
+    }
+    if(SVC_TABS[tab]) updateSvcCounts();
+  }
+
+  async function runMatching(){
+    if(!confirm('Run the matching algorithm now? This will match open purchase requests with available listings.')) return;
+    try{
+      var r=await api('/api/worker/match',{method:'POST',body:JSON.stringify({})});
+      if(r&&r.ok){
+        var msg='Matching complete! Processed: '+(r.requests_processed||0)+', Offers sent: '+(r.offers||0)+', Expired: '+(r.expired||0)+'.';
+        alert(msg);
+      } else {
+        alert('Matching returned: '+(r&&r.error?r.error:'unknown result'));
+      }
+      await load('requests'); await load('offers'); renderCurrent();
+    }catch(e){ alert('Matching failed: '+(e&&e.message?e.message:'check server logs.')); }
+  }
+
+  function showTab(t,node){ currentTab=t; document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');}); if(node)node.classList.add('active'); document.getElementById('search').value=''; var noAdd=['orders','requests','offers','cold_storage','cold_transport','loans','errors','matching','scans','activity','inbox','finance']; document.getElementById('addBtn').style.display=noAdd.indexOf(t)>-1?'none':'inline-block'; var tb=document.querySelector('.toolbar'); if(tb) tb.style.display=(t==='finance')?'none':'flex'; if(t==='finance'){ loadFinance(FIN.view); return; } load(t).then(renderCurrent); }
+
+  function match(row,q){ if(!q)return true; q=q.toLowerCase(); return JSON.stringify(row).toLowerCase().indexOf(q)>-1; }
+
+  function renderCurrent(){
+    if(currentTab==='finance'){ renderFinance(); return; }
+    if(DATA_ERR[currentTab]){
+      setPanel('<div class="loading">Could not load this tab — the server may be waking up. '+
+        '<button class="btn sm" style="margin-left:8px" onclick="retryTab(\''+currentTab+'\')">Retry</button></div>');
+      return;
+    }
+    var q=document.getElementById('search').value;
+    var rows=(DATA[currentTab]||[]).filter(function(r){return match(r,q);});
+    if(SVC_TABS[currentTab])    return renderServiceRequests(rows, currentTab);
+    if(currentTab==='orders')   return renderOrders(rows);
+    if(currentTab==='listings') return renderListings(rows);
+    if(currentTab==='animals')  return renderAnimals(rows);
+    if(currentTab==='deliveries') return renderDeliveries(rows);
+    if(currentTab==='supplies')  return renderSupplies(rows);
+    if(currentTab==='farmers')   return renderFarmers(rows);
+    if(currentTab==='requests')  return renderRequests(rows);
+    if(currentTab==='offers')    return renderOffers(rows);
+    if(currentTab==='transporters') return renderTransporters(rows);
+    if(currentTab==='matching')     return renderMatching();
+    if(currentTab==='scans')        return renderScans(rows);
+    if(currentTab==='activity')     return renderActivity(rows);
+    if(currentTab==='errors')       return renderErrors(rows);
+    if(currentTab==='inbox')        return renderInbox(rows);
+  }
+
+  function renderTransporters(rows){
+    if(!rows.length){ panelMsg('No transporters registered yet. Click + Add to onboard one.'); return; }
+    var body=rows.map(function(t){
+      var avail=t.is_available?'<span class="badge available">Available</span>':'<span class="badge sold">Offline</span>';
+      var st=t.status||'active';
+      return '<tr><td>'+h(t.full_name||'—')+'</td><td>'+h(t.phone||'—')+'</td><td>'+h(t.vehicle_type||'—')+'</td><td>'+h(t.plate_number||'—')+'</td><td>'+h(t.district||'—')+'</td><td>'+(t.capacity_kg||'—')+'kg</td><td>'+avail+'</td><td><span class="badge '+(st==='active'?'active':'cancelled')+'">'+st+'</span></td><td>'+actionsCell('transporters',t.id)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>Name</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>District</th><th>Capacity</th><th>Availability</th><th>Status</th><th></th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+
+  function renderMatching(){
+    var data=DATA.matching||[];
+    // The API returns {candidates:[…]} not a plain array
+    var candidates=Array.isArray(data)?data:(data.candidates||[]);
+    if(!candidates.length){ panelMsg('No pending orders to match. 🎉'); return; }
+    var html=candidates.map(function(c){
+      var o=c.order||{};
+      var farmers=c.farmer_matches||[];
+      var transporters=c.available_transporters||[];
+      var farmerOpts=farmers.map(function(f,i){ return '<option value="'+h(f.farmer_phone)+'|'+h(f.farmer_id||'')+'|'+h(f.crop_name||'')+'">'+h(f.crop_name)+' · '+h(f.district||'—')+' · UGX '+Number(f.price_per_kg||0).toLocaleString()+'/kg · '+h(f.farmer_phone)+'</option>'; }).join('');
+      var trOpts='<option value="">— No transporter yet —</option>'+transporters.map(function(t){ return '<option value="'+h(t.id)+'">'+h(t.full_name)+' · '+h(t.vehicle_type||'—')+' · '+h(t.district||'—')+'</option>'; }).join('');
+      var matchSection=farmers.length
+        ? '<label>Select farmer match:</label><select id="f_'+h(o.id)+'" style="margin-bottom:6px">'+farmerOpts+'</select>'
+          +'<label>Assign transporter (optional):</label><select id="t_'+h(o.id)+'" style="margin-bottom:6px">'+trOpts+'</select>'
+          +'<label>Notes to farmer/transporter:</label><input id="n_'+h(o.id)+'" type="text" placeholder="e.g. collect by Friday">'
+          +'<button class="btn sm" style="margin-top:8px;width:100%" onclick="approveMatch(\''+h(o.id)+'\')">✅ Approve & Notify</button>'
+        : '<p style="color:var(--amber);font-size:.82rem">⚠ No active farmer listings found for this order. Add a matching crop listing first.</p>';
+      return '<div class="card" style="margin-bottom:12px">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:10px">'
+        +'<div><strong>Order '+h(o.ref||o.id.slice(0,8))+'</strong> &nbsp;<span class="badge pending">pending</span></div>'
+        +'<div class="muted" style="font-size:.8rem">'+h(o.created_at?new Date(o.created_at).toLocaleString('en-UG'):'')+'</div></div>'
+        +'<div style="font-size:.85rem;margin-bottom:8px">📍 '+h(o.delivery_address||'—')+' &nbsp;·&nbsp; 💰 UGX '+Number(o.total_price||0).toLocaleString()+'</div>'
+        +matchSection
+        +'</div>';
+    }).join('');
+    setPanel('<div style="margin-bottom:10px;color:var(--text2);font-size:.82rem">'+candidates.length+' pending order(s) awaiting a farmer match</div>'+html);
+  }
+
+  async function approveMatch(orderId){
+    var fSel=document.getElementById('f_'+orderId);
+    var tSel=document.getElementById('t_'+orderId);
+    var nIn=document.getElementById('n_'+orderId);
+    if(!fSel||!fSel.value){ alert('Please select a farmer match first.'); return; }
+    var parts=fSel.value.split('|');
+    var farmerPhone=parts[0]||'', farmerName=parts[2]||'Farmer';
+    var transporterId=tSel?tSel.value:'';
+    var notes=nIn?nIn.value.trim():'';
+    if(!confirm('Approve match for order '+orderId.slice(0,8)+'?\nFarmer: '+farmerPhone+(transporterId?'\nTransporter assigned':''))) return;
+    try{
+      var r=await api('/api/admin/match-approve',{method:'POST',body:JSON.stringify({order_id:orderId,farmer_phone:farmerPhone,farmer_name:farmerName,transporter_id:transporterId||null,notes:notes})});
+      if(r&&r.ok){
+        var sms=r.sms||{};
+        alert('Match approved!\nSMS to farmer: '+(sms.farmer||'not sent (AT not configured)')+'\nSMS to transporter: '+(sms.transporter||'N/A'));
+        await load('matching'); await load('orders'); renderCurrent();
+      } else { alert('Error: '+(r&&r.error?r.error:'unknown')); }
+    }catch(e){ alert('Request failed: '+e.message); }
+  }
+
+  function renderErrors(rows){
+    if(!rows.length){ panelMsg('No system errors recorded. 🎉'); return; }
+    var body=rows.map(function(ev){
+      var sev=ev.severity||'error';
+      var det=ev.details?JSON.stringify(ev.details).slice(0,200):'';
+      var ts=ev.created_at?(new Date(ev.created_at)).toLocaleString('en-UG'):'';
+      return '<tr><td><span class="badge '+(sev==='error'?'cancelled':(sev==='warning'?'pending':'available'))+'">'+h(sev)+'</span></td><td>'+h(ev.event_type||'—')+'</td><td style="max-width:300px;word-break:break-all;font-size:0.78rem">'+h(det)+'</td><td>'+h(ts)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>Severity</th><th>Event</th><th>Details</th><th>Time</th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+
+  function renderScans(rows){
+    var scanRows=rows.filter(function(ev){ return (ev.event_type||'').indexOf('scan')>-1||(ev.event_type||'').indexOf('crop_doctor')>-1||(ev.event_type||'').indexOf('disease')>-1; });
+    if(!scanRows.length){ panelMsg('No crop doctor scans yet. 🌿'); return; }
+    var body=scanRows.map(function(ev){
+      var det=ev.details||{};
+      var ts=ev.created_at?(new Date(ev.created_at)).toLocaleString('en-UG'):'';
+      var crop=det.crop||det.crop_name||'—';
+      var diag=det.diagnosis||(det.result&&det.result.diagnosis)||'—';
+      var uid=ev.user_id||det.user_id||'—';
+      return '<tr><td>'+h(crop)+'</td><td style="max-width:260px;font-size:0.8rem">'+h(String(diag).slice(0,120))+'</td><td style="max-width:200px;font-size:0.78rem;word-break:break-all">'+h(String(det.description||'').slice(0,80))+'</td><td style="font-size:0.78rem">'+h(String(uid).slice(0,16))+'</td><td>'+h(ts)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>Crop</th><th>Diagnosis</th><th>Description</th><th>User</th><th>Time</th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+
+  function renderInbox(rows){
+    var opts=Object.keys(INBOX_TABLES).map(function(k){return '<option value="'+k+'"'+(k===inboxTable?' selected':'')+'>'+INBOX_TABLES[k]+'</option>';}).join('');
+    var head='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px"><select onchange="inboxTable=this.value;load(\'inbox\').then(renderCurrent)" style="padding:6px 10px">'+opts+'</select><span style="color:#8b98a8;font-size:.8rem">Latest 100 rows, read-only</span><button class="btn" style="margin-left:auto" onclick="discordTest()">Send Discord test</button></div>';
+    if(!rows.length){ setPanel(head+'<div class="loading">Nothing in this table yet.</div>'); return; }
+    var cols=[]; rows.forEach(function(r){ Object.keys(r).forEach(function(k){ if(cols.indexOf(k)<0&&cols.length<9) cols.push(k); }); });
+    var th=cols.map(function(c){return '<th>'+h(c)+'</th>';}).join('');
+    var body=rows.map(function(r){ return '<tr>'+cols.map(function(c){ var v=r[c]; if(v&&typeof v==='object') v=JSON.stringify(v); if(/_at$/.test(c)&&v){ var d=new Date(v); if(!isNaN(d)) v=d.toLocaleString('en-UG'); } return '<td>'+h(String(v==null?'':v).slice(0,140))+'</td>'; }).join('')+'</tr>'; }).join('');
+    setPanel(head+'<table><thead><tr>'+th+'</tr></thead><tbody>'+body+'</tbody></table>');
+  }
+  async function discordTest(){
+    try{ var r=await api('/api/admin/discord-test',{method:'POST',body:'{}'}); var res=(r&&r.results)||{}; alert('Discord test:\n'+Object.keys(res).map(function(k){return k+': '+res[k];}).join('\n')); }catch(e){ alert('Test failed'); }
+  }
+  function renderActivity(rows){
+    if(!rows.length){ panelMsg('No recent activity recorded.'); return; }
+    var icons={'listing_created_web':'🌾','purchase_request_created':'🛒','offer_accepted':'🤝','offer_rejected':'❌','match_approved':'✅','transport_registered':'🚛','listing.created':'🌾','user.signup':'👤','order.created':'📦'};
+    var body=rows.map(function(ev){
+      var ts=ev.created_at?(new Date(ev.created_at)).toLocaleString('en-UG'):'';
+      var det=ev.details||{};
+      var icon=icons[ev.event_type]||'📋';
+      var summary='';
+      if(det.crop_name) summary='Crop: '+det.crop_name;
+      else if(det.product) summary='Product: '+det.product;
+      else if(det.full_name) summary='Name: '+det.full_name;
+      else if(det.buyer_id) summary='Buyer ID: '+String(det.buyer_id).slice(0,8)+'...';
+      else summary=JSON.stringify(det).slice(0,80);
+      var uid=ev.user_id?String(ev.user_id).slice(0,8)+'...':'—';
+      return '<tr><td>'+icon+'</td><td>'+h(ev.event_type||'—')+'</td><td style="max-width:280px;font-size:0.82rem">'+h(summary)+'</td><td style="font-size:0.78rem">'+h(uid)+'</td><td>'+h(ts)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th></th><th>Event</th><th>Summary</th><th>User</th><th>Time</th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+
+  function actionsCell(tab,id,status){
+    var edit='<button class="btn sm ghost" onclick="openEdit(\''+tab+'\',\''+h(id)+'\')">Edit</button>';
+    var del = tab==='orders' ? '' : '<button class="btn sm red" onclick="delRow(\''+tab+'\',\''+h(id)+'\')">Delete</button>';
+    var move = '';
+    if(tab==='orders'){
+      var cur=status||'pending';
+      var opts=['pending','confirmed','in_transit','delivered','cancelled'].map(function(s){
+        return '<option value="'+s+'"'+(s===cur?' selected':'')+'>'+s+'</option>';
+      }).join('');
+      move='<select title="Advance status (server-enforced)" onchange="setOrderStatus(\''+h(id)+'\',this.value)">'+opts+'</select>';
+    }
+    return '<div class="rowbtns">'+move+edit+del+'</div>';
+  }
+
+  async function setOrderStatus(id,status){
+    if(!status) return;
+    if(!confirm('Move this order to "'+status+'"? Only legal transitions are accepted.')){ renderCurrent(); return; }
+    try{
+      var r=await api('/api/admin/order/'+encodeURIComponent(id)+'/status',{method:'PATCH',body:JSON.stringify({status:status})});
+      if(r&&r.ok){ await load('orders'); } else alert((r&&r.error)||'Status update failed.');
+    }catch(e){ alert('Status update failed.'); }
+    renderCurrent();
+  }
+
+  function renderOrders(rows){
+    if(!rows.length){ panelMsg('No orders.'); return; }
+    var body=rows.map(function(o){var st=o.status||'pending';var amt=o.total_price||o.total_amount||0;
+      var isBank=(String(o.payment_method||'').toLowerCase()==='bank' && (o.payment_status||'unpaid')!=='paid' && st!=='cancelled');
+      var bankBtn=isBank?'<button class="btn sm" style="margin-right:6px" onclick="verifyBankTransfer(\''+h(o.id)+'\')">Bank paid</button>':'';
+      return '<tr><td>'+h(o.payment_ref||(o.tracking_code||'')||(o.id||'').slice(0,8))+'</td><td>'+h(o.buyer_phone||'—')+'</td><td>'+(o.quantity_kg||0)+'</td><td>'+fmt(amt)+'</td><td><span class="badge '+st+'">'+st+'</span></td><td><span class="badge '+(o.payment_status==='paid'?'paid':'pending')+'">'+h(o.payment_status||'unpaid')+'</span></td><td>'+h(o.payment_method||'—')+'</td><td>'+bankBtn+actionsCell('orders',o.id,st)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>Ref</th><th>Buyer</th><th>Qty</th><th>Amount</th><th>Status</th><th>Payment</th><th>Method</th><th></th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+  async function verifyBankTransfer(orderId){
+    var ref=prompt('Bank / transfer reference (proof the money arrived):');
+    if(!ref||!ref.trim()){ return; }
+    if(!confirm('Mark this bank-transfer order PAID?\nReference: '+ref.trim()+'\nThe amount is taken from the stored order, not typed here.')) return;
+    try{
+      var r=await api('/api/admin/orders/'+encodeURIComponent(orderId)+'/verify-bank-transfer',{method:'POST',body:JSON.stringify({bank_reference:ref.trim()})});
+      if(r&&r.ok){ alert(r.already_paid?'Already marked paid (no double entry).':'Bank transfer recorded and posted to the ledger.'); await load('orders'); }
+      else alert('Error: '+((r&&r.error)||'unknown'));
+    }catch(e){ alert('Request failed: '+e.message); }
+    renderCurrent();
+  }
+  function renderListings(rows){
+    if(!rows.length){ panelMsg('No crop listings.'); return; }
+    var body=rows.map(function(l){var img=l.image_url?'<img class="thumb" src="'+h(l.image_url)+'">':'🌾';
+      return '<tr><td>'+img+'</td><td>'+h(l.crop_name||'—')+(l.video_url?' 🎥':'')+'</td><td>'+fmt(l.price_per_kg)+'</td><td>'+(l.quantity_kg||0)+'kg</td><td>'+h(l.district||'—')+'</td><td>'+(l.is_available?'<span class="badge available">live</span>':'<span class="badge sold">hidden</span>')+'</td><td>'+actionsCell('listings',l.id)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th></th><th>Crop</th><th>Price</th><th>Qty</th><th>District</th><th>Status</th><th></th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+  function renderAnimals(rows){
+    if(!rows.length){ panelMsg('No animal listings.'); return; }
+    var body=rows.map(function(a){var img=a.image_url?'<img class="thumb" src="'+h(a.image_url)+'">':'🐄';var st=a.status||'available';
+      return '<tr><td>'+img+'</td><td>'+h(a.name||'—')+(a.video_url?' 🎥':'')+'</td><td>'+h(a.species||a.category||'—')+'</td><td>'+fmt(a.price)+'</td><td>'+(a.qty||0)+'</td><td>'+h(a.district||'—')+'</td><td><span class="badge '+st+'">'+st+'</span></td><td>'+actionsCell('animals',a.id)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th></th><th>Name</th><th>Type</th><th>Price</th><th>Qty</th><th>District</th><th>Status</th><th></th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+  function renderDeliveries(rows){
+    if(!rows.length){ panelMsg('No deliveries yet.'); return; }
+    var body=rows.map(function(d){var st=d.status||'scheduled';
+      var route=h(d.pickup_location||'—')+' → '+h(d.delivery_location||'—');
+      var driver=d.driver_name?h(d.driver_name)+(d.driver_phone?' · '+h(d.driver_phone):''):'—';
+      return '<tr><td>'+h(d.tracking_code||(d.id||'').slice(0,8))+'</td><td>'+route+'</td><td>'+driver+'</td><td><span class="badge '+st+'">'+h(st.replace(/_/g,' '))+'</span></td><td>'+h(d.estimated_arrival||'—')+'</td><td>'+actionsCell('deliveries',d.id)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>Tracking</th><th>Route</th><th>Driver</th><th>Status</th><th>ETA</th><th></th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+  function renderSupplies(rows){
+    if(!rows.length){ panelMsg('No supply products.'); return; }
+    var catLabel={seeds:'🌱 Seeds',fertilizer:'🧪 Fertilizer',pesticide:'🐛 Pesticide',tool:'🔧 Tool',animal_supply:'🐾 Animal care'};
+    var body=rows.map(function(p){var img=p.image_id?'<img class="thumb" src="https://images.unsplash.com/photo-'+h(p.image_id)+'?auto=format&fit=crop&w=80&h=80&q=60">':'📦';
+      return '<tr><td>'+img+'</td><td>'+h(p.name||'—')+(p.badge?' <span class="badge">'+h(p.badge)+'</span>':'')+'</td><td>'+h(catLabel[p.category]||p.category||'—')+'</td><td>'+h(p.brand||'—')+'</td><td>'+fmt(p.price)+'</td><td>'+h(p.unit||'—')+'</td><td>'+(p.in_stock!==false?'<span class="badge available">in stock</span>':'<span class="badge sold">hidden</span>')+'</td><td>'+actionsCell('supplies',p.id)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th></th><th>Product</th><th>Category</th><th>Brand</th><th>Price</th><th>Unit</th><th>Status</th><th></th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+  function renderFarmers(rows){
+    if(!rows.length){ panelMsg('No users.'); return; }
+    var body=rows.map(function(f){
+      return '<tr><td>'+h(f.full_name||'—')+'</td><td>'+h(f.phone||'—')+'</td><td>'+h(f.email||'—')+'</td><td>'+h(f.district||'—')+'</td><td>'+(f.is_verified?'✅':'—')+'</td><td>'+actionsCell('farmers',f.id)+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>District</th><th>Verified</th><th></th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+  function renderRequests(rows){
+    if(!rows.length){ panelMsg('No purchase requests.'); return; }
+    var body=rows.map(function(r){var st=r.status||'open';
+      return '<tr><td>'+h((r.id||'').slice(0,8))+'</td><td>'+h(r.crop_type||r.crop_name||'—')+'</td><td>'+(r.quantity_kg||r.quantity||0)+'kg</td><td>'+fmt(r.max_price_per_kg||r.max_price||0)+'/kg</td><td>'+h(r.district||'—')+'</td><td><span class="badge '+st+'">'+st+'</span></td><td>'+h(r.buyer_phone||'—')+'</td><td>'+h(r.created_at?new Date(r.created_at).toLocaleDateString('en-UG'):'—')+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>ID</th><th>Crop</th><th>Qty</th><th>Max Price</th><th>District</th><th>Status</th><th>Buyer</th><th>Date</th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+
+  function renderOffers(rows){
+    if(!rows.length){ panelMsg('No offers yet.'); return; }
+    var body=rows.map(function(o){var st=o.status||'pending';
+      var btns='';
+      if(st==='pending'){
+        btns='<div class="rowbtns">'+
+          '<button class="btn sm" onclick="offerAction(\''+h(o.id)+'\',\'accept\')">Accept</button>'+
+          '<button class="btn sm red" onclick="offerAction(\''+h(o.id)+'\',\'reject\')">Reject</button>'+
+        '</div>';
+      } else { btns='<span class="badge '+st+'">'+st+'</span>'; }
+      return '<tr><td>'+h((o.id||'').slice(0,8))+'</td><td>'+h(o.crop_name||o.listing_id||'—')+'</td><td>'+(o.quantity_kg||o.quantity||0)+'kg</td><td>'+fmt(o.price_per_kg||o.price||0)+'/kg</td><td>'+h(o.farmer_phone||'—')+'</td><td>'+h(o.buyer_phone||'—')+'</td><td>'+h(o.created_at?new Date(o.created_at).toLocaleDateString('en-UG'):'—')+'</td><td>'+btns+'</td></tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>ID</th><th>Crop</th><th>Qty</th><th>Price</th><th>Farmer</th><th>Buyer</th><th>Date</th><th>Action</th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+
+  async function offerAction(offerId, action){
+    var label=action==='accept'?'Accept':'Reject';
+    if(!confirm(label+' this offer?')) return;
+    try{
+      var r=await api('/api/offers/'+offerId+'/'+action,{method:'POST',body:JSON.stringify({})});
+      if(r&&(r.ok||r.id||r.status)){ await load('offers'); renderCurrent(); }
+      else alert((r&&r.error)||label+' failed.');
+    }catch(e){ alert(action+' failed.'); }
+  }
+
+  // ── Cold storage / refrigerated transport / loan requests ───────────
+  function updateSvcCounts(){
+    Object.keys(SVC_TABS).forEach(function(t){
+      var n=(DATA[t]||[]).filter(function(r){return (r.status||'pending')==='pending';}).length;
+      ['cnt_'+t,'ov_cnt_'+t].forEach(function(id){
+        var el=document.getElementById(id); if(el) el.textContent=n>0?n:'';
+      });
+    });
+  }
+  function svcDetails(r){
+    var d=r.details||{};
+    return Object.keys(d).map(function(k){
+      return '<span class="muted">'+h(k.replace(/_/g,' '))+':</span> '+h(d[k]);
+    }).join('<br>');
+  }
+  function renderServiceRequests(rows, tab){
+    var empty={cold_storage:'No cold storage bookings yet.',cold_transport:'No refrigerated transport bookings yet.',loans:'No loan requests yet.'}[tab];
+    if(!rows.length){ panelMsg(empty); return; }
+    var isLoan=(tab==='loans');
+    var body=rows.map(function(r){
+      var st=r.status||'pending';
+      var opts=SVC_STATUSES.map(function(o){ return '<option value="'+o+'"'+(o===st?' selected':'')+'>'+o+'</option>'; }).join('');
+      var tel=String(r.requester_phone||'').replace(/[^\d+]/g,'');
+      return '<tr>'+
+        '<td>'+h((r.id||'').slice(0,8).toUpperCase())+'</td>'+
+        '<td>'+h(r.created_at?new Date(r.created_at).toLocaleString('en-UG'):'—')+'</td>'+
+        '<td>'+h(r.requester_name||'—')+'<br>'+(tel?'<a href="tel:'+h(tel)+'">'+h(r.requester_phone)+'</a>':'—')+'</td>'+
+        '<td>'+h(r.provider_name||'—')+'</td>'+
+        '<td style="font-size:.8rem;max-width:280px">'+svcDetails(r)+'</td>'+
+        (isLoan?'<td>'+fmt(r.amount_ugx)+'</td>':'')+
+        '<td><span class="badge '+h(st)+'">'+h(st)+'</span></td>'+
+        '<td><div class="rowbtns"><select class="svc-st" onchange="setSvcStatus(\''+h(r.id)+'\',\''+tab+'\',this.value)">'+opts+'</select>'+
+        '<button class="btn ghost sm" title="Add a note" onclick="svcNote(\''+h(r.id)+'\',\''+tab+'\')">📝</button></div>'+
+        (r.admin_notes?'<div class="muted" style="font-size:.75rem;margin-top:4px;white-space:normal">'+h(r.admin_notes)+'</div>':'')+'</td>'+
+      '</tr>';
+    }).join('');
+    setPanel('<table><thead><tr><th>Ref</th><th>Requested</th><th>Customer</th><th>'+(isLoan?'Product':'Provider')+'</th><th>Details</th>'+(isLoan?'<th>Amount</th>':'')+'<th>Status</th><th>Update</th></tr></thead><tbody>'+body+'</tbody></table>');
+  }
+  async function patchSvc(id, tab, fields){
+    try{
+      var r=await api('/api/admin/service-requests/'+id,{method:'PATCH',body:JSON.stringify(fields)});
+      if(r&&r.ok){ await load(tab); renderCurrent(); }
+      else { alert((r&&r.error)||'Update failed.'); await load(tab); renderCurrent(); }
+    }catch(e){ alert('Update failed.'); }
+  }
+  function setSvcStatus(id, tab, status){ patchSvc(id, tab, {status:status}); }
+  function svcNote(id, tab){
+    var cur=rowById(tab,id).admin_notes||'';
+    var n=prompt('Internal note for this request:', cur);
+    if(n===null) return;
+    patchSvc(id, tab, {admin_notes:n});
+  }
+
+  function setPanel(html){ document.getElementById('panel').innerHTML=html; }
+  function panelMsg(m){ setPanel('<div class="loading">'+m+'</div>'); }
+
+  // ── Edit / create ───────────────────────────────────────────────
+  function rowById(tab,id){ return (DATA[tab]||[]).find(function(r){return String(r.id)===String(id);}) || {}; }
+
+  function openEdit(tab,id){ buildForm(tab, rowById(tab,id), false); }
+  function openCreate(){ if(currentTab==='orders')return; buildForm(currentTab, {}, true); }
+
+  function buildForm(tab,row,isNew){
+    editState={ tab:tab, table:TABLE_OF[tab], id:row.id, isNew:isNew };
+    document.getElementById('editTitle').textContent=(isNew?'Add ':'Edit ')+tab.replace('s','');
+    document.getElementById('editErr').textContent='';
+    var fields=FIELDS[tab]||FIELDS[TABLE_OF[tab]]||[];
+    var html=fields.map(function(f){
+      var v=row[f.k];
+      if(f.t==='textarea') return fieldWrap(f,'<textarea id="ef_'+f.k+'">'+h(v||'')+'</textarea>');
+      if(f.t==='check')    return fieldWrap(f,'<label style="display:flex;align-items:center;gap:8px;color:var(--text)"><input type="checkbox" id="ef_'+f.k+'" style="width:auto" '+(v?'checked':'')+'> '+h(f.label)+'</label>',true);
+      if(f.t==='select')   return fieldWrap(f,'<select id="ef_'+f.k+'">'+f.opts.map(function(o){return '<option '+(String(v)===o?'selected':'')+'>'+o+'</option>';}).join('')+'</select>');
+      if(f.t==='image'||f.t==='video'){
+        var accept=f.t==='image'?'image/*':'video/*';
+        var prev=v?(f.t==='image'?'<img src="'+h(v)+'">':'<video src="'+h(v)+'" controls></video>'):'';
+        return '<label>'+h(f.label)+'</label>'+
+          '<input type="hidden" id="ef_'+f.k+'" value="'+h(v||'')+'">'+
+          '<input type="file" accept="'+accept+'" onchange="uploadField(this,\''+f.k+'\',\''+f.t+'\')">'+
+          '<div class="up-status" id="up_'+f.k+'"></div>'+
+          '<div class="media-preview" id="pv_'+f.k+'">'+prev+'</div>';
+      }
+      return fieldWrap(f,'<input type="'+(f.t==='number'?'number':'text')+'" id="ef_'+f.k+'" value="'+h(v==null?'':v)+'">');
+    }).join('');
+    document.getElementById('editFields').innerHTML=html;
+    document.getElementById('editOverlay').classList.add('open');
+  }
+  function fieldWrap(f,inner,noLabel){ return (noLabel?'':'<label>'+h(f.label)+'</label>')+inner; }
+  function closeEdit(){ document.getElementById('editOverlay').classList.remove('open'); editState=null; }
+
+  var currentUploadKey='';
+  async function uploadField(input,key,kind){
+    var file=input.files&&input.files[0]; if(!file) return;
+    var maxMB=kind==='video'?25:5;
+    if(file.size> maxMB*1024*1024){ document.getElementById('up_'+key).textContent=(kind==='video'?'Video':'Image')+' too large (max '+maxMB+'MB)'; return; }
+    currentUploadKey=key;
+    document.getElementById('up_'+key).textContent='Uploading…';
+    var url=await uploadToStorage(file, kind==='video'?'animals':'listings');
+    if(url){ document.getElementById('ef_'+key).value=url; document.getElementById('up_'+key).textContent='✓ uploaded';
+      document.getElementById('pv_'+key).innerHTML=kind==='image'?'<img src="'+h(url)+'">':'<video src="'+h(url)+'" controls></video>';
+    } else { if(document.getElementById('up_'+key).textContent==='Uploading…') document.getElementById('up_'+key).textContent='Upload failed'; }
+  }
+  async function uploadToStorage(file, kind){
+    try{
+      var fd=new FormData();
+      fd.append('file',file);
+      fd.append('kind',kind||'listings');
+      var res=await fetch(API+'/api/admin/upload',{method:'POST',headers:{Authorization:'Bearer '+TOKEN},body:fd});
+      if(!res.ok){
+        var e=await res.json().catch(function(){return{};});
+        var upEl=document.getElementById('up_'+currentUploadKey);
+        if(upEl) upEl.textContent='Upload failed: '+(e.error||res.status);
+        return null;
+      }
+      var data=await res.json();
+      return data.url||null;
+    }catch(e){ console.error('Upload exception',e); return null; }
+  }
+
+  async function saveEdit(){
+    if(!editState) return;
+    var fields={};
+    (FIELDS[editState.tab]||FIELDS[editState.table]||[]).forEach(function(f){
+      var el=document.getElementById('ef_'+f.k); if(!el) return;
+      if(f.t==='check') fields[f.k]=el.checked;
+      else if(f.t==='number'){ var n=el.value===''?null:Number(el.value); fields[f.k]=n; }
+      else fields[f.k]=el.value;
+    });
+    document.getElementById('editErr').textContent='';
+    document.getElementById('saveBtn').disabled=true; document.getElementById('saveBtn').textContent='Saving…';
+    try{
+      var body={ table:editState.table, fields:fields };
+      var method='PATCH';
+      if(editState.isNew){ method='POST'; } else { body.id=editState.id; }
+      var r=await api('/api/admin/row',{ method:method, body:JSON.stringify(body) });
+      if(r&&r.ok){ closeEdit(); await load(editState.tab); await loadStats(); renderCurrent(); }
+      else document.getElementById('editErr').textContent=(r&&r.error)?r.error:'Save failed.';
+    }catch(e){ document.getElementById('editErr').textContent='Save failed.'; }
+    document.getElementById('saveBtn').disabled=false; document.getElementById('saveBtn').textContent='Save';
+  }
+
+  async function delRow(tab,id){
+    if(!confirm('Delete this '+tab.replace('s','')+'? This cannot be undone.')) return;
+    try{
+      var r=await api('/api/admin/row',{ method:'DELETE', body:JSON.stringify({ table:TABLE_OF[tab], id:id }) });
+      if(r&&r.ok){ await load(tab); await loadStats(); renderCurrent(); }
+      else alert((r&&r.error)||'Delete failed.');
+    }catch(e){ alert('Delete failed.'); }
+  }
+
+  if(TOKEN){ api('/api/admin/verify').then(function(v){ if(v&&v.valid) showDash(); else logout(); }).catch(function(){ logout(); }); }
+</script>
+</body>
+</html>
