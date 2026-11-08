@@ -14,7 +14,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="AgriBridge">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
 <title>AgriBridge · Uganda's Farm-to-Table Platform</title>
 <link rel="manifest" href="manifest.json">
 <meta name="description" content="Uganda's #1 agri-tech platform. Connect farmers directly to buyers. Check live prices, order fresh produce, buy livestock, access training, AI crop and animal doctor. Works on any phone via USSD *789#.">
@@ -58,6 +59,7 @@ img{max-width:100%}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes ab-pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes ticker{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
 @keyframes flash{0%,100%{opacity:1}50%{opacity:0.4}}
@@ -65,8 +67,11 @@ img{max-width:100%}
 
 /* ── NAVBAR ── */
 .navbar{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);background:rgba(6,15,9,0.99);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 16px}
-.nav-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--green);white-space:nowrap}
-.nav-logo span{color:var(--white)}
+.nav-logo{display:flex;align-items:center;white-space:nowrap;text-decoration:none;padding:2px 0}
+.nav-logo img{height:52px;width:auto;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,200,83,0.35)) drop-shadow(0 1px 3px rgba(0,0,0,0.6));transition:filter 0.2s,transform 0.2s}
+.nav-logo img:hover{filter:drop-shadow(0 3px 10px rgba(0,200,83,0.6)) drop-shadow(0 2px 6px rgba(0,0,0,0.7));transform:scale(1.04)}
+.nav-logo-txt{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--green)}
+.nav-logo-txt span{color:var(--white)}
 .nav-search{flex:1;position:relative;max-width:400px}
 .nav-search input{width:100%;padding:8px 36px 8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:0.9rem;font-family:inherit}
 .nav-search input:focus{outline:none;border-color:var(--green)}
@@ -409,6 +414,13 @@ img{max-width:100%}
 .legal-foot-links a{margin-right:12px;font-size:0.82rem;color:var(--green)}
 .modal-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.7);align-items:center;justify-content:center;padding:16px}
 .modal-overlay.open{display:flex;animation:fadeIn 0.25s ease}
+/* The review screen and the privacy request it opens are the only overlays that
+   refuse to be dismissed, and a person reaches them from inside Settings — where
+   both would otherwise sit at z-index 500 and lose to whichever div comes later in
+   the document. Settings is later, so the blocking dialog was invisible behind it:
+   the app stopped scrolling, Escape was held shut, and the tick box was covered. */
+#legalReviewModal{z-index:520}
+#privacyRequestModal{z-index:530}
 .modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;position:relative}
 .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text2);font-size:1.3rem;cursor:pointer;line-height:1}
 .st-top{display:flex;align-items:center;gap:6px;margin:0 36px 14px 0}
@@ -533,7 +545,7 @@ img{max-width:100%}
      redundant and was pushing Log In / Join Free off the screen. */
   #basketNavBtn{display:none}
   .navbar .notif-bell{padding:4px;font-size:1.05rem}
-  .nav-logo{font-size:1rem}
+  .nav-logo img{height:44px}
   .navbar{gap:3px;padding:0 8px}
   .nav-btns{gap:5px}
   .nav-btns .btn-sm{padding:5px 8px;font-size:0.74rem}
@@ -542,13 +554,13 @@ img{max-width:100%}
 }
 @media(max-width:360px){
   .navbar{gap:2px;padding:0 6px}
-  .nav-logo{font-size:0.9rem}
+  .nav-logo img{height:38px}
   .navbar .notif-bell{padding:3px;font-size:1rem}
   .nav-btns{gap:4px}
   .nav-btns .btn-sm{padding:5px 6px;font-size:0.7rem}
 }
 @media(max-width:330px){
-  .nav-logo{font-size:0.82rem}
+  .nav-logo img{height:34px}
   .nav-btns .btn-sm{padding:5px 5px}
 }
 
@@ -1099,6 +1111,9 @@ html.is-web:not(.app-entered) body{overflow:hidden}
 .wl-chip{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 14px;text-align:center;font-weight:700;color:#fff}
 .wl-chip>span{display:block;font-size:2rem;margin-bottom:8px}
 .wl-chip small{display:block;font-weight:500;color:var(--text2);font-size:.76rem;margin-top:3px}
+a.wl-chip{display:block;text-decoration:none}
+a.wl-chip:hover,a.wl-chip:focus-visible{border-color:var(--green);color:var(--green-light)}
+a.wl-chip small{color:var(--green)}
 .wl-trust{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;
   border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .wl-trust-item{text-align:center}
@@ -1260,6 +1275,14 @@ html.is-web:not(.app-entered) body{overflow:hidden}
 .farmer-chip-meta{font-size:.68rem;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .farmer-chip-rate{font-size:.7rem;color:var(--amber);margin-top:4px}
 
+.buyer-footer-socials{display:flex;justify-content:center;gap:14px;margin-bottom:14px}
+.buyer-footer-social{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;
+  border-radius:50%;border:1px solid var(--border);color:var(--text2);text-decoration:none;font-size:1rem;
+  transition:border-color .2s,color .2s,background .2s}
+.buyer-footer-social:hover{background:var(--green);border-color:var(--green);color:#000}
+.buyer-footer-social.fb:hover{background:#1877f2;border-color:#1877f2;color:#fff}
+.buyer-footer-social.ig:hover{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);border-color:#e6683c;color:#fff}
+.buyer-footer-social.li:hover{background:#0a66c2;border-color:#0a66c2;color:#fff}
 .buyer-footer{margin:22px 16px 8px;padding:18px 16px;background:var(--card);border:1px solid var(--border);
   border-radius:16px;text-align:center}
 .buyer-footer-brand{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:#fff;margin-bottom:4px}
@@ -1611,6 +1634,22 @@ html.is-web:not(.app-entered) body{overflow:hidden}
 .bh-hero-dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3)}
 .bh-hero-dots span.active{background:#fff;width:18px;border-radius:3px}
 
+/* ── Animals page hero banner (amber/earthy cattle theme) ── */
+.an-hero{margin:0 16px 16px;border-radius:20px;overflow:hidden;position:relative;min-height:155px;
+  background:linear-gradient(135deg,#3b1900,#5c2d00);display:flex;align-items:center;padding:20px 18px}
+.an-hero-photo{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;opacity:.38;mix-blend-mode:luminosity}
+.an-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,8,0,.85) 55%,transparent 100%)}
+.an-hero-txt{flex:1;z-index:2;position:relative}
+.an-hero-tag{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--amber);background:rgba(255,160,0,.15);border:1px solid rgba(255,160,0,.35);
+  display:inline-block;padding:3px 9px;border-radius:999px;margin-bottom:8px}
+.an-hero-title{font-family:'Syne',sans-serif;font-size:1.28rem;font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px}
+.an-hero-title em{font-style:normal;color:#ffd180}
+.an-hero-btn{display:inline-flex;align-items:center;gap:6px;background:var(--amber);
+  color:#1a0800;border:none;border-radius:999px;padding:8px 18px;font-size:.82rem;
+  font-weight:800;cursor:pointer;font-family:inherit}
+.an-hero-btn:hover{filter:brightness(1.1)}
+
 /* ── Card payment modal ── */
 .card-pay-modal{position:fixed;inset:0;z-index:900;display:none;align-items:flex-end}
 .card-pay-modal.open{display:flex}
@@ -1751,7 +1790,7 @@ html.is-web:not(.app-entered) body{overflow:hidden}
 <!-- ══════════════════ WEB LANDING (browser visitors only) ══════════════════ -->
 <div id="webLanding" role="region" aria-label="AgriBridge — Bridging Farms, Building Markets">
   <header class="wl-nav">
-    <div class="wl-logo">🌱 Agri<span>Bridge</span></div>
+    <div class="wl-logo" style="display:flex;align-items:center"><img src="/logo.png" alt="AgriBridge" style="height:54px;width:auto;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,200,83,0.4)) drop-shadow(0 1px 4px rgba(0,0,0,0.5))" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span style="display:none;font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:var(--green)">🌱 Agri<span style="color:#fff">Bridge</span></span></div>
     <nav class="wl-navlinks">
       <a href="#wl-features">Features</a>
       <a href="#wl-roles">Who it's for</a>
@@ -1770,6 +1809,7 @@ html.is-web:not(.app-entered) body{overflow:hidden}
         <button class="wl-btn ghost lg" onclick="enterApp('register')">Create free account</button>
       </div>
       <div class="wl-stores">
+        <button class="wl-store wl-install-btn" id="wlInstallBtn" onclick="__wlInstall()" style="display:none"><span>📲</span><span><small>Install the</small>AgriBridge App</span></button>
         <button class="wl-store" onclick="appStoreClick()"><span>▶</span><span><small>Get it on</small>Google Play</span></button>
         <button class="wl-store" onclick="appStoreClick()"><span></span><span><small>Download on the</small>App Store</span></button>
       </div>
@@ -1807,7 +1847,7 @@ html.is-web:not(.app-entered) body{overflow:hidden}
     <div class="wl-chips">
       <div class="wl-chip"><span>🌾</span>Farmer<small>Sell &amp; grow</small></div>
       <div class="wl-chip"><span>🛒</span>Buyer<small>Source &amp; order</small></div>
-      <div class="wl-chip"><span>🚚</span>Transporter<small>Deliver &amp; earn</small></div>
+      <a class="wl-chip" href="/transporter"><span>🚚</span>Transporter<small>Driver portal →</small></a>
       <div class="wl-chip"><span>🏪</span>Supplier<small>List &amp; sell inputs</small></div>
       <div class="wl-chip"><span>🛡️</span>Admin / Co-op<small>Oversee &amp; support</small></div>
     </div>
@@ -1827,8 +1867,20 @@ html.is-web:not(.app-entered) body{overflow:hidden}
   </section>
 
   <footer class="wl-foot">
-    <div class="wl-logo">🌱 Agri<span>Bridge</span></div>
-    <div class="wl-foot-links"><a href="#" onclick="enterApp();return false">Home</a><a href="#wl-features">Features</a><a href="#" onclick="enterApp('login');return false">Sign in</a><a href="legal/terms-of-use.html">Terms</a><a href="legal/privacy-policy.html">Privacy</a><a href="#" onclick="openPrivacyRequest();return false">Privacy requests</a></div>
+    <img src="/logo.png" alt="AgriBridge" style="height:60px;width:auto;object-fit:contain;margin-bottom:10px" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+    <div class="wl-logo" style="display:none">🌱 Agri<span>Bridge</span></div>
+    <div style="display:flex;justify-content:center;gap:14px;margin:10px 0">
+      <a href="https://www.instagram.com/agribrige" target="_blank" rel="noopener" class="buyer-footer-social ig" title="Instagram" aria-label="Instagram">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/people/Agribridge-Agribrige/61572887219965" target="_blank" rel="noopener" class="buyer-footer-social fb" title="Facebook" aria-label="Facebook">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/agribrige-com-6aaa24449" target="_blank" rel="noopener" class="buyer-footer-social li" title="LinkedIn" aria-label="LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+    </div>
+    <div class="wl-foot-links"><a href="#" onclick="enterApp();return false">Home</a><a href="#wl-features">Features</a><a href="#" onclick="enterApp('login');return false">Sign in</a><a href="/transporter">Driver portal</a><a href="legal/terms-of-use.html">Terms</a><a href="legal/privacy-policy.html">Privacy</a><a href="#" onclick="openPrivacyRequest();return false">Privacy requests</a></div>
     <small>© 2026 AgriBridge Uganda · Bridging Farms. Building Markets.</small>
   </footer>
 </div>
@@ -1860,7 +1912,10 @@ html.is-web:not(.app-entered) body{overflow:hidden}
 
 <!-- ══ NAVBAR ══ -->
 <nav class="navbar" role="navigation" aria-label="Main">
-  <div class="nav-logo">Agri<span>Bridge</span></div>
+  <div class="nav-logo" onclick="showPage('home')" style="cursor:pointer" role="link" aria-label="AgriBridge Home">
+    <img src="/logo.png" alt="AgriBridge" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="nav-logo-txt" style="display:none">Agri<span>Bridge</span></div>
+  </div>
   <div class="nav-search">
     <input type="text" id="globalSearch" placeholder="Search crops, animals, farmers…" oninput="handleSearch(this.value)" aria-label="Search">
     <span class="nav-search-icon">🔍</span>
@@ -2062,8 +2117,21 @@ html.is-web:not(.app-entered) body{overflow:hidden}
 
   <!-- ── Footer ── -->
   <footer class="buyer-footer">
-    <div class="buyer-footer-brand">AgriBridge</div>
-    <div class="buyer-footer-tag">Fresh Food. Fair Prices. Stronger Farmers.</div>
+    <img src="/logo.png" alt="AgriBridge" style="height:52px;width:auto;object-fit:contain;margin-bottom:8px" onerror="this.style.display='none'">
+    <div class="buyer-footer-brand" style="display:none">AgriBridge</div>
+    <div class="buyer-footer-tag">Connecting Farms to Markets</div>
+    <!-- Social media links -->
+    <div class="buyer-footer-socials">
+      <a href="https://www.instagram.com/agribrige" target="_blank" rel="noopener" class="buyer-footer-social ig" title="Instagram @agribrige" aria-label="AgriBridge on Instagram">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/people/Agribridge-Agribrige/61572887219965" target="_blank" rel="noopener" class="buyer-footer-social fb" title="Facebook" aria-label="AgriBridge on Facebook">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/agribrige-com-6aaa24449" target="_blank" rel="noopener" class="buyer-footer-social li" title="LinkedIn" aria-label="AgriBridge on LinkedIn">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+    </div>
     <div class="buyer-footer-links">
       <a href="#" onclick="showPage('about');return false">Help &amp; Support</a>
       <a href="legal/privacy-policy.html">Privacy Policy</a>
@@ -2596,12 +2664,33 @@ AgriBridge service</div>
   </div>
   <div class="page-header"><h2>✉️ Get In Touch</h2><p>Farmers, buyers, investors, and partners — all welcome</p></div>
   <div class="section">
-    <div class="contact-info-grid">
-      <div class="contact-info-card"><div class="ci-icon">📞</div><div class="ci-label">Phone / WhatsApp</div><div class="ci-val">+256 755 966 690</div></div>
-      <div class="contact-info-card"><div class="ci-icon">✉️</div><div class="ci-label">Email</div><div class="ci-val">agribrige@gmail.com</div></div>
-      <div class="contact-info-card"><div class="ci-icon">📍</div><div class="ci-label">Office</div><div class="ci-val">Kampala, Uganda</div></div>
-      <div class="contact-info-card"><div class="ci-icon">📱</div><div class="ci-label">USSD (Any Phone)</div><div class="ci-val">*789#</div></div>
+    <!-- Direct connect channels -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      <a href="https://wa.me/256755966690?text=Hi%20AgriBridge%2C%20I%20need%20help%20with..."
+         target="_blank" rel="noopener"
+         style="display:flex;align-items:center;gap:10px;background:#25D366;color:#fff;border-radius:14px;padding:14px 16px;text-decoration:none;font-weight:700;font-size:0.9rem">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <a href="https://www.facebook.com/people/Agribridge-Agribrige/61572887219965"
+         target="_blank" rel="noopener"
+         style="display:flex;align-items:center;gap:10px;background:#1877F2;color:#fff;border-radius:14px;padding:14px 16px;text-decoration:none;font-weight:700;font-size:0.9rem">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+        Facebook
+      </a>
+      <a href="https://www.instagram.com/agribrige"
+         target="_blank" rel="noopener"
+         style="display:flex;align-items:center;gap:10px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;border-radius:14px;padding:14px 16px;text-decoration:none;font-weight:700;font-size:0.9rem">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        Instagram
+      </a>
+      <a href="mailto:agribrige@gmail.com?subject=AgriBridge%20Enquiry"
+         style="display:flex;align-items:center;gap:10px;background:var(--green);color:#0a1f0e;border-radius:14px;padding:14px 16px;text-decoration:none;font-weight:700;font-size:0.9rem">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        Email Us
+      </a>
     </div>
+    <p style="text-align:center;color:var(--text2);font-size:0.78rem;margin-bottom:16px">Or leave a message below — we reply within 24 hours</p>
     <p class="legal-foot-links" style="text-align:center;margin:14px 0"><a href="legal/terms-of-use.html" target="_blank" rel="noopener">Terms of Use</a><a href="legal/privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a><a href="#" onclick="openPrivacyRequest();return false">Privacy requests</a></p>
     <div class="contact-form">
       <h3 style="margin-bottom:20px">Send a Message</h3>
@@ -2633,22 +2722,16 @@ AgriBridge service</div>
      PAGE: ANIMALS MARKETPLACE
 ════════════════════════════════════════════════════════ -->
 <div id="page-animals" class="page">
-  <div class="page-header">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
-      <div>
-        <h2>🐄 Livestock &amp; Animals</h2>
-        <p>Buy &amp; sell cattle, goats, poultry, fish and bees — vet-certified, MAAIF approved</p>
-      </div>
-      <button class="btn-sm" onclick="openListAnimalModal()" style="background:var(--amber);white-space:nowrap;flex-shrink:0">+ List Animal</button>
+  <!-- Animals hero banner — same style as crops hero -->
+  <div class="an-hero">
+    <img class="an-hero-photo" src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=900&q=75" alt="" loading="lazy" onerror="this.style.display='none'">
+    <div class="an-hero-txt">
+      <div class="an-hero-tag">🐾 Vet-Certified · MAAIF Approved</div>
+      <div class="an-hero-title">Uganda's Finest <em>Livestock</em>,<br>Direct from Farmers</div>
+      <button class="an-hero-btn" onclick="openListAnimalModal()">+ List Animal</button>
     </div>
   </div>
 
-  <div class="animal-stats-row">
-    <div class="animal-stat"><div class="num" id="an-count">1,240+</div><div class="lbl">Animals Listed</div></div>
-    <div class="animal-stat"><div class="num">89</div><div class="lbl">Verified Breeders</div></div>
-    <div class="animal-stat"><div class="num">134</div><div class="lbl">Districts Covered</div></div>
-    <div class="animal-stat"><div class="num">24hr</div><div class="lbl">Vet Response</div></div>
-  </div>
 
   <div class="section">
     <!-- Info banner -->
@@ -2985,7 +3068,7 @@ AgriBridge service</div>
       <span class="profile-menu-arrow">›</span>
     </div>
   </div>
-  <button class="profile-logout-btn" onclick="signOut()" data-i18n="profile.signout">Sign Out</button>
+  <button class="profile-logout-btn" onclick="logOut();return false" data-i18n="profile.signout">Sign Out</button>
   <div style="height:20px"></div>
 </div>
 
@@ -3894,8 +3977,8 @@ function bhSetCat(cat, el) {
     if (c.includes(cat)) return true;
     if (cat === 'vegetables') return c.includes('veg') || c.includes('tomato') || c.includes('cabbage') || c.includes('onion');
     if (cat === 'fruits') return c.includes('fruit') || c.includes('banana') || c.includes('mango');
-    if (cat === 'staples') return c.includes('staple') || c.includes('maize') || c.includes('cassava') || c.includes('matooke');
-    if (cat === 'grains') return c.includes('grain') || c.includes('rice') || c.includes('millet') || c.includes('bean');
+    if (cat === 'staples') return c.includes('staple') || c.includes('cassava') || c.includes('matooke') || c.includes('plantain') || c.includes('yam') || c.includes('sweet potato');
+    if (cat === 'grains') return c.includes('grain') || c.includes('maize') || c.includes('corn') || c.includes('rice') || c.includes('millet') || c.includes('sorghum') || c.includes('wheat') || c.includes('barley') || c.includes('bean') || c.includes('soy') || c.includes('groundnut') || c.includes('peanut');
     return false;
   });
   if (!grid) return;
@@ -4602,31 +4685,92 @@ function renderAnimals() {
 
 function animalCard(a) {
   const catLabel = { livestock:'🐄 Livestock', poultry:'🐔 Poultry', dairy:'🥛 Dairy', aqua:'🐟 Aquaculture', apiary:'🐝 Beekeeping' };
-  const tagCls   = { livestock:'tag-livestock', poultry:'tag-poultry', dairy:'tag-dairy', aqua:'tag-aqua', apiary:'tag-apiary' };
-  const photoMap = { cattle:'1516467508483-a7212febe31a', cow:'1570824104453-508955ab713e', goat:'1591593765853-b9e4c5d80b03', chicken:'1548550023-2bdb3c5beed7', fish:'1625246174804-de40b2fae23d', tilapia:'1625246174804-de40b2fae23d', bee:'1558618666-fcd25c85cd64', honey:'1607303929487-5e16e41f2f41', rabbit:'1585110396000-d9e2e6c1e4f2' };
-  const pk = Object.keys(photoMap).find(k => a.name.toLowerCase().includes(k));
-  const imgUrl = a.image_url ? a.image_url : '';
-  const safeId = escHtml(a.id);
-  const safeName = escHtml(a.name);
-  return `<div class="animal-card" id="ac-${safeId}">
-    ${a.certified ? '<div class="certified-badge">✅ MAAIF</div>' : ''}
-    ${a.health_cert ? '<div class="health-badge">🩺 Vet Cert</div>' : ''}
-    ${imgUrl ? `<img src="${imgUrl}" alt="${safeName}" class="animal-card-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
-    <div class="animal-emoji-bg" style="display:${imgUrl?'none':'flex'}">${getAnimalEmoji(a.name||'')}</div>
-    <div class="animal-info">
-      <div class="animal-name">${safeName}</div>
-      <span class="animal-tag ${tagCls[a.cat]||'tag-livestock'}">${catLabel[a.cat]||a.cat}</span>
-      <div class="animal-desc">${escHtml(a.desc||'')}${a.breed?`<br><b>Type:</b> ${escHtml(a.breed)}`:''}</div>
-      ${a.video_url?`<a href="${escHtml(a.video_url)}" target="_blank" rel="noopener" style="display:inline-block;font-size:0.76rem;color:var(--green);margin:2px 0 6px">🎥 Watch video</a>`:''}
-      <div class="animal-price">UGX ${Number(a.price).toLocaleString()} <small>/ ${escHtml(a.unit||'head')}</small></div>
-      <div class="animal-district">📍 ${escHtml(a.district||'Uganda')} · 📦 ${Number(a.qty||0).toLocaleString()} available</div>
-      ${a.health_cert ? '<div class="animal-vet">📄 Health certificate available on purchase</div>' : ''}
-      <div class="animal-actions">
-        <button class="btn-animal-basket" onclick="addToBasket('${safeId}','${safeName}',${a.price},'${escHtml(a.unit||'head')}','${a.emoji||'🐄'}','animal')">🛒 Add to Basket</button>
-        <button class="btn-animal-order" onclick="quickOrderAnimal('${safeId}','${safeName}',${a.price})">Order Now</button>
-      </div>
+  const em = getAnimalEmoji(a.name || '');
+  const safeId = String(a.id).replace(/[^a-zA-Z0-9-]/g,'');
+  const safeName = escHtml(a.name || 'Animal');
+  const farmerName = escHtml(a.farmer_name || 'Local Farmer');
+  const district = a.district ? escHtml(a.district) : '';
+  const unit = escHtml(a.unit || 'head');
+  const price = Number(a.price) || 0;
+  const qty = Number(a.qty) || 0;
+  const low = qty > 0 && qty <= 3;
+  const out = qty === 0;
+
+  const imgHtml = a.image_url
+    ? `<img src="${escHtml(a.image_url)}" alt="${safeName}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:2.8rem">${em}</span>`
+    : `<span style="font-size:2.8rem">${em}</span>`;
+
+  const badges = (a.certified ? '<span class="prod-card-badge" style="background:#43a047;color:#fff">✅ MAAIF</span>' : '')
+    + (a.health_cert ? '<span class="prod-card-badge" style="background:#0288d1;color:#fff">🩺 Vet Cert</span>' : '');
+
+  const catBadge = catLabel[a.cat] ? `<span class="prod-card-badge" style="background:rgba(255,143,0,.18);color:var(--amber);border:1px solid var(--amber)">${catLabel[a.cat]}</span>` : '';
+  const breedHtml = a.breed ? `<span class="prod-card-meta"><span style="color:var(--text2)">Type: </span>${escHtml(a.breed)}</span>` : '';
+  const videoHtml = a.video_url ? `<a href="${escHtml(a.video_url)}" target="_blank" rel="noopener" style="font-size:0.72rem;color:var(--green);display:block;margin-top:2px">🎥 Watch video</a>` : '';
+
+  const stock = out
+    ? '<span class="prod-card-stock out">None available</span>'
+    : low ? `<span class="prod-card-stock low">Only ${qty} left</span>`
+    : `<span class="prod-card-stock ok">${qty} available</span>`;
+
+  const metaHtml = (district ? `<span>📍 ${district}</span>` : '');
+
+  return `<div class="prod-card" role="link" tabindex="0" aria-label="View ${safeName}"
+    onclick="openAnimalDetail('${safeId}')"
+    onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAnimalDetail('${safeId}');}">
+    <div class="prod-card-img" style="position:relative">${imgHtml}${badges}</div>
+    <div class="prod-card-body">
+      <div class="prod-card-name">${safeName}</div>
+      <div style="margin-bottom:4px">${catBadge}</div>
+      <div class="prod-card-farmer">${farmerName}</div>
+      <div class="prod-card-meta">${metaHtml}</div>
+      ${breedHtml}
+      ${videoHtml}
+      <div class="prod-card-price-row"><span class="prod-card-price">${fmtUgx(price)}<small>/${unit}</small></span></div>
+      <div class="prod-card-stock-row">${stock}</div>
+    </div>
+    <div class="prod-card-footer">
+      <button class="prod-card-cart" onclick="event.stopPropagation();addToBasket('${safeId}','${safeName}',${price},'${unit}','${em}','animal')"${out?' disabled aria-disabled="true"':''}>
+        ${out ? 'Out of stock' : '+ Add'}
+      </button>
     </div>
   </div>`;
+}
+
+function openAnimalDetail(id) {
+  const a = allAnimals.find(x => x.id === id);
+  if (!a) { showToast('Animal not found — refresh the page'); return; }
+  const em = getAnimalEmoji(a.name || '');
+  const catLabel = { livestock:'🐄 Livestock', poultry:'🐔 Poultry', dairy:'🥛 Dairy', aqua:'🐟 Aquaculture', apiary:'🐝 Beekeeping' };
+  // Reuse the quick-order flow for now; a full detail modal can be added later
+  const price = Number(a.price) || 0;
+  const modalHtml = `
+    <div style="text-align:center;font-size:3rem;margin-bottom:8px">${a.image_url ? `<img src="${escHtml(a.image_url)}" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px">` : em}</div>
+    <h3 style="margin:0 0 4px">${escHtml(a.name||'')}</h3>
+    <div style="color:var(--text2);font-size:0.82rem;margin-bottom:8px">${catLabel[a.cat]||''} · ${escHtml(a.district||'Uganda')}</div>
+    ${a.breed?`<div style="font-size:0.82rem;margin-bottom:4px"><b>Type:</b> ${escHtml(a.breed)}</div>`:''}
+    <div style="font-size:0.85rem;color:var(--text2);margin-bottom:10px;line-height:1.5">${escHtml(a.desc||'')}</div>
+    ${a.certified?'<div style="color:#43a047;font-size:0.82rem;margin-bottom:4px">✅ MAAIF Certified</div>':''}
+    ${a.health_cert?'<div style="color:#0288d1;font-size:0.82rem;margin-bottom:4px">🩺 Health certificate available</div>':''}
+    ${a.video_url?`<div style="margin-bottom:8px"><a href="${escHtml(a.video_url)}" target="_blank" rel="noopener" style="color:var(--green);font-size:0.82rem">🎥 Watch video</a></div>`:''}
+    <div style="font-size:1.2rem;font-weight:800;color:var(--amber);margin-bottom:4px">${fmtUgx(price)} <small style="font-weight:400;font-size:0.75rem;color:var(--text2)">/ ${escHtml(a.unit||'head')}</small></div>
+    <div style="font-size:0.8rem;color:var(--text2);margin-bottom:14px">📦 ${Number(a.qty||0)} available · Farmer: ${escHtml(a.farmer_name||'Local Farmer')}</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-sm" style="flex:1;background:var(--amber-dim);color:var(--amber);border:1px solid var(--amber)"
+        onclick="addToBasket('${id}','${escHtml(a.name||'')}',${price},'${escHtml(a.unit||'head')}','${em}','animal');closeModal('animalDetailModal')">🛒 Add to Basket</button>
+      <button class="btn-sm" style="flex:1;background:var(--amber);color:#000"
+        onclick="quickOrderAnimal('${id}','${escHtml(a.name||'')}',${price});closeModal('animalDetailModal')">Order Now</button>
+    </div>`;
+  var el = document.getElementById('animalDetailModal');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'animalDetailModal';
+    el.className = 'modal-overlay';
+    el.onclick = function(e){ if(e.target===el) closeModal('animalDetailModal'); };
+    el.innerHTML = '<div class="modal-box" style="max-width:420px"><button class="modal-close" onclick="closeModal(\'animalDetailModal\')">✕</button><div id="animalDetailBody"></div></div>';
+    document.body.appendChild(el);
+  }
+  document.getElementById('animalDetailBody').innerHTML = modalHtml;
+  openModal('animalDetailModal');
 }
 
 function setAnimalFilter(f,btn){ animalFilter=f; document.querySelectorAll('#animalFilters .filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); renderAnimals(); }
@@ -6530,7 +6674,13 @@ async function loadMyOrders() {
     const date  = o.created_at ? new Date(o.created_at).toLocaleDateString('en-UG', {day:'numeric',month:'short',year:'numeric'}) : '';
     let items = o.items || [];
     if (typeof items === 'string') { try { items = JSON.parse(items); } catch(e) { items = []; } }
-    const itemStr = items.map(i => escHtml((i.product||i.name||'Item') + ' ×' + (i.quantity||i.qty||1))).join(', ') || 'Order items';
+    const itemStr = items.map(i => {
+      const iname = i.product_name || i.crop_name || i.product || i.name || 'Item';
+      const iqty  = i.quantity || i.qty || 1;
+      const iunit = i.unit || 'kg';
+      const ifarmer = i.farmer_name ? ` (from ${i.farmer_name})` : '';
+      return escHtml(`${iname} ×${iqty} ${iunit}${ifarmer}`);
+    }).join('<br>') || 'Order items';
     const hasId = !!o.id;
     return `<div style="background:var(--bg3);border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
@@ -6567,9 +6717,15 @@ async function downloadReceipt(orderId, ref) {
     if (!r.ok) { showToast('Could not load receipt'); return; }
     const o = await r.json();
     // Build a printable HTML receipt and trigger download
-    const items = (o.items || []).map(i =>
-      `<tr><td>${escHtml(i.product||i.name||'Item')}</td><td style="text-align:center">${i.quantity||i.qty||1} ${i.unit||'kg'}</td><td style="text-align:right">UGX ${Number((i.price_per_unit||i.price||0)*(i.quantity||i.qty||1)).toLocaleString()}</td></tr>`
-    ).join('');
+    const items = (o.items || []).map(i => {
+      const iname   = i.product_name || i.crop_name || i.product || i.name || 'Item';
+      const iqty    = i.quantity || i.qty || 1;
+      const iunit   = i.unit || 'kg';
+      const iup     = i.unit_price || i.price_per_unit || i.price || 0;
+      const itotal  = Number(iup) * Number(iqty);
+      const ifarmer = i.farmer_name ? `<br><small style="color:#666">From: ${escHtml(i.farmer_name)}</small>` : '';
+      return `<tr><td>${escHtml(iname)}${ifarmer}</td><td style="text-align:center">${iqty} ${iunit}</td><td style="text-align:right">UGX ${itotal.toLocaleString()}</td></tr>`;
+    }).join('');
     const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Receipt ${o.order_ref}</title>
 <style>body{font-family:Arial,sans-serif;max-width:520px;margin:40px auto;color:#111;font-size:13px}
 h1{color:#17E06B;margin-bottom:4px}.logo{font-size:1.5rem;font-weight:900;color:#17E06B}
@@ -6724,9 +6880,34 @@ async function sendContactMsgCore() {
   const name=document.getElementById('cName')?.value.trim(), contact=document.getElementById('cContact')?.value.trim();
   const role=document.getElementById('cRole')?.value||'visitor', msg=document.getElementById('cMessage')?.value.trim();
   if(!name||!contact||!msg){ showToast('Please fill all fields'); return; }
-  const result=await sbInsert('contact_messages',{ full_name:name, contact, role, message:msg }, {minimal:true});
-  if(result){ showToast('Message sent! We\'ll reply within 24 hours ✅'); ['cName','cContact','cMessage'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); }
-  else showToast('Saved locally. We\'ll follow up soon ✅');
+  // /api/contact stores the message AND alerts the owner. The direct insert is
+  // only a fallback for when the backend cannot be reached: it used to be the
+  // whole path, and a message sent that way landed in the table with no
+  // notification of any kind (the owner only found out by accident).
+  var status=0, serverError='';
+  try {
+    const r = await fetch(USSD_API+'/api/contact', {
+      method:'POST',
+      headers: Object.assign({'Content-Type':'application/json'},
+                             _authToken ? {Authorization:'Bearer '+_authToken} : {}),
+      body: JSON.stringify({full_name:name, contact:contact, role:role, message:msg})
+    });
+    status = r.status;
+    const j = await r.json().catch(function(){ return {}; });
+    if (r.ok && j && j.ok) status = 200; else serverError = (j && j.error) || '';
+  } catch(e) { status = 0; }
+  var sent = (status === 200);
+  // 404/405 count as unreachable: the SPA and the backend are published
+  // separately, so for the minutes the backend is mid-deploy this route simply
+  // does not exist yet. A message must never be lost during that window.
+  if (!sent && (status === 0 || status >= 500 || status === 404 || status === 405)) {
+    sent = await sbInsert('contact_messages',{ full_name:name, contact, role, message:msg }, {minimal:true});
+  }
+  if(sent){ showToast('Message sent! We\'ll reply within 24 hours ✅'); ['cName','cContact','cMessage'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); }
+  else if(serverError){ showToast(serverError); }
+  // Nothing reached either path. Saying "saved" here is what hid the message
+  // that never arrived, so the only honest answer is the number that works.
+  else showToast('We could not send that. Please try again, or WhatsApp us on +256 755 966 690.');
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -8164,12 +8345,36 @@ function _setNotifUnread(n){
   if(dot){ dot.textContent = txt; dot.className = 'fh-dot' + (n > 0 ? ' on' : ''); }
 }
 
+// Pre-warm the Render backend so the first real request doesn't stall
+// on a cold-start. Called once on page load — fire and forget.
+function _warmBackend(){
+  try{ fetch(USSD_API+'/health',{method:'GET',mode:'cors',credentials:'omit'}).catch(function(){}); }
+  catch(e){}
+}
+
+function _notifSkeleton(n){
+  n=n||3;
+  var items='';
+  for(var i=0;i<n;i++){
+    items+='<div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px">'+
+      '<div style="width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;margin-top:5px"></div>'+
+      '<div style="flex:1">'+
+        '<div style="height:11px;width:'+(55+i*12)+'%;background:var(--border);border-radius:4px;margin-bottom:6px;animation:ab-pulse 1.4s ease-in-out infinite"></div>'+
+        '<div style="height:9px;width:'+(70-i*8)+'%;background:var(--border);border-radius:4px;animation:ab-pulse 1.4s ease-in-out '+(i*0.15)+'s infinite"></div>'+
+      '</div>'+
+    '</div>';
+  }
+  return items;
+}
+
 async function loadNotifications(){
   const list=document.getElementById('notifList');
   if(!list) return;
   // _authToken is set by onAuthStateChange — do NOT rely on localStorage only
   const tok=_authToken||localStorage.getItem('ab_jwt')||localStorage.getItem('ab_token')||(await refreshAuthToken());
   if(!tok){ list.innerHTML='<div style="padding:16px;text-align:center;color:var(--text2);font-size:0.85rem">Log in to see notifications</div>'; return; }
+  // Show skeleton immediately so the panel feels snappy
+  list.innerHTML=_notifSkeleton(4);
   try{
     const r=await fetch(USSD_API+'/api/user/notifications',{headers:{'Authorization':'Bearer '+tok}});
     if(!r.ok) throw new Error('not ok');
@@ -8198,7 +8403,7 @@ async function loadNotifications(){
       '</div>';
     }).join('');
   } catch(e){
-    list.innerHTML='<div style="padding:16px;text-align:center;color:var(--text2);font-size:0.85rem">Could not load notifications</div>';
+    list.innerHTML='<div style="padding:16px;text-align:center;color:var(--text2);font-size:0.85rem">Could not load notifications. Please try again.</div>';
   }
 }
 
@@ -8280,6 +8485,32 @@ function _stAvatar(size){
     ? '<img class="st-av" style="width:'+size+'px;height:'+size+'px" src="'+escHtml(u.avatar_url)+'" alt="">'
     : '<div class="st-av" style="width:'+size+'px;height:'+size+'px">'+escHtml((u.name||'U').charAt(0).toUpperCase())+'</div>';
 }
+// One login is one kind of account, and the server holds that answer:
+// /api/user/account-type reads user_roles.business_role first and the guarded profile
+// tables after it, and only says can_choose to a login that appears in neither. So the
+// dropdown is for the person who has not chosen yet, and everyone else is shown words —
+// which is the honest UI for "no switching roles by editing a profile field". Hiding the
+// box is not what enforces it: the POST refuses a second choice whatever the browser
+// sends, and migration 0028 refuses the second profile row it would have led to.
+function _accountTypeName(){
+  var r=(_accountType&&_accountType.role)||'';
+  if(_ROLE_LABELS[r]) return _ROLE_LABELS[r];
+  if(_ROLE_SHORT[r]) return _ROLE_SHORT[r];
+  var label=(_accountType&&_accountType.label)||r;
+  if(!label) return 'Not chosen yet';
+  return label.charAt(0).toUpperCase()+label.slice(1);
+}
+function _accountTypePicker(role){
+  if(_accountType&&_accountType.can_choose===false){
+    return '<div class="st-input" style="background:rgba(128,128,128,.12);color:var(--text)">'+
+        escHtml(_accountTypeName())+'</div>'+
+      '<div class="st-label" style="margin-bottom:12px">Set once and kept by AgriBridge — one login is one type of account. '+
+      'If this is not the account you need, message us instead of opening a second one.</div>';
+  }
+  return '<select id="setRole" onchange="setAccountRole(this.value)" class="st-input">'+
+    ['farmer','vendor','hotel','supplier'].map(function(r){ return '<option value="'+r+'"'+(role===r?' selected':'')+'>'+_ROLE_LABELS[r]+'</option>'; }).join('')+
+  '</select>';
+}
 
 function renderSettings(){
   var b=document.getElementById('settingsBody'); if(!b) return;
@@ -8333,9 +8564,7 @@ function renderSettings(){
       '<input id="setPhone" placeholder="Phone" class="st-input">'+
       '<input id="setDistrict" placeholder="District" class="st-input">'+
       '<span class="st-label">Account type — this decides which features you see</span>'+
-      '<select id="setRole" onchange="setAccountRole(this.value)" class="st-input">'+
-        ['farmer','vendor','hotel','supplier'].map(function(r){ return '<option value="'+r+'"'+(role===r?' selected':'')+'>'+_ROLE_LABELS[r]+'</option>'; }).join('')+
-      '</select>'+
+      _accountTypePicker(role)+
       '<div class="st-label" style="margin-bottom:12px">'+escHtml(currentUser.email||'')+'</div>'+
       '<button class="btn-sm" style="width:100%" onclick="saveProfile()">Save changes</button></div>';
   }
@@ -8380,6 +8609,7 @@ function renderSettings(){
     var n=document.getElementById('setName'); if(n) n.value=currentUser.name||'';
     var p=document.getElementById('setPhone'); if(p) p.value=currentUser.phone||'';
     var d=document.getElementById('setDistrict'); if(d) d.value=currentUser.district||'';
+    _askAccountTypeOnce();
   }
   if(screen==='privacy' && currentUser) loadPrivacySettings();
   if(screen==='notifications') refreshPushSettings();
@@ -8468,32 +8698,98 @@ async function uploadAvatar(inp){
   showToast(saved ? 'Photo updated ✓' : 'Photo shown, but saving to your account failed — try again');
   renderSettings();
 }
-function saveProfile(){
-  if(!currentUser) return;
+var _savingProfile=false;
+async function saveProfile(){
+  if(!currentUser||_savingProfile) return;
   var g=function(id){ var e=document.getElementById(id); return e?e.value.trim():''; };
-  var nm=g('setName'); if(nm) currentUser.name=nm;
-  currentUser.phone=g('setPhone');
-  currentUser.district=g('setDistrict');
-  localStorage.setItem('ab_user',JSON.stringify(currentUser));
-  // Persist to the farmers row so edits survive re-login and reach other devices.
-  if(currentUser.supaId) sbUpdate('farmers',{ full_name:currentUser.name||null, phone:currentUser.phone||null, district:currentUser.district||null },'id',currentUser.supaId);
-  if(typeof updateNavUser==='function') updateNavUser(currentUser);
-  showToast('Profile saved ✓');
-  closeModal('settingsModal');
+  var nm=g('setName'), ph=g('setPhone'), di=g('setDistrict');
+  // An empty box means "leave it", which is exactly what the backend does with
+  // an empty field — mirroring anything else would show the person a profile the
+  // database does not hold.
+  var next={ name: nm || currentUser.name, phone: ph || currentUser.phone,
+             district: di || currentUser.district };
+  var commit=function(){
+    currentUser.name=next.name; currentUser.phone=next.phone; currentUser.district=next.district;
+    try{ localStorage.setItem('ab_user',JSON.stringify(currentUser)); }catch(e){}
+    if(typeof updateNavUser==='function') updateNavUser(currentUser);
+  };
+  // Waiting for the answer means the tap now takes most of a second, long enough
+  // for a second tap. Each POST holds one of Render's two workers, and a doubled
+  // write of the same values is a second write, not a firmer one.
+  _savingProfile=true;
+  try{
+    if(currentUser.supaId){
+      // The farmers row is the copy every other device and every buyer sees, so
+      // this write — not localStorage.setItem — is what "saved" means. It used to
+      // be a fire-and-forget PATCH straight to PostgREST whose result was thrown
+      // away while the toast said "Profile saved ✓": a phone another account
+      // already holds is refused by the unique index in migration 0008, and the
+      // person was told it worked. Going through /api/user/profile means the same
+      // rules that guard sign-up guard this edit, and the answer comes back in
+      // words the person can act on.
+      var res=await abApi('/api/user/profile',{method:'POST',body:JSON.stringify(
+        {full_name:next.name, phone:next.phone, district:next.district})});
+      if(!res.ok){
+        // The route's own sentence is the one thing worth repeating — "That
+        // phone number is already registered to another account" tells the
+        // person what to change. Everything else is translated, because
+        // abApi's stand-in for a failed request is the word "network" and the
+        // 401 body is the word "token".
+        var msg;
+        if(res.status===401) msg='Your session has ended. Sign in again, then save your profile.';
+        else if(!res.status) msg='We could not reach AgriBridge. Check your connection and try again.';
+        else msg=(res.json&&res.json.error)||'We could not save that. Try again.';
+        showToast(msg);
+        return;
+      }
+    }
+    commit();
+    showToast('Profile saved ✓');
+    closeModal('settingsModal');
+  } finally { _savingProfile=false; }
 }
-// Let a user set/correct their own account type. Older accounts were created
-// without a role and defaulted to a seller view; this makes the choice stick
-// (auth metadata + local) and instantly re-tailors the nav, More menu and home.
+// Let a person set their own account type — once, and on the server.
+// Older accounts were created without a role and defaulted to a seller view, so this
+// has to stay reachable. What changed is where the answer is kept: it used to be
+// written into user_metadata by the browser, which is exactly the field a person can
+// re-pick at any time. /api/user/account-type records it in user_roles.business_role
+// and refuses a second choice; migration 0028 then makes the choice mean something in
+// the database, because a second profile row is refused whichever key writes it.
 async function setAccountRole(r){
   if(!currentUser||!r) return;
-  currentUser.role=r;
-  try{ localStorage.setItem('ab_user',JSON.stringify(currentUser)); }catch(e){}
-  try{ if(sbAuth&&sbAuth.auth&&sbAuth.auth.updateUser) await sbAuth.auth.updateUser({ data:{ role:r } }); }catch(e){}
+  var sel=document.getElementById('setRole');
+  var revert=function(){ if(sel) sel.value=(_accountType&&_accountType.role)||currentUser.role||'vendor'; };
+  var res=await abApi('/api/user/account-type',{method:'POST',body:JSON.stringify({role:r})});
+  // Both answers can change what this login is. A 200 records the choice; a 409
+  // carries the type the server is holding instead — their recorded choice, an
+  // operator row, or a profile table they already appear in — and adopting it is
+  // the same kind of change, so the two paths share one tail instead of the
+  // refusal quietly leaving the person on the wrong feature set.
+  var held=res.json&&res.json.role;
+  if(!res.ok&&!held){
+    revert();
+    showToast((res.json&&res.json.error)||'We could not set your account type. Check your connection and try again.');
+    return;
+  }
+  var changed=currentUser.role!==held;
+  _accountType={role:held,source:res.json.source||'business_role',
+                label:_ROLE_LABELS[held]||'',can_choose:false};
+  try{ localStorage.setItem('ab_account_type',JSON.stringify(_accountType)); }catch(e){}
+  if(changed){
+    currentUser.role=held;
+    try{ localStorage.setItem('ab_user',JSON.stringify(currentUser)); }catch(e){}
+  }
   if(typeof applyRoleUI==='function') applyRoleUI();
   if(typeof updateNavUser==='function') updateNavUser(currentUser);
   if(typeof renderRoleHome==='function') renderRoleHome();
-  showToast('Account type set — features updated ✓');
-  _legalCheckedFor = null; postAuthLegalCheck('settings_review');
+  repaintAccountPanel();
+  showToast(res.ok?'Account type set — features updated ✓'
+                   :((res.json&&res.json.error)||'This login already has an account type.'));
+  // Whichever role the server is now answering for has its own terms, and the
+  // acceptance recorded under the old one does not cover it. This used to run
+  // only after a 200, so a login that turned out to be a hotel — refused, then
+  // adopted — never got asked.
+  if(changed||res.ok){ _legalCheckedFor=null; postAuthLegalCheck('settings_review'); }
 }
 function shareListing(name,district,price){ const text='🌾 Fresh '+name+' from '+district+' at UGX '+Number(price).toLocaleString()+'/kg on AgriBridge!\nhttps://agribrige.com · Dial *789# on any phone'; if(navigator.share) navigator.share({title:name+' on AgriBridge',text,url:'https://agribrige.com'}).catch(()=>{}); else window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank'); }
 function updateOnlineStatus(){ const b=document.getElementById('offlineBanner'); if(b) b.style.display=navigator.onLine?'none':'block'; }
@@ -8821,6 +9117,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // First-time welcome
   if (!localStorage.getItem('ab_visited')) {
     setTimeout(() => { showToast('🌱 Welcome to AgriBridge! Browse fresh produce or dial *789# on any phone.'); localStorage.setItem('ab_visited','1'); }, 1800);
+    // The one arrival the backend cannot see on its own: no route runs just
+    // because someone opened the site. Once per browser, no token, fire and
+    // forget — a failed beacon must never delay or block a first visit.
+    try { fetch(USSD_API+'/api/activity', {method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({event:'visit.first'})}).catch(function(){}); } catch(e){}
   }
   // Recommendations
   setTimeout(() => { if(getTopInterests(1).length>0) renderRecommendations(); }, 1200);
@@ -9490,12 +9791,75 @@ function renderMoreGrid(){
     return '<button onclick="'+act+'"><span>'+it.icon+'</span>'+it.label+'</button>'; }).join('');
 }
 
+// What the server says this login is. Kept separately from currentUser.role,
+// which is user_metadata.role — a field the signed-in browser writes itself (see
+// setAccountRole) and therefore cannot be trusted as an identity. The pair that
+// cannot be edited by the account holder is user_roles.business_role (written only
+// by /api/user/account-type) and migration 0028's trigger, which refuses a second
+// profile row whatever key sends the write.
+var _accountType = null;
+try { _accountType = JSON.parse(localStorage.getItem('ab_account_type') || 'null'); } catch (e) {}
+
+var _accountTypeCall = null;
+function loadAccountType() {
+  if (!currentUser || !currentUser.supaId) { _accountType = null; return Promise.resolve(null); }
+  // Two auth callbacks can fire on one sign-in, and each round trip is not free on
+  // the Render box: share the one that is already in flight.
+  if (_accountTypeCall) return _accountTypeCall;
+  _accountTypeCall = abApi('/api/user/account-type').then(function (res) {
+    _accountTypeCall = null;
+    // A failed read keeps whatever was cached: 'could not ask' must not demote a
+    // person to the metadata value they may have set themselves.
+    if (!res || !res.ok || !res.json || !res.json.role) return _accountType;
+    var changed = !_accountType || _accountType.role !== res.json.role;
+    _accountType = { role: res.json.role, source: res.json.source,
+                     label: res.json.label || '', can_choose: !!res.json.can_choose };
+    try { localStorage.setItem('ab_account_type', JSON.stringify(_accountType)); } catch (e) {}
+    if (changed) {
+      // The navigation the person is looking at was built from a guess. Rebuild it
+      // from the answer; applyRoleUI's own re-entrancy guard covers the repaint.
+      if (typeof applyRoleUI === 'function') applyRoleUI();
+      if (typeof renderRoleHome === 'function') renderRoleHome();
+    }
+    return _accountType;
+  }, function () { _accountTypeCall = null; return _accountType; });
+  return _accountTypeCall;
+}
+
+// The account panel is the one screen that has to show the server's answer, and a
+// person who signed in before this stage has nothing cached to show it from. Asked
+// once per login: a read that failed must not become a request every time Settings
+// opens, and a locked type that is missing is shown as the dropdown — which the POST
+// then refuses, adopting the truth from its body.
+var _accountTypeAsked = false;
+function _askAccountTypeOnce() {
+  if (_accountTypeAsked || _accountType) return;
+  if (!currentUser || !currentUser.supaId) return;
+  _accountTypeAsked = true;
+  loadAccountType().then(function () {
+    if (_accountType && _setScreen === 'account') repaintAccountPanel();
+  });
+}
+// Redraws the account panel over whatever the server now says. Called after a choice
+// is made or refused, so the dropdown becomes the locked line it just became true for.
+function repaintAccountPanel() {
+  if (_setScreen === 'account' && document.getElementById('settingsBody')) renderSettings();
+}
+
 function getCurrentRole() {
   if (!currentUser) return 'guest';
-  var role = (currentUser.role || (currentUser.user_metadata && currentUser.user_metadata.role) || 'vendor');
+  // 'admin' is a privilege, not a marketplace account, and the SPA has no admin
+  // screens — an operator keeps the view their metadata gave them before this stage.
+  var server = (_accountType && _accountType.role && _accountType.role !== 'admin')
+    ? _accountType.role : '';
+  var role = server || (currentUser.role || (currentUser.user_metadata && currentUser.user_metadata.role) || 'vendor');
   if (role === 'hotel' || role === 'restaurant' || role === 'b2b') return 'hotel';
   if (role === 'farmer') return 'farmer';
   if (role === 'supplier' || role === 'input_seller') return 'supplier';
+  // Transporter accounts are created by an administrator and drive deliveries in
+  // their own portal. Without this branch a driver fell through to 'vendor' and
+  // was shown a buyer's screens for a role they do not have.
+  if (role === 'transporter' || role === 'driver') return 'transporter';
   return 'vendor';
 }
 
@@ -9508,6 +9872,15 @@ function applyRoleUI() {
   _applyingRoleUI = true;
   setTimeout(function(){ _applyingRoleUI = false; }, 0);
   var role = getCurrentRole();
+
+  // A transporter has no marketplace screens; their five destinations live in the
+  // dedicated portal. Send them there instead of painting a buyer's navigation.
+  if (role === 'transporter') {
+    if (location.pathname.replace(/\/+$/, '') !== '/transporter') {
+      location.replace('/transporter');
+    }
+    return;
+  }
 
   // 1. Role indicator stripe at top
   var indicator = document.getElementById('roleIndicator');
@@ -9710,6 +10083,7 @@ function initSupabase() {
       currentUser = { name: (u.user_metadata&&u.user_metadata.name)||(u.user_metadata&&u.user_metadata.full_name)||u.email.split('@')[0], role: (u.user_metadata&&u.user_metadata.role)||'vendor', phone: (u.user_metadata&&u.user_metadata.phone)||'', district: (u.user_metadata&&u.user_metadata.district)||'', email: u.email, supaId: u.id };
       localStorage.setItem('ab_user', JSON.stringify(currentUser));
       updateNavUser(currentUser.name, currentUser.role);
+      loadAccountType();
       if (_oauthNeedsProfile(u)) _openOAuthProfile(u);
       else hydrateUserProfile();
       // Flush any profile that couldn't be saved at registration time
@@ -9732,6 +10106,9 @@ function initSupabase() {
     } else {
       currentUser = null;
       localStorage.removeItem('ab_user');
+      _accountType = null;
+      _accountTypeAsked = false;
+      try { localStorage.removeItem('ab_account_type'); } catch (e) {}
       updateNavUser(null, null);
       _stopNotifPolling();
       _hidePushPrompt();
@@ -9745,6 +10122,7 @@ function initSupabase() {
       currentUser = { name: (u.user_metadata&&u.user_metadata.name)||(u.user_metadata&&u.user_metadata.full_name)||u.email.split('@')[0], role: (u.user_metadata&&u.user_metadata.role)||'vendor', phone: (u.user_metadata&&u.user_metadata.phone)||'', district: (u.user_metadata&&u.user_metadata.district)||'', email: u.email, supaId: u.id };
       localStorage.setItem('ab_user', JSON.stringify(currentUser));
       updateNavUser(currentUser.name, currentUser.role);
+      loadAccountType();
       if (_oauthNeedsProfile(u)) _openOAuthProfile(u);
       else hydrateUserProfile();
       if (typeof syncCloudBasket === 'function') syncCloudBasket();
@@ -9992,7 +10370,7 @@ async function doRegister() {
   try {
     var res = await sbAuth.auth.signUp({
       email: email, password: pwd,
-      options: { data: { name: name, phone: phone, role: role, district: district,
+      options: { data: { name: name, full_name: name, phone: phone, role: role, district: district,
         legal_signup: { accepted_at: new Date().toISOString(), versions: legalVersions },
         marketing_optin: { sms: wantsSms } } }
     });
@@ -10206,17 +10584,37 @@ async function oauthSignOut() {
 }
 
 // ── logOut — replaces original ────────────────────────
+// signOut() is an alias used by the profile panel Sign Out button
+async function signOut(){ return logOut(); }
 async function logOut(){
-  if(sbAuth)await sbAuth.auth.signOut();
+  // The server-side sign-out is tried first but can never hold the door shut: with
+  // an expired or already-revoked session — the state a person is in when they have
+  // been locked out of an old account — supabase-js rejects here, and the click did
+  // nothing at all. Getting out of a session must not depend on the session being
+  // healthy.
+  if(sbAuth){ try{ await sbAuth.auth.signOut(); }catch(e){} }
   currentUser=null;
   localStorage.removeItem('ab_user');
+  // The server's answer about the account type belongs to the person, not the
+  // device: leaving it cached would show the next signer-in their navigation built
+  // from someone else's role for the second or two before their own read returns.
+  _accountType=null;
+  _accountTypeAsked=false;
+  try{ localStorage.removeItem('ab_account_type'); }catch(e){}
   updateNavUser(null,null);
   _hidePushPrompt();
+  closeModal('profileModal');
   closeModal('myAccountModal');
+  closeModal('settingsModal');
   showToast('👋 Logged out successfully');
   basketItems=[]; appliedPromo=null;
   localStorage.removeItem('ab_basket'); localStorage.removeItem('ab_promo');
   renderBasket(); updateBasketBadge();
+  // And leave the screen they were looking at. A farmer who signed out from their
+  // dashboard stayed on it — own listings, own orders, own earnings — with only two
+  // small nav buttons visibly changed, which is the other half of why sign-out reads
+  // as a button that does not work. Home repaints for whoever is now looking.
+  try{ showPage('home'); }catch(e){}
 }
 // Play-required account deletion (audit H6). Calls the server-side erasure
 // endpoint with the verified session token; the SERVER scopes it to the caller's
@@ -10464,7 +10862,8 @@ window.showPage = function(name) {
   function isIos(){ return /iphone|ipad|ipod/i.test(navigator.userAgent||''); }
   function show(){ var b=document.getElementById('installBanner'); if(b) b.style.display='flex'; }
   function hide(){ var b=document.getElementById('installBanner'); if(b) b.style.display='none'; }
-  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; if(!localStorage.getItem('ab_install_dismissed')) show(); });
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; if(!localStorage.getItem('ab_install_dismissed')) show(); var lb=document.getElementById('wlInstallBtn'); if(lb) lb.style.display='flex'; });
+  window.__wlInstall=function(){ if(deferred){ deferred.prompt(); deferred.userChoice.then(function(r){ if(r.outcome==='accepted'){ var lb=document.getElementById('wlInstallBtn'); if(lb) lb.style.display='none'; } }); } else if(isIos()){ showToast&&showToast('Tap the Share icon ⬆ then "Add to Home Screen"'); } };
   window.addEventListener('appinstalled', function(){ hide(); localStorage.setItem('ab_install_dismissed','1'); if(typeof showToast==='function') showToast('Installed! Find AgriBridge on your home screen 🎉'); });
   window.__installApp=function(){
     if(deferred){ deferred.prompt(); deferred.userChoice.then(function(){ deferred=null; hide(); }); }
@@ -12259,8 +12658,13 @@ window.getE164Phone = function(wrapperId, inputId) {
   var btn = document.getElementById(wrapperId + '_btn');
   var input = document.getElementById(inputId);
   if (!btn || !input) return '';
+  var national = input.value.trim();
+  // An empty box is an empty box. Joining it to the dial code made '+256' — a
+  // country code with no number after it — which the settings screen then sent
+  // as a profile phone and the database refused as a format violation.
+  if (!national) return '';
   var dial = btn.getAttribute('data-dial') || '+256';
-  return normalisePhone(dial, input.value.trim());
+  return normalisePhone(dial, national);
 };
 
 /** Replace the registration phone field with the new component */
@@ -12305,7 +12709,16 @@ window.renderSettings = function() {
       setPhone.remove();
       // Restore saved value if it starts with a digit (national) or +
       var restoredInput = document.getElementById('setPhone');
-      if (restoredInput && currentVal) restoredInput.value = currentVal.replace(/^\+\d+\s?/,'');
+      if (restoredInput && currentVal) {
+        // The flag button beside this box carries the country code, so the box
+        // itself shows the national number. The pattern used here was
+        // /^\+\d+\s?/, and \d+ is greedy: for the stored E.164 value
+        // '+256771234567' it matched the WHOLE number and replaced it with
+        // nothing. Every farmer who opened this screen saw an empty phone box,
+        // and saving it sent '+256' — a country code with no number after it.
+        // A country code is one to three digits, so that is all that may go.
+        restoredInput.value = currentVal.replace(/^\+\d{1,3}\s?/, '').trim();
+      }
     }
     // Patch saveProfile to use E.164
     if (!window._saveProfilePatched) {
@@ -12437,6 +12850,19 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 })(); // end auth lang IIFE
+</script>
+
+<script>
+// Pre-warm the Flask backend on page load so the first real API call
+// (notifications, listings, etc.) doesn't sit through a Render cold-start.
+// /health is a tiny no-auth endpoint; we fire it and forget.
+(function(){
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){ _warmBackend && _warmBackend(); });
+  } else {
+    setTimeout(function(){ _warmBackend && _warmBackend(); }, 800);
+  }
+})();
 </script>
 </body>
 </html>
