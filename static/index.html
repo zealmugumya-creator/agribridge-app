@@ -580,6 +580,7 @@ img{max-width:100%}
 .nav-role-indicator.farmer{background:linear-gradient(90deg,var(--green),var(--green-bright))}
 .nav-role-indicator.vendor{background:linear-gradient(90deg,#1565C0,#42a5f5)}
 .nav-role-indicator.hotel{background:linear-gradient(90deg,var(--amber),var(--amber-light))}
+.nav-role-indicator.exporter{background:linear-gradient(90deg,#00838f,#26c6da)}
 /* ── How it works ──────────────────────── */
 .how-step{display:flex;gap:20px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:12px}
 .how-step-num{width:40px;height:40px;border-radius:50%;background:var(--green);color:#fff;font-weight:800;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -1809,9 +1810,9 @@ a.wl-chip small{color:var(--green)}
         <button class="wl-btn ghost lg" onclick="enterApp('register')">Create free account</button>
       </div>
       <div class="wl-stores">
-        <button class="wl-store wl-install-btn" id="wlInstallBtn" onclick="__wlInstall()" style="display:none"><span>📲</span><span><small>Install the</small>AgriBridge App</span></button>
-        <button class="wl-store" onclick="appStoreClick()"><span>▶</span><span><small>Get it on</small>Google Play</span></button>
-        <button class="wl-store" onclick="appStoreClick()"><span></span><span><small>Download on the</small>App Store</span></button>
+        <button class="wl-store wl-install-btn" id="wlInstallBtn" onclick="showInstallModal()" style="display:none"><span>📲</span><span><small>Install the</small>AgriBridge App</span></button>
+        <button class="wl-store" id="wlAndroidBtn" onclick="showInstallModal()"><span>▶</span><span><small>Get it on</small>Google Play</span></button>
+        <button class="wl-store" id="wlIosBtn" onclick="showInstallModal()"><span></span><span><small>Download on the</small>App Store</span></button>
       </div>
       <div class="wl-ussd">📵 No smartphone? Dial <b>*789#</b> on any MTN or Airtel phone.</div>
     </div>
@@ -1951,6 +1952,17 @@ a.wl-chip small{color:var(--green)}
 
 <!-- ══════════════════ PAGE: HOME ══════════════════ -->
 <div id="page-home" class="page active" style="padding:0 0 80px">
+
+  <!-- ── App install nudge (shown to logged-in users who haven't installed yet) ── -->
+  <div id="homeInstallNudge" style="display:none;margin:12px 16px 0;background:linear-gradient(135deg,#0c2016,#122a1a);border:1px solid rgba(0,200,83,0.25);border-radius:14px;padding:12px 14px;align-items:center;gap:12px">
+    <img src="/logo.png" alt="" style="height:36px;width:auto;flex-shrink:0;filter:drop-shadow(0 1px 4px rgba(0,200,83,0.5))">
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:800;font-size:.88rem;color:#fff;line-height:1.2">Get the AgriBridge App</div>
+      <div style="font-size:.74rem;color:var(--text2);margin-top:2px">Works offline · opens instantly · no browser bar</div>
+    </div>
+    <button onclick="showInstallModal()" style="background:var(--green);color:#04160c;border:none;border-radius:10px;padding:8px 14px;font-size:.8rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0">Get App</button>
+    <button onclick="document.getElementById('homeInstallNudge').style.display='none';localStorage.setItem('ab_nudge_dismissed','1')" style="background:transparent;border:none;color:var(--text2);cursor:pointer;font-size:1rem;padding:4px;flex-shrink:0" aria-label="Dismiss">✕</button>
+  </div>
 
   <!-- ── Buyer home top bar ── -->
   <div class="bh-top" id="buyerHomeTop">
@@ -3054,6 +3066,12 @@ AgriBridge service</div>
       <span class="profile-menu-label" data-i18n="profile.language">Language</span>
       <span class="profile-menu-arrow">›</span>
     </div>
+    <div class="profile-menu-item" id="profileInstallItem" onclick="showInstallModal()">
+      <div class="profile-menu-ic">📲</div>
+      <span class="profile-menu-label">Get the App</span>
+      <span style="font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--green-dim);color:var(--green-light)">FREE</span>
+      <span class="profile-menu-arrow">›</span>
+    </div>
   </div>
   <div class="profile-section-lbl">Legal</div>
   <div class="profile-menu">
@@ -3495,6 +3513,22 @@ async function saveProfileWithRetry(profile, attempts) {
     if (sbAuth && profile && (profile.full_name || profile.name)) {
       var tok = _authToken || localStorage.getItem('ab_jwt') || localStorage.getItem('ab_token') || (await refreshAuthToken());
       if (tok) {
+        // An exporter sells through the same farmers row a farmer uses, and that
+        // row on its own reads as 'farmer' to the server. The account type must
+        // therefore be recorded BEFORE the row exists, while the one-time choice
+        // is still open. A 409 means the server already holds a type for this
+        // login — let the profile write meet the same guard and answer honestly.
+        // Anything else (503 before migration 0030 is applied, a failed request)
+        // defers the whole save to the pending-profile flush rather than writing
+        // a row that would freeze this login as a farmer forever.
+        if ((profile.role || '') === 'exporter') {
+          var ra = await fetch(USSD_API + '/api/user/account-type', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
+            body: JSON.stringify({ role: 'exporter' })
+          });
+          if (!ra.ok && ra.status !== 409) throw new Error('account type not recorded yet');
+        }
         var r = await fetch(USSD_API + '/api/user/profile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tok },
@@ -3638,7 +3672,7 @@ function showPage(name) {
   if (name === 'delivery') { loadAlerts(); loadMyOrders(); }
   if (name === 'crops')    { renderCrops(); renderCalendar(); }
   if (name === 'animals')  loadAnimals();
-  if (name === 'home')     { loadHomeStats(); renderRoleHome(); renderRecommendations(); applyHomeMode(); }
+  if (name === 'home')     { loadHomeStats(); renderRoleHome(); renderRecommendations(); applyHomeMode(); if(typeof window.__maybeShowInstallNudge==='function') window.__maybeShowInstallNudge(); }
   if (name === 'dashboard') loadDashboard();
   if (name === 'farmer-produce')  loadFarmerProduce();
   if (name === 'farmer-orders')   loadFarmerOrders();
@@ -6800,7 +6834,7 @@ async function supaAuthSignIn(phone, password) {
 async function verifyOtp(){ closeModal('registerModal'); showToast('Registered! Welcome to AgriBridge 🌾'); }
 function openMyAccount() {
   const body=document.getElementById('myAccountBody');
-  if(body&&currentUser){ const roleLabel=currentUser.role==='farmer'?'🌾 Farmer':'🛒 Buyer/Vendor'; body.innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div style="width:44px;height:44px;border-radius:50%;background:var(--green-dim);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:var(--green)">${(currentUser.name||'U').charAt(0).toUpperCase()}</div><div><div style="font-weight:700">${escHtml(currentUser.name||'')}</div><div style="font-size:0.8rem;color:var(--text2)">${roleLabel} · ${escHtml(currentUser.district||'')}</div></div></div><div style="font-size:0.82rem;color:var(--text2)">📞 ${escHtml(currentUser.phone||'')}</div>`; }
+  if(body&&currentUser){ const roleLabel=currentUser.role==='farmer'?'🌾 Farmer':(currentUser.role==='exporter'?'🌍 Exporter / Trading Co.':'🛒 Buyer/Vendor'); body.innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div style="width:44px;height:44px;border-radius:50%;background:var(--green-dim);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:var(--green)">${(currentUser.name||'U').charAt(0).toUpperCase()}</div><div><div style="font-weight:700">${escHtml(currentUser.name||'')}</div><div style="font-size:0.8rem;color:var(--text2)">${roleLabel} · ${escHtml(currentUser.district||'')}</div></div></div><div style="font-size:0.82rem;color:var(--text2)">📞 ${escHtml(currentUser.phone||'')}</div>`; }
   openModal('myAccountModal');
 }
 
@@ -7153,7 +7187,7 @@ async function submitListProduceCore() {
   if(typeof loadLiveBoard==='function') loadLiveBoard();
   // The farmer's own produce/home counts come from a separate read, so drop the
   // cache or a freshly published listing would not appear for 15 seconds.
-  if(getCurrentRole()==='farmer') farmerAfterChange();
+  if(getCurrentRole()==='farmer'||getCurrentRole()==='exporter') farmerAfterChange();
   // Optional photo/video: never blocks or invalidates the saved listing.
   if(photoFile||videoFile) attachListingMedia(listing.id, photoFile, videoFile);
 }
@@ -7191,7 +7225,7 @@ async function attachListingMedia(listingId, photoFile, videoFile){
       window._listingsFull=false;
       showToast('📷 Photo added to your listing');
       if(document.querySelector('.page.active')?.id==='page-market') loadListings();
-      if(getCurrentRole()==='farmer') farmerAfterChange();
+      if(getCurrentRole()==='farmer'||getCurrentRole()==='exporter') farmerAfterChange();
     }else{
       lpMediaEnd(true);
       showToast('Listing saved. The photo could not be added — open Edit on the listing to try again.');
@@ -7237,7 +7271,7 @@ async function renderRoleHome() {
   const hour=new Date().getHours(); const greeting=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
   const aiCard=`<div class="afc2" onclick="toggleAI()"><div class="afc2-txt"><div class="afc2-title">AI Farm Assistant</div><div class="afc2-sub">How can I help you today?</div><span class="afc2-btn">Ask AgriBridge AI ›</span></div><div class="afc2-orb"><span class="of-eye"></span><span class="of-eye"></span><span class="of-smile"></span></div></div>`;
   const greet=`<div class="hd-greet"><h3>Hello, ${escHtml(firstName)} 👋</h3><p>${greeting}! Let's grow more today.</p></div>`;
-  if(role==='farmer') {
+  if(role==='farmer'||role==='exporter') {
     loadFarmerHome();
   } else if(role==='supplier') {
     panel.innerHTML=`<div class="hd">${greet}${aiCard}
@@ -7479,7 +7513,8 @@ function fhHead() {
 // hydrateUserProfile() can land after the home has already painted, carrying the
 // verified DB name and photo. Repaint the greeting without refetching anything.
 function fhHeadRefresh() {
-  if (!currentUser || getCurrentRole() !== 'farmer') return;
+  var _r = getCurrentRole();
+  if (!currentUser || (_r !== 'farmer' && _r !== 'exporter')) return;
   var panel = document.getElementById('roleHomePanel');
   var head = panel && panel.querySelector('.fh-head');
   if (!head) return;
@@ -8146,8 +8181,8 @@ function renderBuyerAnalytics(orders){
   ${topCats.length?`<div class="an-sect"><h3>Top categories</h3><div class="an-cats">${catHtml}</div></div>`:''}`;
 }
 async function loadDashboard() {
-  // ── FARMER fd-* earnings dashboard ─────────────────────────────
-  if(currentUser && currentUser.role==='farmer') {
+  // ── FARMER fd-* earnings dashboard (exporters sell on the same surface) ────
+  if(currentUser && (currentUser.role==='farmer'||currentUser.role==='exporter')) {
     const hour=new Date().getHours();
     const greet=hour<12?'Good morning 👋':hour<17?'Good afternoon 👋':'Good evening 👋';
     const helloEl=document.getElementById('fdHello'); if(helloEl) helloEl.textContent=greet;
@@ -8220,7 +8255,7 @@ async function loadDashboard() {
   if(el.style.display==='none') el.style.display='';
   if(!currentUser){ el.innerHTML='<div style="text-align:center;padding:40px"><div style="font-size:3rem">📭</div><p style="color:var(--text2);margin:12px 0">Log in to see your dashboard</p><button class="btn-primary" style="width:auto;padding:12px 24px" onclick="openModal(\'loginModal\')">Log In</button></div>'; return; }
   el.innerHTML='<div class="loader"><div class="spinner"></div>Loading…</div>';
-  if(currentUser.role==='farmer') {
+  if(currentUser.role==='farmer'||currentUser.role==='exporter') {
     // safety fallback (farmer early-returns above)
     el.innerHTML='';
   } else if(getCurrentRole()==='supplier'){
@@ -8462,8 +8497,8 @@ function setLang(code){ localStorage.setItem('ab_lang',code); var langBtn=docume
 // ── Settings hub (Telegram-style: home menu + one screen per section) ──────────
 var _setScreen='home';
 var _LANGS=[['en','🇬🇧 English'],['lg','🇺🇬 Luganda'],['rn','🌄 Runyankole'],['ac','🌾 Acholi/Luo']];
-var _ROLE_LABELS={farmer:'🌾 Farmer (I sell produce)',vendor:'🛒 Buyer (I buy produce)',hotel:'🏨 Hotel / Restaurant (B2B)',supplier:'🏪 Supplier (I sell farm inputs)'};
-var _ROLE_SHORT={farmer:'Farmer',vendor:'Buyer',hotel:'Hotel / Restaurant',supplier:'Supplier',guest:'Guest'};
+var _ROLE_LABELS={farmer:'🌾 Farmer (I sell produce)',vendor:'🛒 Buyer (I buy produce)',hotel:'🏨 Hotel / Restaurant (B2B)',supplier:'🏪 Supplier (I sell farm inputs)',exporter:'🌍 Exporter / Trading Co. (I sell across borders)'};
+var _ROLE_SHORT={farmer:'Farmer',vendor:'Buyer',hotel:'Hotel / Restaurant',supplier:'Supplier',exporter:'Exporter / Trading Co.',guest:'Guest'};
 var _SCREEN_TITLES={account:'set.account',notifications:'set.notif',language:'set.language',privacy:'set.privacy',help:'set.help'};
 
 // Opens Settings on the home menu (the gear button).
@@ -8508,7 +8543,7 @@ function _accountTypePicker(role){
       'If this is not the account you need, message us instead of opening a second one.</div>';
   }
   return '<select id="setRole" onchange="setAccountRole(this.value)" class="st-input">'+
-    ['farmer','vendor','hotel','supplier'].map(function(r){ return '<option value="'+r+'"'+(role===r?' selected':'')+'>'+_ROLE_LABELS[r]+'</option>'; }).join('')+
+    ['farmer','vendor','hotel','supplier','exporter'].map(function(r){ return '<option value="'+r+'"'+(role===r?' selected':'')+'>'+_ROLE_LABELS[r]+'</option>'; }).join('')+
   '</select>';
 }
 
@@ -8535,7 +8570,7 @@ function renderSettings(){
         _stRow('🔔','#e8505b',typeof t==='function'?t('set.notif'):'Notifications','<span id="stNotifSub">'+(typeof t==='function'?t('set.notif.sub'):'Phone alerts and in-app updates')+'</span>',"settingsGo('notifications')")+
         _stRow('🌐','#8e5be8',typeof t==='function'?t('set.language'):'Language',escHtml(langName),"settingsGo('language')")+
       '</div>';
-      if(role==='farmer'){
+      if(role==='farmer'||role==='exporter'){
         html+='<div class="st-group">'+
           _stRow('🌾','#2eae5b',typeof t==='function'?t('set.list'):'List produce',typeof t==='function'?t('set.list.sub'):'Add something for sale',"closeModal('settingsModal');openListProduceModal()")+
           _stRow('📊','#e8a33a',typeof t==='function'?t('set.dashboard'):'My dashboard',typeof t==='function'?t('set.dashboard.sub'):'Orders, earnings and listings',"closeModal('settingsModal');showPage('dashboard')")+
@@ -9255,6 +9290,24 @@ function validatePhone(phone) {
   return cleaned.length >= 9 && cleaned.length <= 12;
 }
 
+// Same rule as normalize_phone in app.py and the E.164 check migration 0030
+// installs on farmers/buyers: Ugandan local forms keep their +256, every other
+// number must carry its country code. Returns '' when it cannot be stored
+// honestly — including '+10000000000', the placeholder no new account may use.
+var PHONE_HINT = 'Enter a valid phone number with country code, e.g. +256 771 234567 or +20 103 679 7717.';
+function normalizePhoneE164(raw) {
+  var s = String(raw || '').trim();
+  if (!s) return '';
+  var d = s.replace(/\D/g, '');
+  if (s.indexOf('00') === 0) d = d.slice(2);
+  if (/^256[37]\d{8}$/.test(d)) return '+256' + d.slice(3);
+  if (/^0[37]\d{8}$/.test(d)) return '+256' + d.slice(1);
+  if (/^[37]\d{8}$/.test(d)) return '+256' + d;
+  if (d === '10000000000') return '';
+  if (/^[1-9]\d{6,14}$/.test(d)) return '+' + d;
+  return '';
+}
+
 // ── Email validation ─────────────────────────────────────
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -9746,6 +9799,11 @@ var ROLE_PAGES = {
   farmer: ['home','farmer-produce','farmer-orders','farmer-earnings','farmer-profile',
            'market','prices','crops','animals','training','delivery','ussd',
            'doctor','supply','dashboard','community','finance','coldchain','about','contact'],
+  // An exporter is a seller: the same selling surfaces as a farmer, under their
+  // own honest label (the server's business_role, not a farmers-row guess).
+  exporter: ['home','farmer-produce','farmer-orders','farmer-earnings','farmer-profile',
+             'market','prices','crops','animals','training','delivery','ussd',
+             'doctor','supply','dashboard','community','finance','coldchain','about','contact'],
   vendor: ['home','market','prices','crops','animals','delivery','ussd',
            'doctor','supply','community','about','contact'],
   hotel:  ['home','market','b2b','delivery','community','about','contact'],
@@ -9754,6 +9812,7 @@ var ROLE_PAGES = {
 var ROLE_NAV = {
   guest:  [{page:'home',icon:'🏠',label:'Home'},{page:'market',icon:'🛒',label:'Browse'},{page:'about',icon:'💡',label:'About'},{page:'contact',icon:'✉️',label:'Contact'}],
   farmer: [{page:'home',icon:'🏠',label:'Home'},{page:'farmer-produce',icon:'🌾',label:'Produce'},{page:'farmer-orders',icon:'📥',label:'Orders'},{page:'farmer-earnings',icon:'💰',label:'Earnings'},{page:'farmer-profile',icon:'👤',label:'Profile'}],
+  exporter: [{page:'home',icon:'🏠',label:'Home'},{page:'farmer-produce',icon:'🌾',label:'Produce'},{page:'farmer-orders',icon:'📥',label:'Orders'},{page:'farmer-earnings',icon:'💰',label:'Earnings'},{page:'farmer-profile',icon:'👤',label:'Profile'}],
   vendor: [{page:'home',icon:'🏠',label:'Home'},{page:'market',icon:'🛒',label:'Market'},{page:'prices',icon:'📊',label:'Prices'},{page:'animals',icon:'🐄',label:'Animals'},{page:'delivery',icon:'🚚',label:'Orders'}],
   hotel:  [{page:'home',icon:'🏠',label:'Home'},{page:'b2b',icon:'🏢',label:'B2B Portal'},{page:'market',icon:'🛒',label:'Browse'},{page:'delivery',icon:'🚚',label:'Deliveries'},{page:'contact',icon:'✉️',label:'Support'}],
   supplier:[{page:'home',icon:'🏠',label:'Home'},{page:'dashboard',icon:'🏪',label:'My Store'},{page:'supply',icon:'🌱',label:'Supplies'},{page:'delivery',icon:'🚚',label:'Orders'},{page:'market',icon:'🛒',label:'Market'}],
@@ -9777,6 +9836,7 @@ var MORE_ITEMS = {
 var MORE_BY_ROLE = {
   guest:  ['crops','animals','doctor','training','delivery','supply','finance','b2b','community','coldchain','export','ussd','about','contact'],
   farmer: ['market','prices','ai','crops','animals','doctor','training','finance','supply','coldchain','export','delivery','community','ussd','about','contact'],
+  exporter: ['market','prices','ai','crops','animals','doctor','training','finance','supply','coldchain','export','delivery','community','ussd','about','contact'],
   vendor: ['crops','animals','delivery','training','community','coldchain','ussd','about','contact'],
   hotel:  ['b2b','supply','delivery','coldchain','finance','community','training','ussd','about','contact'],
   supplier:['supply','delivery','community','training','coldchain','finance','ussd','about','contact']
@@ -9855,6 +9915,7 @@ function getCurrentRole() {
   var role = server || (currentUser.role || (currentUser.user_metadata && currentUser.user_metadata.role) || 'vendor');
   if (role === 'hotel' || role === 'restaurant' || role === 'b2b') return 'hotel';
   if (role === 'farmer') return 'farmer';
+  if (role === 'exporter') return 'exporter';
   if (role === 'supplier' || role === 'input_seller') return 'supplier';
   // Transporter accounts are created by an administrator and drive deliveries in
   // their own portal. Without this branch a driver fell through to 'vendor' and
@@ -9906,12 +9967,12 @@ function applyRoleUI() {
     }
     var orb = '<button class="nav-ai" onclick="toggleAI()" aria-label="AI Assistant">' +
       '<span class="nav-ai-orb"><span class="of-eye"></span><span class="of-eye"></span><span class="of-smile"></span></span></button>';
-    if (role === 'farmer') {
+    if (role === 'farmer' || role === 'exporter') {
       // Five full-width tabs (Home, Produce, Orders, Earnings, Profile) and no
       // centre orb: the AI assistant stays on the Home card and in the ☰ sheet,
       // and each farmer screen carries its own ☰ button so nothing is stranded.
       nav.classList.add('bottom-nav--five');
-      nav.innerHTML = (ROLE_NAV.farmer || []).slice(0, 5).map(navBtn).join('');
+      nav.innerHTML = (ROLE_NAV[role] || []).slice(0, 5).map(navBtn).join('');
     } else {
       nav.classList.remove('bottom-nav--five');
       var left  = it.slice(0, 2).map(navBtn).join('');
@@ -9943,8 +10004,8 @@ function applyRoleUI() {
   else if (role === 'hotel') {
     showPage('b2b');
   }
-  // 6. If farmer, default to home with farmer quick links
-  else if (role === 'farmer') {
+  // 6. If farmer or exporter, default to home with the seller quick links
+  else if (role === 'farmer' || role === 'exporter') {
     // applyRoleUI re-runs whenever the nav avatar refreshes (including after a
     // profile save), so it must not eject a farmer who is standing on one of
     // their own screens.
@@ -10012,7 +10073,7 @@ function applyHomeMode() {
   if (!home) return;
   var role = '';
   if (currentUser) role = String(currentUser.role || currentUser.user_role || '').toLowerCase();
-  var isSeller = !!currentUser && (role === 'farmer' || role === 'supplier');
+  var isSeller = !!currentUser && (role === 'farmer' || role === 'supplier' || role === 'exporter');
   var panel = document.getElementById('roleHomePanel');
   // A seller's Home is their dashboard. Everything else on this page is the
   // buyer storefront (search, hero, category chips, product grids) and stays
@@ -10349,9 +10410,9 @@ async function doRegister() {
   if (!email) { _showRegErr('Please enter your email address.'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { _showRegErr('Please enter a valid email address.'); return; }
   if (!phone) { _showRegErr('Please enter your phone number.'); return; }
-  var _pd = phone.replace(/\D/g,''); if (_pd.indexOf('256')===0) _pd=_pd.slice(3); else if (_pd.charAt(0)==='0') _pd=_pd.slice(1);
-  if (!/^7\d{8}$/.test(_pd)) { _showRegErr('Enter a valid Ugandan phone, e.g. 0771 234567.'); return; }
-  phone = '+256' + _pd;
+  var _norm = normalizePhoneE164(phone);
+  if (!_norm) { _showRegErr(PHONE_HINT); return; }
+  phone = _norm;
   if (!pwd)   { _showRegErr('Please create a password.'); return; }
   if (pwd.length < 6) { _showRegErr('Password must be at least 6 characters.'); return; }
   if (pwd !== conf)   { _showRegErr('Passwords do not match.'); return; }
@@ -10534,12 +10595,10 @@ async function saveOAuthProfile() {
   var terms = !!(document.getElementById('oauthAcceptTerms') || {}).checked;
   if (name.length < 2 || name.length > 80) return fail('Please enter your full name.');
   if (!phone) return fail('Please enter your phone number.');
-  var digits = phone.replace(/\D/g, '');
-  if (digits.indexOf('256') === 0) digits = digits.slice(3);
-  else if (digits.charAt(0) === '0') digits = digits.slice(1);
-  if (!/^7\d{8}$/.test(digits)) return fail('Enter a valid Ugandan phone, e.g. 0771 234567.');
-  phone = '+256' + digits;
-  if (['farmer', 'vendor', 'hotel', 'supplier'].indexOf(role) < 0) return fail('Please choose your account type.');
+  var normalized = normalizePhoneE164(phone);
+  if (!normalized) return fail(PHONE_HINT);
+  phone = normalized;
+  if (['farmer', 'vendor', 'hotel', 'supplier', 'exporter'].indexOf(role) < 0) return fail('Please choose your account type.');
   if (!district) return fail('Please choose your district.');
   if (!terms) return fail('Please tick the box to agree to the Terms of Use and confirm you have read the Privacy Policy.');
   var versions = await legalVersionsForRole(role);
@@ -10554,6 +10613,10 @@ async function saveOAuthProfile() {
       }
     });
     if (res.error) throw new Error(res.error.message || 'Could not save your profile.');
+    // Same queue doRegister keeps: if the save is deferred (for an exporter, the
+    // account-type write must land before the profile row), the next signed-in
+    // flush retries it instead of losing the onboarding.
+    try { localStorage.setItem('ab_pending_profile', JSON.stringify({name:name,phone:phone,role:role,district:district,email:(currentUser&&currentUser.email)||''})); } catch (e) {}
     var saved = await saveProfileWithRetry({
       full_name: name, phone: phone, role: role, district: district,
       email: (currentUser && currentUser.email) || ''
@@ -10862,18 +10925,46 @@ window.showPage = function(name) {
   function isIos(){ return /iphone|ipad|ipod/i.test(navigator.userAgent||''); }
   function show(){ var b=document.getElementById('installBanner'); if(b) b.style.display='flex'; }
   function hide(){ var b=document.getElementById('installBanner'); if(b) b.style.display='none'; }
-  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; if(!localStorage.getItem('ab_install_dismissed')) show(); var lb=document.getElementById('wlInstallBtn'); if(lb) lb.style.display='flex'; });
-  window.__wlInstall=function(){ if(deferred){ deferred.prompt(); deferred.userChoice.then(function(r){ if(r.outcome==='accepted'){ var lb=document.getElementById('wlInstallBtn'); if(lb) lb.style.display='none'; } }); } else if(isIos()){ showToast&&showToast('Tap the Share icon ⬆ then "Add to Home Screen"'); } };
-  window.addEventListener('appinstalled', function(){ hide(); localStorage.setItem('ab_install_dismissed','1'); if(typeof showToast==='function') showToast('Installed! Find AgriBridge on your home screen 🎉'); });
-  window.__installApp=function(){
-    if(deferred){ deferred.prompt(); deferred.userChoice.then(function(){ deferred=null; hide(); }); }
-    else if(isIos()){ if(typeof showToast==='function') showToast('Tap the Share icon, then "Add to Home Screen" to install'); }
-    else if(typeof showToast==='function'){ showToast('Open your browser menu and choose "Install app"'); }
-  };
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault(); deferred=e; window.__installDeferred=e;
+    if(!localStorage.getItem('ab_install_dismissed')) show();
+    var lb=document.getElementById('wlInstallBtn'); if(lb) lb.style.display='flex';
+    // On landing page show the Install button, hide the generic store buttons
+    var ab=document.getElementById('wlAndroidBtn'); var ib=document.getElementById('wlIosBtn');
+    if(ab) ab.style.display='none'; if(ib) ib.style.display='none';
+  });
+  window.__wlInstall=function(){ if(typeof showInstallModal==='function') showInstallModal(); };
+  window.addEventListener('appinstalled', function(){
+    hide(); localStorage.setItem('ab_install_dismissed','1'); window.__installDeferred=null;
+    if(typeof showToast==='function') showToast('Installed! Find AgriBridge on your home screen 🎉');
+    var lb=document.getElementById('wlInstallBtn'); if(lb) lb.style.display='none';
+  });
+  window.__installApp=function(){ if(typeof showInstallModal==='function') showInstallModal(); };
   window.__dismissInstall=function(){ hide(); localStorage.setItem('ab_install_dismissed','1'); };
+  // Show home install nudge for logged-in users who haven't installed yet
+  window.__maybeShowInstallNudge=function(){
+    var nudge=document.getElementById('homeInstallNudge');
+    if(!nudge) return;
+    if(isStandalone()){ nudge.style.display='none'; return; }
+    if(localStorage.getItem('ab_nudge_dismissed')) return;
+    var user=null; try{ user=localStorage.getItem('ab_user'); }catch(e){}
+    if(user) nudge.style.display='flex';
+  };
   window.addEventListener('load', function(){
-    if(isStandalone()) return; // already installed — never nag
-    if(isIos() && !localStorage.getItem('ab_install_dismissed')) setTimeout(show, 2500);
+    if(isStandalone()){ // already installed — hide landing buttons but keep profile item (shows "Already installed" state)
+      ['wlInstallBtn','wlAndroidBtn','wlIosBtn'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+      // Update profile item label to "App Installed" instead of hiding it
+      var pi=document.getElementById('profileInstallItem');
+      if(pi){ pi.querySelector('.profile-menu-label').textContent='App Installed ✓'; }
+      return;
+    }
+    if(isIos()){
+      // On iOS, show the iOS-style button and hide Android one
+      var ab=document.getElementById('wlAndroidBtn'); var ib=document.getElementById('wlIosBtn');
+      if(ab) ab.style.display='none';
+      if(ib){ ib.querySelector('small').textContent='Download on the'; ib.querySelector('span:last-child').lastChild.textContent='App Store'; ib.style.display='flex'; }
+      if(!localStorage.getItem('ab_install_dismissed')) setTimeout(show, 2500);
+    }
   });
 })();
 
@@ -11483,11 +11574,11 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="auth-or">or sign up with email</div>
       </div>
       <div class="form-group"><label data-i18n="reg.name">Full Name</label><input type="text" id="regName" placeholder="e.g. Grace Nakato" autocomplete="name"></div>
-      <div class="form-group" id="regPhoneFormGroup"><label data-i18n="reg.phone">Phone</label><input type="tel" id="regPhone" placeholder="+256 7xx xxx xxx" autocomplete="tel"></div>
+      <div class="form-group" id="regPhoneFormGroup"><label data-i18n="reg.phone">Phone</label><input type="tel" id="regPhone" placeholder="+256 771 234567 or +20 103 679 7717" autocomplete="tel"></div>
       <div class="form-group"><label data-i18n="reg.email">Email Address</label><input type="email" id="regEmail" placeholder="your@email.com" autocomplete="email"></div>
       <div class="form-row">
         <div class="form-group"><label>I am a…</label>
-          <select id="regRole" onchange="updateRegRoleTerms()"><option value="farmer">Farmer 🌾</option><option value="vendor">Vendor / Buyer 🛒</option><option value="hotel">Hotel / Restaurant 🏨</option><option value="supplier">Supplier / Input Seller 🏪</option></select>
+          <select id="regRole" onchange="updateRegRoleTerms()"><option value="farmer">Farmer 🌾</option><option value="vendor">Vendor / Buyer 🛒</option><option value="hotel">Hotel / Restaurant 🏨</option><option value="supplier">Supplier / Input Seller 🏪</option><option value="exporter">Exporter / Trading Co. 🌍</option></select>
         </div>
         <div class="form-group"><label>District</label>
           <select id="regDistrict"><option>Kampala</option><option>Wakiso</option><option>Mukono</option><option>Jinja</option><option>Mbarara</option><option>Bushenyi</option><option>Kabale</option><option>Gulu</option><option>Lira</option><option>Mbale</option><option>Kasese</option><option>Masaka</option><option>Hoima</option><option>Arua</option><option>Other</option></select>
@@ -11549,10 +11640,10 @@ document.addEventListener('DOMContentLoaded', function() {
     </p>
     <div id="oauthProfileErr" role="alert" style="display:none;background:#b71c1c22;border:1px solid #b71c1c;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.83rem;color:#ff5252"></div>
     <div class="form-group"><label for="oauthName">Full name</label><input type="text" id="oauthName" autocomplete="name" maxlength="80" placeholder="e.g. Grace Nakato"></div>
-    <div class="form-group"><label for="oauthPhone">Phone (MTN or Airtel)</label><input type="tel" id="oauthPhone" autocomplete="tel" placeholder="+256 7xx xxx xxx"></div>
+    <div class="form-group"><label for="oauthPhone">Phone (with country code)</label><input type="tel" id="oauthPhone" autocomplete="tel" placeholder="+256 771 234567 or +20 103 679 7717"></div>
     <div class="form-row">
       <div class="form-group"><label for="oauthRole">I am a…</label>
-        <select id="oauthRole" onchange="updateOAuthRoleTerms()"><option value="farmer">Farmer 🌾</option><option value="vendor">Vendor / Buyer 🛒</option><option value="hotel">Hotel / Restaurant 🏨</option><option value="supplier">Supplier / Input Seller 🏪</option></select>
+        <select id="oauthRole" onchange="updateOAuthRoleTerms()"><option value="farmer">Farmer 🌾</option><option value="vendor">Vendor / Buyer 🛒</option><option value="hotel">Hotel / Restaurant 🏨</option><option value="supplier">Supplier / Input Seller 🏪</option><option value="exporter">Exporter / Trading Co. 🌍</option></select>
       </div>
       <div class="form-group"><label for="oauthDistrict">District</label>
         <select id="oauthDistrict"><option>Kampala</option><option>Wakiso</option><option>Mukono</option><option>Jinja</option><option>Mbarara</option><option>Bushenyi</option><option>Kabale</option><option>Gulu</option><option>Lira</option><option>Mbale</option><option>Kasese</option><option>Masaka</option><option>Hoima</option><option>Arua</option><option>Other</option></select>
@@ -11940,6 +12031,55 @@ document.addEventListener('DOMContentLoaded', function() {
   <button class="ib-x" onclick="__dismissInstall()" aria-label="Dismiss">✕</button>
 </div>
 
+<!-- App install modal — shown when user taps Get/Download App buttons -->
+<div id="installModal" style="display:none;position:fixed;inset:0;z-index:7000;background:rgba(0,0,0,0.65);align-items:flex-end;justify-content:center" onclick="if(event.target===this)closeInstallModal()">
+  <div style="background:var(--bg2);border-radius:22px 22px 0 0;width:100%;max-width:520px;padding:24px 20px 32px;box-shadow:0 -8px 32px rgba(0,0,0,0.4)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <img src="/logo.png" alt="" style="height:36px;width:auto;filter:drop-shadow(0 1px 4px rgba(0,200,83,0.4))">
+        <div><div style="font-weight:800;font-size:1.05rem;color:var(--text)">Get AgriBridge</div><div style="font-size:0.76rem;color:var(--text2)">Add to your home screen</div></div>
+      </div>
+      <button onclick="closeInstallModal()" style="background:var(--bg3);border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;color:var(--text2)">✕</button>
+    </div>
+    <!-- Android / Desktop: native install prompt available -->
+    <div id="im-android" style="display:none">
+      <div style="background:var(--green-dim);border-radius:14px;padding:16px;margin-bottom:14px;display:flex;gap:12px;align-items:center">
+        <span style="font-size:1.8rem">📲</span>
+        <div><div style="font-weight:700;color:var(--text);margin-bottom:3px">Install on this device</div><div style="font-size:0.8rem;color:var(--text2)">Works offline · opens instantly · no browser bar</div></div>
+      </div>
+      <button onclick="__doInstallPrompt()" style="width:100%;padding:14px;background:var(--green);color:#04160c;border:none;border-radius:13px;font-size:1rem;font-weight:800;cursor:pointer;margin-bottom:10px">📲 Install App</button>
+    </div>
+    <!-- iOS instructions -->
+    <div id="im-ios" style="display:none">
+      <div style="background:var(--bg3);border-radius:14px;padding:16px;margin-bottom:14px">
+        <div style="font-weight:700;color:var(--text);margin-bottom:10px">Add to Home Screen on iPhone / iPad</div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:8px;background:var(--green);color:#04160c;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0">1</div><span style="font-size:0.88rem;color:var(--text)">Tap the <strong>Share</strong> button <span style="font-size:1.1rem">⬆</span> in Safari's toolbar</span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:8px;background:var(--green);color:#04160c;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0">2</div><span style="font-size:0.88rem;color:var(--text)">Scroll down and tap <strong>"Add to Home Screen"</strong></span></div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="width:28px;height:28px;border-radius:8px;background:var(--green);color:#04160c;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.85rem;flex-shrink:0">3</div><span style="font-size:0.88rem;color:var(--text)">Tap <strong>Add</strong> — AgriBridge appears on your home screen</span></div>
+        </div>
+      </div>
+      <div style="font-size:0.76rem;color:var(--text2);text-align:center;margin-bottom:10px">⚠ Must be opened in <strong>Safari</strong> for this to work on iOS</div>
+    </div>
+    <!-- Fallback: browser menu -->
+    <div id="im-other" style="display:none">
+      <div style="background:var(--bg3);border-radius:14px;padding:16px;margin-bottom:14px">
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px">Install from your browser</div>
+        <div style="font-size:0.85rem;color:var(--text2)">Open your browser menu (⋮ or ⋯) and look for <strong>"Install app"</strong> or <strong>"Add to Home Screen"</strong>. On Chrome, it may also appear in the address bar as a small install icon.</div>
+      </div>
+    </div>
+    <!-- Already installed -->
+    <div id="im-installed" style="display:none">
+      <div style="text-align:center;padding:16px 0">
+        <div style="font-size:2.2rem;margin-bottom:8px">✅</div>
+        <div style="font-weight:800;color:var(--text);font-size:1rem">Already installed!</div>
+        <div style="font-size:0.82rem;color:var(--text2);margin-top:4px">AgriBridge is running as an installed app on this device.</div>
+      </div>
+    </div>
+    <button onclick="closeInstallModal()" style="width:100%;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:13px;font-size:0.9rem;font-weight:600;cursor:pointer;color:var(--text2)">Close</button>
+  </div>
+</div>
+
 <!-- Phone alerts (push) prompt — shown once after login -->
 <div id="pushPrompt" role="region" aria-label="Phone alerts">
   <div class="pp-txt"><b>🔔 Get order updates on your phone</b>See confirmations and delivery updates in your phone's notification bar — even when AgriBridge is closed.</div>
@@ -11973,9 +12113,35 @@ function enterApp(target){
   if(target==='login' && typeof openModal==='function') openModal('loginModal');
   else if(target==='register' && typeof openModal==='function') openModal('registerModal');
 }
-function appStoreClick(){
-  if(typeof showToast==='function') showToast('📲 Coming soon to Google Play & the App Store! For now tap “Launch app”, or add AgriBridge to your home screen.');
-  else enterApp();
+function appStoreClick(){ showInstallModal(); }
+
+function showInstallModal(){
+  var m=document.getElementById('installModal');
+  if(!m) return;
+  // Detect environment
+  var isStandalone=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;
+  var isIos=/iphone|ipad|ipod/i.test(navigator.userAgent||'');
+  var hasDeferred=!!window.__installDeferred;
+  // Show correct panel
+  ['im-android','im-ios','im-other','im-installed'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+  if(isStandalone){ document.getElementById('im-installed').style.display='block'; }
+  else if(hasDeferred){ document.getElementById('im-android').style.display='block'; }
+  else if(isIos){ document.getElementById('im-ios').style.display='block'; }
+  else { document.getElementById('im-other').style.display='block'; }
+  m.style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeInstallModal(){
+  var m=document.getElementById('installModal'); if(m) m.style.display='none';
+  document.body.style.overflow='';
+}
+function __doInstallPrompt(){
+  if(window.__installDeferred){
+    window.__installDeferred.prompt();
+    window.__installDeferred.userChoice.then(function(r){
+      if(r.outcome==='accepted'){ window.__installDeferred=null; closeInstallModal(); if(typeof showToast==='function') showToast('Installed! Find AgriBridge on your home screen 🎉'); }
+    });
+  }
 }
 </script>
 
@@ -12001,6 +12167,7 @@ function normLegalRole(r) {
   r = String(r || '').toLowerCase();
   if (r === 'hotel' || r === 'restaurant' || r === 'b2b') return 'hotel';
   if (r === 'farmer') return 'farmer';
+  if (r === 'exporter') return 'exporter';
   if (r === 'supplier' || r === 'input_seller') return 'supplier';
   return 'vendor';
 }
@@ -12866,5 +13033,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-
-<!-- agribridge-deploy-202611081841 -->
