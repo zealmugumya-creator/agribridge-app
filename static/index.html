@@ -1046,92 +1046,317 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green) !
 .aiw-prompts button span{font-size:1.15rem}
 
 /* ═══════════════ WEB LANDING (marketing site for browser visitors) ═══════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   AGRIBRIDGE PUBLIC LANDING — Cafe Javas-inspired redesign
+   Cream-white + agricultural-green palette
+   Isolated to #webLanding — zero overlap with app CSS
+═══════════════════════════════════════════════════════════════ */
+:root{
+  --wl-cream:#fffdf7;--wl-cream2:#f5f0e8;--wl-cream3:#ede6d8;
+  --wl-green:#1a7a3c;--wl-green2:#22964a;--wl-green3:#2db55d;
+  --wl-green-lt:#e8f7ee;--wl-brown:#5c3d1e;--wl-text:#1c2b1f;
+  --wl-text2:#4a5e4e;--wl-text3:#7a8c7e;--wl-border:#d9e8dc;
+  --wl-shadow:0 4px 24px rgba(26,122,60,.12);
+}
 #webLanding{display:none}
-html.is-web:not(.app-entered) #webLanding{display:block;position:fixed;inset:0;z-index:6000;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  background:radial-gradient(120% 80% at 80% -10%,rgba(23,224,107,.14),transparent 55%),linear-gradient(180deg,#040a07,#02120a 60%,#040a07)}
+html.is-web:not(.app-entered) #webLanding{
+  display:block;position:fixed;inset:0;z-index:6000;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--wl-cream);color:var(--wl-text)
+}
 html.is-web:not(.app-entered) body{overflow:hidden}
+#webLanding *{box-sizing:border-box}
 #webLanding a{color:inherit;text-decoration:none}
-.wl-nav{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px clamp(16px,5vw,48px);
-  background:rgba(4,10,7,.72);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
-.wl-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:var(--green)}
-.wl-logo span{color:#fff}
-.wl-navlinks{display:flex;align-items:center;gap:8px}
-.wl-navlinks>a{display:none;color:var(--text2);font-weight:600;font-size:.92rem;padding:8px 12px}
-.wl-navlinks>a:hover{color:var(--green-light)}
-.wl-btn{border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:.92rem;padding:10px 18px;border-radius:12px;
-  background:linear-gradient(135deg,var(--green-light),var(--green));color:var(--g-ink);box-shadow:0 10px 26px -12px rgba(23,224,107,.8);transition:transform .15s,box-shadow .15s}
-.wl-btn:hover{transform:translateY(-2px);box-shadow:0 16px 34px -14px rgba(23,224,107,.9)}
-.wl-btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none}
-.wl-btn.ghost:hover{border-color:var(--green);color:var(--green-light)}
-.wl-btn.lg{padding:14px 26px;font-size:1rem;border-radius:14px}
-.wl-hero{max-width:1180px;margin:0 auto;padding:clamp(28px,6vw,64px) clamp(16px,5vw,48px);
-  display:grid;grid-template-columns:1fr;gap:36px;align-items:center}
-.wl-tag{display:inline-block;font-size:.8rem;font-weight:700;color:var(--green-light);background:var(--green-dim);
-  border:1px solid var(--border);padding:6px 14px;border-radius:999px;margin-bottom:18px}
-.wl-h1{font-family:'Syne',sans-serif;font-weight:800;line-height:1.08;font-size:clamp(2.1rem,6.4vw,3.6rem);color:#fff;margin-bottom:16px}
-.wl-h1 em{font-style:normal;background:linear-gradient(90deg,var(--green-light),var(--green));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.wl-sub{color:var(--text2);font-size:clamp(1rem,2.6vw,1.14rem);line-height:1.6;max-width:560px;margin-bottom:26px}
-.wl-hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
-.wl-stores{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
-.wl-store{display:flex;align-items:center;gap:10px;background:#0c1712;border:1px solid var(--border);color:#fff;
-  padding:9px 16px;border-radius:12px;cursor:pointer;font-family:inherit}
-.wl-store>span:first-child{font-size:1.2rem}
-.wl-store>span:last-child{display:flex;flex-direction:column;line-height:1.15;text-align:left;font-weight:700;font-size:.95rem}
-.wl-store small{font-size:.62rem;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-.wl-ussd{font-size:.86rem;color:var(--text2)}
-.wl-ussd b{color:var(--green-light)}
-/* hero phone mock */
-.wl-hero-art{display:flex;justify-content:center}
-.wl-phone{width:min(300px,80vw);background:linear-gradient(180deg,#0a1610,#06100b);border:1px solid var(--border);
-  border-radius:30px;padding:16px 14px;box-shadow:0 40px 90px -40px rgba(0,0,0,.9),0 0 0 8px rgba(10,22,16,.6),var(--glow)}
-.wl-phone-top{display:flex;justify-content:space-between;font-size:.72rem;color:var(--text2);padding:2px 6px 12px}
-.wl-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px;margin-bottom:10px}
-.wl-ai{display:flex;align-items:center;gap:12px;background:radial-gradient(120% 140% at 10% 0%,rgba(23,224,107,.2),transparent 60%),var(--card)}
-.wl-ai b{display:block;font-size:.9rem}.wl-ai small{color:var(--text2);font-size:.74rem}
-.wl-ai-orb{position:relative;width:42px;height:42px;border-radius:50%;flex-shrink:0;
-  background:radial-gradient(circle at 36% 30%,#0c3b22,#041007 72%);box-shadow:0 0 0 2px rgba(23,224,107,.5),0 0 20px rgba(23,224,107,.6)}
-.wl-ai-orb span{position:absolute;top:38%;width:7px;height:7px;border-radius:50%;background:var(--green-light);box-shadow:0 0 8px var(--green)}
-.wl-ai-orb span:nth-child(1){left:30%}.wl-ai-orb span:nth-child(2){right:30%}
-.wl-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.wl-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px}
-.wl-stat small{color:var(--text2);font-size:.72rem}.wl-stat b{display:block;font-size:1.2rem;color:var(--green-light);margin-top:3px}
-.wl-mini{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.wl-mini>span{font-size:1.5rem}.wl-mini b{font-size:.84rem}.wl-mini small{display:block;color:var(--green);font-size:.72rem}
-.wl-mini i{margin-left:auto;width:30px;height:30px;border-radius:9px;background:var(--green);color:var(--g-ink);display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800}
-/* sections */
-.wl-features,.wl-roles,.wl-trust,.wl-final{max-width:1180px;margin:0 auto;padding:clamp(30px,6vw,60px) clamp(16px,5vw,48px)}
-.wl-h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.5rem,4.5vw,2.3rem);color:#fff;text-align:center;margin-bottom:8px}
-.wl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:26px}
-.wl-feat{background:linear-gradient(160deg,rgba(23,224,107,.06),var(--card));border:1px solid var(--border);border-radius:18px;padding:22px}
-.wl-feat-ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;
-  background:var(--green-dim);border:1px solid var(--border);margin-bottom:14px}
-.wl-feat h3{font-size:1.08rem;font-weight:800;color:#fff;margin-bottom:6px}
-.wl-feat p{color:var(--text2);font-size:.9rem;line-height:1.5}
-.wl-roles-sub{color:var(--text2);text-align:center;font-size:.98rem;margin-top:2px}
-.wl-chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:26px}
-.wl-chip{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 14px;text-align:center;font-weight:700;color:#fff}
-.wl-chip>span{display:block;font-size:2rem;margin-bottom:8px}
-.wl-chip small{display:block;font-weight:500;color:var(--text2);font-size:.76rem;margin-top:3px}
-a.wl-chip{display:block;text-decoration:none}
-a.wl-chip:hover,a.wl-chip:focus-visible{border-color:var(--green);color:var(--green-light)}
-a.wl-chip small{color:var(--green)}
-.wl-trust{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;
-  border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.wl-trust-item{text-align:center}
-.wl-trust-item>span{font-size:1.6rem;display:block;margin-bottom:8px}
-.wl-trust-item b{display:block;color:#fff;font-size:.98rem;margin-bottom:3px}
-.wl-trust-item small{color:var(--text2);font-size:.82rem}
-.wl-final{text-align:center}
-.wl-foot{max-width:1180px;margin:0 auto;padding:26px clamp(16px,5vw,48px) 40px;display:flex;flex-direction:column;align-items:center;gap:12px;
-  border-top:1px solid var(--border)}
-.wl-foot-links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
-.wl-foot-links a{color:var(--text2);font-weight:600;font-size:.9rem}
-.wl-foot-links a:hover{color:var(--green-light)}
-.wl-foot small{color:var(--text2);font-size:.8rem}
+
+/* ── NAV ── */
+.wl-nav{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px clamp(16px,5vw,52px);
+  background:rgba(255,253,247,.92);backdrop-filter:blur(16px);
+  border-bottom:1.5px solid var(--wl-border);
+  box-shadow:0 2px 16px rgba(26,122,60,.07)
+}
+.wl-navlinks{display:flex;align-items:center;gap:6px}
+.wl-navlinks>a{
+  display:none;color:var(--wl-text2);font-weight:600;
+  font-size:.88rem;padding:8px 13px;border-radius:9px;transition:background .15s,color .15s
+}
+.wl-navlinks>a:hover{background:var(--wl-green-lt);color:var(--wl-green)}
+.wl-btn{
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;
+  font-size:.9rem;padding:10px 20px;border-radius:10px;
+  background:var(--wl-green);color:#fff;
+  box-shadow:0 4px 16px rgba(26,122,60,.28);transition:transform .15s,box-shadow .15s,background .15s
+}
+.wl-btn:hover{background:var(--wl-green2);transform:translateY(-1px);box-shadow:0 6px 22px rgba(26,122,60,.36)}
+.wl-btn.ghost{background:transparent;border:1.5px solid var(--wl-green);color:var(--wl-green);box-shadow:none}
+.wl-btn.ghost:hover{background:var(--wl-green-lt)}
+.wl-btn.lg{padding:14px 28px;font-size:1rem;border-radius:12px}
+
+/* ── HERO SLIDER ── */
+.wl-slider-wrap{position:relative;overflow:hidden;background:#1a3a24;min-height:clamp(300px,52vw,520px)}
+.wl-slides{display:flex;width:100%;height:100%;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.wl-slide{
+  flex:0 0 100%;min-height:clamp(300px,52vw,520px);
+  display:flex;align-items:center;position:relative;overflow:hidden
+}
+/* gradient slide backgrounds — rich agricultural greens */
+.wl-slide:nth-child(1){background:linear-gradient(130deg,#0d2a16 0%,#1a5c30 50%,#2d8a4e 100%)}
+.wl-slide:nth-child(2){background:linear-gradient(130deg,#1a3a0d 0%,#3a6e1a 50%,#5aa022 100%)}
+.wl-slide:nth-child(3){background:linear-gradient(130deg,#1c2805 0%,#3c5010 50%,#607a1a 100%)}
+.wl-slide:nth-child(4){background:linear-gradient(130deg,#2a1a05 0%,#5c3a0d 50%,#8c5a1a 100%)}
+/* decorative crop pattern overlay */
+.wl-slide::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 80% 50%,rgba(255,255,255,.07),transparent 65%);
+  pointer-events:none
+}
+.wl-slide-inner{
+  max-width:1180px;width:100%;margin:0 auto;
+  padding:clamp(32px,6vw,64px) clamp(20px,5vw,52px);
+  display:grid;grid-template-columns:1fr;gap:28px;align-items:center;
+  position:relative;z-index:2
+}
+.wl-slide-label{
+  display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;
+  color:rgba(255,255,255,.75);background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:999px;margin-bottom:14px
+}
+.wl-slide-h{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(1.9rem,5.5vw,3.4rem);line-height:1.08;color:#fff;margin-bottom:14px
+}
+.wl-slide-h em{font-style:normal;color:#a8f5c0}
+.wl-slide-p{color:rgba(255,255,255,.8);font-size:clamp(.96rem,2.4vw,1.1rem);line-height:1.6;max-width:520px;margin-bottom:22px}
+.wl-slide-cta{display:flex;flex-wrap:wrap;gap:12px}
+.wl-slide-btn{
+  border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:.98rem;
+  padding:12px 24px;border-radius:11px;transition:transform .15s,opacity .15s
+}
+.wl-slide-btn.primary{background:#fff;color:var(--wl-green)}
+.wl-slide-btn.primary:hover{transform:translateY(-1px);opacity:.93}
+.wl-slide-btn.outline{background:transparent;border:1.5px solid rgba(255,255,255,.55);color:#fff}
+.wl-slide-btn.outline:hover{background:rgba(255,255,255,.12)}
+/* emoji art panel */
+.wl-slide-art{
+  display:none;justify-content:center;align-items:center;
+  font-size:clamp(5rem,10vw,9rem);
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.35))
+}
+/* slider dots */
+.wl-dots{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  display:flex;gap:7px;z-index:5
+}
+.wl-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:.25s;border:none;padding:0}
+.wl-dot.active{background:#fff;width:22px;border-radius:4px}
+/* slider arrows */
+.wl-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+  width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.18);backdrop-filter:blur(6px);
+  color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;display:none
+}
+.wl-arrow:hover{background:rgba(255,255,255,.32)}
+.wl-arrow.prev{left:16px}
+.wl-arrow.next{right:16px}
+
+/* ── QUICK LINKS STRIP (like Cafe Javas menu strip) ── */
+.wl-strip{background:var(--wl-green);padding:0 clamp(16px,5vw,52px)}
+.wl-strip-inner{max-width:1180px;margin:0 auto;display:flex;overflow-x:auto;gap:0;scrollbar-width:none}
+.wl-strip-inner::-webkit-scrollbar{display:none}
+.wl-strip-link{
+  flex:0 0 auto;display:flex;align-items:center;gap:8px;
+  color:rgba(255,255,255,.85);font-weight:700;font-size:.88rem;
+  padding:14px 20px;border-right:1px solid rgba(255,255,255,.15);
+  cursor:pointer;transition:background .15s,color .15s;white-space:nowrap;border:none;
+  font-family:inherit;background:none
+}
+.wl-strip-link:last-child{border-right:none}
+.wl-strip-link:hover,.wl-strip-link.active{background:rgba(255,255,255,.12);color:#fff}
+.wl-strip-link span{font-size:1.1rem}
+
+/* ── PRODUCE CARDS GRID ── */
+.wl-products{background:var(--wl-cream2);padding:clamp(28px,5vw,52px) clamp(16px,5vw,52px)}
+.wl-sec-head{max-width:1180px;margin:0 auto 24px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.wl-h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.4rem,4vw,2.1rem);color:var(--wl-text);margin-bottom:4px}
+.wl-h2-sub{font-size:.9rem;color:var(--wl-text3);font-weight:500}
+.wl-see-all{font-size:.85rem;font-weight:700;color:var(--wl-green);cursor:pointer;white-space:nowrap;border:none;background:none;font-family:inherit;padding:4px 0}
+.wl-see-all:hover{text-decoration:underline}
+.wl-prod-grid{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.wl-prod-card{
+  background:#fff;border-radius:16px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(26,122,60,.08);
+  display:flex;flex-direction:column;cursor:pointer;
+  transition:transform .2s,box-shadow .2s;border:1.5px solid transparent
+}
+.wl-prod-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(26,122,60,.16);border-color:var(--wl-border)}
+.wl-prod-img{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(3rem,8vw,5rem);background:var(--wl-green-lt);position:relative
+}
+.wl-prod-badge{
+  position:absolute;top:10px;left:10px;font-size:.64rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.4px;padding:4px 9px;border-radius:999px
+}
+.wl-prod-badge.fresh{background:var(--wl-green);color:#fff}
+.wl-prod-badge.sale{background:#e85d04;color:#fff}
+.wl-prod-badge.new{background:#f4a022;color:#fff}
+.wl-prod-body{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:4px}
+.wl-prod-name{font-size:.95rem;font-weight:700;color:var(--wl-text);line-height:1.25}
+.wl-prod-farm{font-size:.74rem;color:var(--wl-text3)}
+.wl-prod-price{font-size:1.05rem;font-weight:800;color:var(--wl-green);margin-top:4px}
+.wl-prod-price small{font-size:.7rem;color:var(--wl-text3);font-weight:500}
+.wl-prod-foot{padding:0 14px 12px}
+.wl-prod-btn{
+  width:100%;padding:9px;background:var(--wl-green);color:#fff;
+  border:none;border-radius:9px;font-size:.82rem;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:background .15s
+}
+.wl-prod-btn:hover{background:var(--wl-green2)}
+
+/* ── HOW IT WORKS ── */
+.wl-how{background:var(--wl-cream);padding:clamp(28px,5vw,52px) clamp(16px,5vw,52px)}
+.wl-how-inner{max-width:1180px;margin:0 auto}
+.wl-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:28px}
+.wl-step{
+  background:#fff;border:1.5px solid var(--wl-border);border-radius:18px;
+  padding:24px 20px;position:relative;overflow:hidden
+}
+.wl-step::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--wl-green)
+}
+.wl-step-num{
+  width:40px;height:40px;border-radius:12px;background:var(--wl-green-lt);
+  color:var(--wl-green);font-size:1.1rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-family:'Syne',sans-serif
+}
+.wl-step h3{font-size:1rem;font-weight:800;color:var(--wl-text);margin-bottom:6px}
+.wl-step p{font-size:.88rem;color:var(--wl-text2);line-height:1.55}
+
+/* ── ROLES / WHO IT'S FOR ── */
+.wl-roles{background:var(--wl-green);padding:clamp(28px,5vw,52px) clamp(16px,5vw,52px)}
+.wl-roles-inner{max-width:1180px;margin:0 auto}
+.wl-roles .wl-h2{color:#fff}
+.wl-roles .wl-h2-sub{color:rgba(255,255,255,.75);font-size:.95rem;margin-bottom:28px}
+.wl-chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.wl-chip{
+  background:rgba(255,255,255,.12);backdrop-filter:blur(8px);
+  border:1.5px solid rgba(255,255,255,.22);border-radius:16px;
+  padding:20px 16px;text-align:center;cursor:pointer;
+  transition:background .2s,border-color .2s;text-decoration:none;display:block;color:#fff
+}
+.wl-chip:hover{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.45)}
+.wl-chip>span{display:block;font-size:2.2rem;margin-bottom:10px}
+.wl-chip b{display:block;font-size:.98rem;font-weight:700;color:#fff;margin-bottom:3px}
+.wl-chip small{display:block;font-size:.76rem;color:rgba(255,255,255,.7)}
+
+/* ── TRUST STRIP ── */
+.wl-trust{background:var(--wl-cream3);padding:clamp(20px,4vw,40px) clamp(16px,5vw,52px)}
+.wl-trust-inner{
+  max-width:1180px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:20px
+}
+.wl-trust-item{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.wl-trust-ic{
+  width:56px;height:56px;border-radius:16px;
+  background:#fff;border:1.5px solid var(--wl-border);
+  display:flex;align-items:center;justify-content:center;font-size:1.6rem;
+  box-shadow:0 2px 10px rgba(26,122,60,.08)
+}
+.wl-trust-item b{font-size:.95rem;font-weight:700;color:var(--wl-text)}
+.wl-trust-item small{font-size:.8rem;color:var(--wl-text3)}
+
+/* ── SOCIAL + SUBSCRIBE STRIP ── */
+.wl-social-strip{background:var(--wl-brown);padding:clamp(20px,4vw,36px) clamp(16px,5vw,52px)}
+.wl-social-inner{max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
+.wl-social-left h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:6px}
+.wl-social-left p{font-size:.86rem;color:rgba(255,255,255,.65)}
+.wl-socials{display:flex;gap:10px;margin-top:12px}
+.wl-soc-btn{
+  width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);color:#fff;display:flex;align-items:center;
+  justify-content:center;font-size:1rem;cursor:pointer;transition:background .2s;text-decoration:none
+}
+.wl-soc-btn:hover{background:rgba(255,255,255,.25)}
+.wl-subscribe{display:flex;gap:8px;flex-wrap:wrap}
+.wl-sub-input{
+  flex:1;min-width:200px;padding:11px 16px;border-radius:10px;
+  border:none;background:rgba(255,255,255,.12);color:#fff;
+  font-family:inherit;font-size:.9rem;outline:none;
+  border:1px solid rgba(255,255,255,.2)
+}
+.wl-sub-input::placeholder{color:rgba(255,255,255,.45)}
+.wl-sub-input:focus{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5)}
+.wl-sub-btn{
+  padding:11px 20px;background:var(--wl-green3);color:#fff;
+  border:none;border-radius:10px;font-weight:700;font-size:.88rem;
+  cursor:pointer;font-family:inherit;white-space:nowrap;transition:background .15s
+}
+.wl-sub-btn:hover{background:var(--wl-green2)}
+
+/* ── FINAL CTA ── */
+.wl-final{background:var(--wl-cream);padding:clamp(32px,6vw,64px) clamp(16px,5vw,52px);text-align:center}
+.wl-final-inner{max-width:720px;margin:0 auto}
+.wl-final .wl-h2{color:var(--wl-text);margin-bottom:14px}
+.wl-final-p{color:var(--wl-text2);font-size:clamp(.96rem,2.4vw,1.08rem);line-height:1.65;margin-bottom:28px}
+.wl-final-cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:16px}
+.wl-ussd{font-size:.85rem;color:var(--wl-text3)}
+.wl-ussd b{color:var(--wl-green);font-weight:700}
+.wl-stores{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:18px}
+.wl-store{
+  display:flex;align-items:center;gap:10px;
+  background:#fff;border:1.5px solid var(--wl-border);color:var(--wl-text);
+  padding:10px 16px;border-radius:12px;cursor:pointer;font-family:inherit;
+  box-shadow:0 2px 8px rgba(26,122,60,.08);transition:box-shadow .15s,border-color .15s
+}
+.wl-store:hover{border-color:var(--wl-green);box-shadow:0 4px 16px rgba(26,122,60,.14)}
+.wl-store>span:first-child{font-size:1.3rem}
+.wl-store>span:last-child{display:flex;flex-direction:column;line-height:1.2;text-align:left;font-weight:700;font-size:.9rem}
+.wl-store small{font-size:.6rem;font-weight:500;color:var(--wl-text3);text-transform:uppercase;letter-spacing:.4px}
+
+/* ── FOOTER ── */
+.wl-foot{background:var(--wl-text);padding:clamp(28px,5vw,52px) clamp(16px,5vw,52px) 28px}
+.wl-foot-inner{max-width:1180px;margin:0 auto}
+.wl-foot-grid{display:grid;grid-template-columns:1fr;gap:28px;margin-bottom:32px}
+.wl-foot-brand p{font-size:.86rem;color:rgba(255,255,255,.55);line-height:1.6;margin-top:10px;max-width:260px}
+.wl-foot-col h4{font-size:.88rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.wl-foot-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px}
+.wl-foot-col ul li a,.wl-foot-col ul li button{
+  font-size:.86rem;color:rgba(255,255,255,.55);font-weight:500;
+  background:none;border:none;cursor:pointer;font-family:inherit;padding:0;text-align:left;
+  transition:color .15s
+}
+.wl-foot-col ul li a:hover,.wl-foot-col ul li button:hover{color:#fff}
+.wl-foot-bottom{
+  border-top:1px solid rgba(255,255,255,.1);padding-top:18px;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px
+}
+.wl-foot-copy{font-size:.8rem;color:rgba(255,255,255,.4)}
+.wl-foot-socials{display:flex;gap:8px}
+
+/* ── RESPONSIVE ── */
+@media(min-width:600px){
+  .wl-prod-grid{grid-template-columns:repeat(3,1fr)}
+  .wl-slide-art{display:flex}
+  .wl-slide-inner{grid-template-columns:1fr auto}
+  .wl-arrow{display:flex}
+}
 @media(min-width:860px){
   .wl-navlinks>a{display:inline-block}
-  .wl-hero{grid-template-columns:1.05fr .95fr;gap:48px}
+  .wl-prod-grid{grid-template-columns:repeat(4,1fr)}
+  .wl-foot-grid{grid-template-columns:1.6fr 1fr 1fr 1fr}
 }
+@media(min-width:1000px){
+  .wl-slide-h{font-size:3.2rem}
+}
+
+/* ── SLIDER JS support ── */
+.wl-slides{will-change:transform}
+@keyframes wl-pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.wl-slide-art{animation:wl-pulse 3.5s ease-in-out infinite}
 
 /* ═══════════════════════════════════════════════════════════════
    BUYER INTERFACE v2 — Premium farm-to-table shopping experience
@@ -1790,23 +2015,280 @@ a.wl-chip small{color:var(--green)}
 
 <!-- ══════════════════ WEB LANDING (browser visitors only) ══════════════════ -->
 <div id="webLanding" role="region" aria-label="AgriBridge — Bridging Farms, Building Markets">
+
+  <!-- ══ NAV ══ -->
   <header class="wl-nav">
-    <div class="wl-logo" style="display:flex;align-items:center"><img src="/logo.png" alt="AgriBridge" style="height:54px;width:auto;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,200,83,0.4)) drop-shadow(0 1px 4px rgba(0,0,0,0.5))" onerror="this.style.display='none';this.nextElementSibling.style.display='inline'"><span style="display:none;font-family:'Syne',sans-serif;font-weight:800;font-size:1.35rem;color:var(--green)">🌱 Agri<span style="color:#fff">Bridge</span></span></div>
+    <div style="display:flex;align-items:center">
+      <img src="/logo.png" alt="AgriBridge" style="height:52px;width:auto;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(26,122,60,0.25)) drop-shadow(0 1px 3px rgba(0,0,0,0.12))" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <span style="display:none;align-items:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--wl-green)">🌱 Agri<span style="color:var(--wl-text)">Bridge</span></span>
+    </div>
     <nav class="wl-navlinks">
-      <a href="#wl-features">Features</a>
+      <a href="#wl-how">How it works</a>
       <a href="#wl-roles">Who it's for</a>
       <button class="wl-btn ghost" onclick="enterApp('login')">Sign in</button>
-      <button class="wl-btn" onclick="enterApp()">Launch app →</button>
+      <button class="wl-btn" onclick="enterApp()">Start ordering →</button>
     </nav>
   </header>
 
-  <section class="wl-hero">
-    <div class="wl-hero-txt">
-      <div class="wl-tag">🌍 Bridging Farms. Building Markets.</div>
-      <h1 class="wl-h1">Uganda's all-in-one <em>agri&#8209;marketplace</em></h1>
-      <p class="wl-sub">Empowering farmers, buyers, transporters and agri&#8209;businesses. Buy and sell produce directly, track deliveries live, diagnose crops with AI, and grow your income — zero middlemen.</p>
-      <div class="wl-hero-cta">
-        <button class="wl-btn lg" onclick="enterApp()">Launch web app →</button>
+  <!-- ══ HERO SLIDER ══ -->
+  <div class="wl-slider-wrap" id="wlSliderWrap">
+    <div class="wl-slides" id="wlSlides">
+
+      <!-- Slide 1 — Farmers -->
+      <div class="wl-slide">
+        <div class="wl-slide-inner">
+          <div>
+            <div class="wl-slide-label">🌍 Bridging Farms · Building Markets</div>
+            <h1 class="wl-slide-h">Uganda's <em>freshest</em><br>farm marketplace</h1>
+            <p class="wl-slide-p">Buy directly from verified Ugandan farmers. No middlemen, farm-fresh prices, delivered to your door.</p>
+            <div class="wl-slide-cta">
+              <button class="wl-slide-btn primary" onclick="enterApp()">Start ordering →</button>
+              <button class="wl-slide-btn outline" onclick="enterApp('register')">Create free account</button>
+            </div>
+          </div>
+          <div class="wl-slide-art" aria-hidden="true">🌾</div>
+        </div>
+      </div>
+
+      <!-- Slide 2 — Farmers sell -->
+      <div class="wl-slide">
+        <div class="wl-slide-inner">
+          <div>
+            <div class="wl-slide-label">👨‍🌾 For Farmers</div>
+            <h1 class="wl-slide-h">Sell your crops<br>at <em>fair prices</em></h1>
+            <p class="wl-slide-p">List produce, get orders from verified buyers across Uganda, and track every delivery from farm to door.</p>
+            <div class="wl-slide-cta">
+              <button class="wl-slide-btn primary" onclick="enterApp('register')">List your farm →</button>
+              <button class="wl-slide-btn outline" onclick="enterApp('login')">Sign in</button>
+            </div>
+          </div>
+          <div class="wl-slide-art" aria-hidden="true">🥦</div>
+        </div>
+      </div>
+
+      <!-- Slide 3 — AI tools -->
+      <div class="wl-slide">
+        <div class="wl-slide-inner">
+          <div>
+            <div class="wl-slide-label">🤖 AI-powered farming</div>
+            <h1 class="wl-slide-h">Your <em>AI farm</em><br>assistant</h1>
+            <p class="wl-slide-p">Diagnose crop and animal diseases instantly, get personalised growing advice, and track market prices in real time.</p>
+            <div class="wl-slide-cta">
+              <button class="wl-slide-btn primary" onclick="enterApp()">Try AI assistant →</button>
+              <button class="wl-slide-btn outline" onclick="enterApp('register')">Get started free</button>
+            </div>
+          </div>
+          <div class="wl-slide-art" aria-hidden="true">🌽</div>
+        </div>
+      </div>
+
+      <!-- Slide 4 — Transport -->
+      <div class="wl-slide">
+        <div class="wl-slide-inner">
+          <div>
+            <div class="wl-slide-label">🚚 Logistics network</div>
+            <h1 class="wl-slide-h">Farm to table,<br><em>tracked live</em></h1>
+            <p class="wl-slide-p">Book verified transporters, track every delivery in real time, and earn more as a driver on Uganda's agri-logistics network.</p>
+            <div class="wl-slide-cta">
+              <button class="wl-slide-btn primary" onclick="enterApp()">Book transport →</button>
+              <button class="wl-slide-btn outline" onclick="window.location='/transporter'">Driver portal →</button>
+            </div>
+          </div>
+          <div class="wl-slide-art" aria-hidden="true">🫘</div>
+        </div>
+      </div>
+
+    </div><!-- /slides -->
+
+    <button class="wl-arrow prev" id="wlPrev" onclick="wlSlide(-1)" aria-label="Previous slide">&#8249;</button>
+    <button class="wl-arrow next" id="wlNext" onclick="wlSlide(1)" aria-label="Next slide">&#8250;</button>
+
+    <div class="wl-dots" id="wlDots">
+      <button class="wl-dot active" onclick="wlGoTo(0)" aria-label="Slide 1"></button>
+      <button class="wl-dot" onclick="wlGoTo(1)" aria-label="Slide 2"></button>
+      <button class="wl-dot" onclick="wlGoTo(2)" aria-label="Slide 3"></button>
+      <button class="wl-dot" onclick="wlGoTo(3)" aria-label="Slide 4"></button>
+    </div>
+  </div><!-- /slider -->
+
+  <!-- ══ QUICK LINKS STRIP ══ -->
+  <nav class="wl-strip" aria-label="Quick links">
+    <div class="wl-strip-inner">
+      <button class="wl-strip-link" onclick="enterApp()"><span>🛒</span> Shop Now</button>
+      <button class="wl-strip-link" onclick="enterApp('register')"><span>🌾</span> Sell Produce</button>
+      <button class="wl-strip-link" onclick="window.location='/transporter'"><span>🚚</span> Driver Portal</button>
+      <button class="wl-strip-link" onclick="enterApp()"><span>🤖</span> AI Assistant</button>
+      <button class="wl-strip-link" onclick="showInstallModal()"><span>📲</span> Get the App</button>
+    </div>
+  </nav>
+
+  <!-- ══ FEATURED PRODUCE ══ -->
+  <section class="wl-products" id="wl-products">
+    <div class="wl-sec-head">
+      <div>
+        <h2 class="wl-h2">Fresh from the Farm</h2>
+        <p class="wl-h2-sub">Sourced directly from verified farmers across Uganda</p>
+      </div>
+      <button class="wl-see-all" onclick="enterApp()">See all produce →</button>
+    </div>
+    <div class="wl-prod-grid">
+      <div class="wl-prod-card" onclick="enterApp()">
+        <div class="wl-prod-img">🌽<div class="wl-prod-badge fresh">Fresh</div></div>
+        <div class="wl-prod-body">
+          <div class="wl-prod-name">Fresh Maize</div>
+          <div class="wl-prod-farm">Mayuge Farm Co-op</div>
+          <div class="wl-prod-price">UGX 850<small>/kg</small></div>
+        </div>
+        <div class="wl-prod-foot"><button class="wl-prod-btn" onclick="enterApp();event.stopPropagation()">Add to cart</button></div>
+      </div>
+      <div class="wl-prod-card" onclick="enterApp()">
+        <div class="wl-prod-img">🫘<div class="wl-prod-badge fresh">Fresh</div></div>
+        <div class="wl-prod-body">
+          <div class="wl-prod-name">Red Kidney Beans</div>
+          <div class="wl-prod-farm">Kabale Highlands Farm</div>
+          <div class="wl-prod-price">UGX 1,200<small>/kg</small></div>
+        </div>
+        <div class="wl-prod-foot"><button class="wl-prod-btn" onclick="enterApp();event.stopPropagation()">Add to cart</button></div>
+      </div>
+      <div class="wl-prod-card" onclick="enterApp()">
+        <div class="wl-prod-img">🍅<div class="wl-prod-badge sale">Sale</div></div>
+        <div class="wl-prod-body">
+          <div class="wl-prod-name">Tomatoes</div>
+          <div class="wl-prod-farm">Mukono Organic Farm</div>
+          <div class="wl-prod-price">UGX 2,000<small>/crate</small></div>
+        </div>
+        <div class="wl-prod-foot"><button class="wl-prod-btn" onclick="enterApp();event.stopPropagation()">Add to cart</button></div>
+      </div>
+      <div class="wl-prod-card" onclick="enterApp()">
+        <div class="wl-prod-img">🍌<div class="wl-prod-badge new">New</div></div>
+        <div class="wl-prod-body">
+          <div class="wl-prod-name">Matooke Bananas</div>
+          <div class="wl-prod-farm">Mbarara Valley Farm</div>
+          <div class="wl-prod-price">UGX 15,000<small>/bunch</small></div>
+        </div>
+        <div class="wl-prod-foot"><button class="wl-prod-btn" onclick="enterApp();event.stopPropagation()">Add to cart</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ HOW IT WORKS ══ -->
+  <section class="wl-how" id="wl-how">
+    <div class="wl-how-inner">
+      <div style="text-align:center;margin-bottom:4px">
+        <h2 class="wl-h2">How AgriBridge works</h2>
+        <p class="wl-h2-sub">Three simple steps — farm to your table</p>
+      </div>
+      <div class="wl-steps">
+        <div class="wl-step">
+          <div class="wl-step-num">1</div>
+          <h3>Browse &amp; Order</h3>
+          <p>Find fresh produce from verified farmers near you. Filter by crop type, location, or price. Add to cart and check out in seconds.</p>
+        </div>
+        <div class="wl-step">
+          <div class="wl-step-num">2</div>
+          <h3>Farmer Confirms</h3>
+          <p>Your chosen farmer gets notified instantly, packs your order fresh, and hands it to a verified transporter from our logistics network.</p>
+        </div>
+        <div class="wl-step">
+          <div class="wl-step-num">3</div>
+          <h3>Track &amp; Receive</h3>
+          <p>Follow your delivery live on the map. Farm-fresh produce arrives at your door — no middlemen, no markups.</p>
+        </div>
+        <div class="wl-step">
+          <div class="wl-step-num">4</div>
+          <h3>No Smartphone? No problem.</h3>
+          <p>Dial <strong>*789#</strong> on any MTN or Airtel phone to access AgriBridge via USSD. Works even without internet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ROLES ══ -->
+  <section class="wl-roles" id="wl-roles">
+    <div class="wl-roles-inner">
+      <h2 class="wl-h2">Built for every role</h2>
+      <p class="wl-h2-sub">One platform — a tailored experience for each link in the chain</p>
+      <div class="wl-chips">
+        <div class="wl-chip" onclick="enterApp('register')">
+          <span>🌾</span><b>Farmer</b><small>Sell &amp; grow your income</small>
+        </div>
+        <div class="wl-chip" onclick="enterApp()">
+          <span>🛒</span><b>Buyer</b><small>Source fresh produce directly</small>
+        </div>
+        <a class="wl-chip" href="/transporter">
+          <span>🚚</span><b>Transporter</b><small>Driver portal →</small>
+        </a>
+        <div class="wl-chip" onclick="enterApp('register')">
+          <span>🏪</span><b>Supplier</b><small>List &amp; sell agri-inputs</small>
+        </div>
+        <div class="wl-chip" onclick="enterApp('login')">
+          <span>🏨</span><b>Hotel / Restaurant</b><small>Bulk fresh sourcing</small>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TRUST STRIP ══ -->
+  <section class="wl-trust">
+    <div class="wl-trust-inner">
+      <div class="wl-trust-item">
+        <div class="wl-trust-ic">🛡️</div>
+        <b>Trusted &amp; Secure</b>
+        <small>Verified farmers &amp; safe transactions</small>
+      </div>
+      <div class="wl-trust-item">
+        <div class="wl-trust-ic">📶</div>
+        <b>Offline &amp; USSD</b>
+        <small>Works without internet on any phone</small>
+      </div>
+      <div class="wl-trust-item">
+        <div class="wl-trust-ic">🌐</div>
+        <b>Multi-language</b>
+        <small>English, Luganda, Runyankole &amp; more</small>
+      </div>
+      <div class="wl-trust-item">
+        <div class="wl-trust-ic">💬</div>
+        <b>24/7 Support</b>
+        <small>AI + human help, always available</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SOCIAL + SUBSCRIBE ══ -->
+  <section class="wl-social-strip">
+    <div class="wl-social-inner">
+      <div class="wl-social-left">
+        <h3>Follow AgriBridge</h3>
+        <p>Farm tips, market prices &amp; harvest news every day</p>
+        <div class="wl-socials">
+          <a class="wl-soc-btn" href="https://www.instagram.com/agribrige" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <a class="wl-soc-btn" href="https://www.facebook.com/people/Agribridge-Agribrige/61572887219965" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+          </a>
+          <a class="wl-soc-btn" href="https://www.linkedin.com/in/agribrige-com-6aaa24449" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <label for="wlSubEmail" style="display:block;font-size:.86rem;font-weight:700;color:#fff;margin-bottom:8px">Subscribe to market price alerts</label>
+        <div class="wl-subscribe">
+          <input class="wl-sub-input" type="email" id="wlSubEmail" placeholder="your@email.com" autocomplete="email">
+          <button class="wl-sub-btn" onclick="wlSubscribe()">Subscribe</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FINAL CTA ══ -->
+  <section class="wl-final">
+    <div class="wl-final-inner">
+      <h2 class="wl-h2">Your Growth. Our Mission.</h2>
+      <p class="wl-final-p">Join thousands of Ugandan farmers and buyers already trading smarter on AgriBridge. Zero middlemen, real-time tracking, and AI tools to grow your income.</p>
+      <div class="wl-final-cta">
+        <button class="wl-btn lg" onclick="enterApp()">Launch AgriBridge →</button>
         <button class="wl-btn ghost lg" onclick="enterApp('register')">Create free account</button>
       </div>
       <div class="wl-stores">
@@ -1814,76 +2296,102 @@ a.wl-chip small{color:var(--green)}
         <button class="wl-store" id="wlAndroidBtn" onclick="showInstallModal()"><span>▶</span><span><small>Get it on</small>Google Play</span></button>
         <button class="wl-store" id="wlIosBtn" onclick="showInstallModal()"><span></span><span><small>Download on the</small>App Store</span></button>
       </div>
-      <div class="wl-ussd">📵 No smartphone? Dial <b>*789#</b> on any MTN or Airtel phone.</div>
+      <div class="wl-ussd" style="margin-top:14px">📵 No smartphone? Dial <b>*789#</b> on any MTN or Airtel phone.</div>
     </div>
-    <div class="wl-hero-art" aria-hidden="true">
-      <div class="wl-phone">
-        <div class="wl-phone-top"><span>9:41</span><span>📶 🔋</span></div>
-        <div class="wl-card wl-ai"><div class="wl-ai-orb"><span></span><span></span></div><div><b>AI Farm Assistant</b><small>How can I help you grow today?</small></div></div>
-        <div class="wl-stat-row">
-          <div class="wl-stat"><small>🌱 Crop Health</small><b>85%</b></div>
-          <div class="wl-stat"><small>💰 Income</small><b>UGX 2.4M</b></div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="wl-foot">
+    <div class="wl-foot-inner">
+      <div class="wl-foot-grid">
+        <!-- Brand -->
+        <div class="wl-foot-brand">
+          <img src="/logo.png" alt="AgriBridge" style="height:56px;width:auto;object-fit:contain;filter:brightness(0) invert(1) opacity(.9)" onerror="this.style.display='none'">
+          <p>Uganda's all-in-one agricultural marketplace — connecting farmers, buyers, and transporters across East Africa.</p>
         </div>
-        <div class="wl-card wl-mini"><span>🌽</span><div><b>Maize · UGX 850/kg</b><small>+5% today</small></div><i>＋</i></div>
-        <div class="wl-card wl-mini"><span>🫘</span><div><b>Beans · UGX 1,200/kg</b><small>+8% today</small></div><i>＋</i></div>
+        <!-- Locations -->
+        <div class="wl-foot-col">
+          <h4>Locations</h4>
+          <ul>
+            <li><span style="color:rgba(255,255,255,.55);font-size:.86rem">Kampala (HQ)</span></li>
+            <li><span style="color:rgba(255,255,255,.55);font-size:.86rem">Mbarara</span></li>
+            <li><span style="color:rgba(255,255,255,.55);font-size:.86rem">Gulu</span></li>
+            <li><span style="color:rgba(255,255,255,.55);font-size:.86rem">Jinja</span></li>
+            <li><span style="color:rgba(255,255,255,.55);font-size:.86rem">Mbale</span></li>
+          </ul>
+        </div>
+        <!-- Platform -->
+        <div class="wl-foot-col">
+          <h4>Platform</h4>
+          <ul>
+            <li><a href="#" onclick="enterApp();return false">Marketplace</a></li>
+            <li><a href="#" onclick="enterApp();return false">AI Assistant</a></li>
+            <li><a href="#" onclick="enterApp();return false">Farm Management</a></li>
+            <li><a href="/transporter">Driver Portal</a></li>
+            <li><button onclick="showInstallModal()">Get the App</button></li>
+          </ul>
+        </div>
+        <!-- Legal -->
+        <div class="wl-foot-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="legal/terms-of-use.html">Terms of Use</a></li>
+            <li><a href="legal/privacy-policy.html">Privacy Policy</a></li>
+            <li><button onclick="openPrivacyRequest()">Privacy Requests</button></li>
+            <li><a href="#" onclick="enterApp('login');return false">Sign In</a></li>
+            <li><a href="#" onclick="enterApp('register');return false">Register</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="wl-foot-bottom">
+        <span class="wl-foot-copy">© 2026 AgriBridge Uganda · Bridging Farms. Building Markets.</span>
+        <div class="wl-foot-socials">
+          <a class="wl-soc-btn" href="https://www.instagram.com/agribrige" target="_blank" rel="noopener" aria-label="Instagram" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <a class="wl-soc-btn" href="https://www.facebook.com/people/Agribridge-Agribrige/61572887219965" target="_blank" rel="noopener" aria-label="Facebook" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+          </a>
+          <a class="wl-soc-btn" href="https://www.linkedin.com/in/agribrige-com-6aaa24449" target="_blank" rel="noopener" aria-label="LinkedIn" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+        </div>
       </div>
     </div>
-  </section>
-
-  <section class="wl-features" id="wl-features">
-    <h2 class="wl-h2">Everything you need to grow</h2>
-    <div class="wl-grid">
-      <div class="wl-feat"><div class="wl-feat-ic">🤖</div><h3>AI Assistant</h3><p>Smart farm guidance, crop &amp; animal disease diagnosis, and instant answers.</p></div>
-      <div class="wl-feat"><div class="wl-feat-ic">🛒</div><h3>Marketplace</h3><p>Buy &amp; sell crops and livestock directly with verified farmers and buyers.</p></div>
-      <div class="wl-feat"><div class="wl-feat-ic">🌾</div><h3>Farm Management</h3><p>Track fields, crops, yields and expenses — all in one place.</p></div>
-      <div class="wl-feat"><div class="wl-feat-ic">🚚</div><h3>Transport &amp; Logistics</h3><p>Book transport and track every delivery live, farm to door.</p></div>
-      <div class="wl-feat"><div class="wl-feat-ic">📊</div><h3>Analytics</h3><p>Revenue, top products and market insights that grow your income.</p></div>
-      <div class="wl-feat"><div class="wl-feat-ic">📵</div><h3>Works Offline</h3><p>USSD on any phone, plus offline mode when the network is weak.</p></div>
-    </div>
-  </section>
-
-  <section class="wl-roles" id="wl-roles">
-    <h2 class="wl-h2">Built for every role</h2>
-    <p class="wl-roles-sub">One platform, a tailored experience for each person in the chain.</p>
-    <div class="wl-chips">
-      <div class="wl-chip"><span>🌾</span>Farmer<small>Sell &amp; grow</small></div>
-      <div class="wl-chip"><span>🛒</span>Buyer<small>Source &amp; order</small></div>
-      <a class="wl-chip" href="/transporter"><span>🚚</span>Transporter<small>Driver portal →</small></a>
-      <div class="wl-chip"><span>🏪</span>Supplier<small>List &amp; sell inputs</small></div>
-      <div class="wl-chip"><span>🛡️</span>Admin / Co-op<small>Oversee &amp; support</small></div>
-    </div>
-  </section>
-
-  <section class="wl-trust">
-    <div class="wl-trust-item"><span>🛡️</span><b>Trusted &amp; Secure</b><small>Verified users &amp; safe transactions</small></div>
-    <div class="wl-trust-item"><span>📶</span><b>Offline Mode</b><small>Works without internet</small></div>
-    <div class="wl-trust-item"><span>🌐</span><b>Multi-language</b><small>English, Luganda, Runyankole &amp; more</small></div>
-    <div class="wl-trust-item"><span>💬</span><b>24/7 Support</b><small>We're here to help you grow</small></div>
-  </section>
-
-  <section class="wl-final">
-    <h2 class="wl-h2">Your Growth. Our Mission.</h2>
-    <p class="wl-sub" style="margin:0 auto 22px">Join thousands of Ugandan farmers and buyers already trading smarter on AgriBridge.</p>
-    <button class="wl-btn lg" onclick="enterApp()">Launch AgriBridge →</button>
-  </section>
-
-  <footer class="wl-foot">
-    <img src="/logo.png" alt="AgriBridge" style="height:60px;width:auto;object-fit:contain;margin-bottom:10px" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-    <div class="wl-logo" style="display:none">🌱 Agri<span>Bridge</span></div>
-    <div style="display:flex;justify-content:center;gap:14px;margin:10px 0">
-      <a href="https://www.instagram.com/agribrige" target="_blank" rel="noopener" class="buyer-footer-social ig" title="Instagram" aria-label="Instagram">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-      </a>
-      <a href="https://www.facebook.com/people/Agribridge-Agribrige/61572887219965" target="_blank" rel="noopener" class="buyer-footer-social fb" title="Facebook" aria-label="Facebook">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.971h-1.514c-1.491 0-1.956.93-1.956 1.886v2.267h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
-      </a>
-      <a href="https://www.linkedin.com/in/agribrige-com-6aaa24449" target="_blank" rel="noopener" class="buyer-footer-social li" title="LinkedIn" aria-label="LinkedIn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-      </a>
-    </div>
-    <div class="wl-foot-links"><a href="#" onclick="enterApp();return false">Home</a><a href="#wl-features">Features</a><a href="#" onclick="enterApp('login');return false">Sign in</a><a href="/transporter">Driver portal</a><a href="legal/terms-of-use.html">Terms</a><a href="legal/privacy-policy.html">Privacy</a><a href="#" onclick="openPrivacyRequest();return false">Privacy requests</a></div>
-    <small>© 2026 AgriBridge Uganda · Bridging Farms. Building Markets.</small>
   </footer>
+
+  <!-- ══ SLIDER SCRIPT ══ -->
+  <script>
+  (function(){
+    var cur=0,total=4,timer,wrap=document.getElementById('wlSlides'),dots;
+    function update(){
+      if(!wrap)return;
+      wrap.style.transform='translateX(-'+cur*100+'%)';
+      dots=document.querySelectorAll('.wl-dot');
+      dots.forEach(function(d,i){d.classList.toggle('active',i===cur)});
+    }
+    window.wlSlide=function(dir){
+      cur=(cur+dir+total)%total;update();resetTimer();
+    };
+    window.wlGoTo=function(i){cur=i;update();resetTimer()};
+    function resetTimer(){clearInterval(timer);timer=setInterval(function(){wlSlide(1)},5000)}
+    // pause on hover
+    var sw=document.getElementById('wlSliderWrap');
+    if(sw){sw.addEventListener('mouseenter',function(){clearInterval(timer)});sw.addEventListener('mouseleave',resetTimer)}
+    // subscribe toast
+    window.wlSubscribe=function(){
+      var el=document.getElementById('wlSubEmail');
+      if(!el||!el.value.includes('@')){alert('Please enter a valid email address.');return}
+      el.value='';
+      var msg=document.createElement('div');
+      msg.textContent='✓ Subscribed! You\'ll receive market price alerts.';
+      msg.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a7a3c;color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;font-size:.9rem;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3)';
+      document.body.appendChild(msg);setTimeout(function(){msg.remove()},3500);
+    };
+    resetTimer();
+  })();
+  </script>
+
 </div>
 
 <!-- ══ SPLASH / ONBOARDING PAGE ══ -->
