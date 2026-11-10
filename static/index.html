@@ -13456,6 +13456,8 @@ function enterApp(target){
       return;
     }
   } catch(e) {}
+  // Always land on home and load products
+  try { if(typeof showPage==='function') showPage('home'); } catch(e) {}
   if(target==='login' && typeof openModal==='function') openModal('loginModal');
   else if(target==='register' && typeof openModal==='function') openModal('registerModal');
 }
