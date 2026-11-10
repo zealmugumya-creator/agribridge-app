@@ -4059,7 +4059,8 @@ AgriBridge service</div>
 
 // ── SUPABASE CONFIG ──────────────────────────────────────────────
 const SUPA_URL = 'https://lvloaweijidgcuezdnmu.supabase.co';
-const SUPA_KEY = 'sb_publishable_lzjlixcVLCUVg9MDy5adFw_pgxTz03y';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bG9hd2VpamlkZ2N1ZXpkbm11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NzM3ODgsImV4cCI6MjEwNzE0OTc4OH0.vw2EyPQh_uogDDTfLfLk0KiyHVUptTm2ihMtRilSxLo';
+const SUPA_ANON = SUPA_KEY; // alias used by admin/boost fetch calls
 const USSD_API = 'https://agribridge-1-og7a.onrender.com';
 // Logged-in user's Supabase access token. Set from auth state changes below and
 // sent by sb() so PostgREST/RLS can identify the user (auth.uid()). Falls back
@@ -10513,7 +10514,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ⚠ Supabase anon key is intentionally public — Row Level Security (RLS) handles access control
 // Enable RLS on all tables in Supabase dashboard: Authentication → Policies
 const SUPABASE_URL  = 'https://lvloaweijidgcuezdnmu.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_lzjlixcVLCUVg9MDy5adFw_pgxTz03y';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx2bG9hd2VpamlkZ2N1ZXpkbm11Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NzM3ODgsImV4cCI6MjEwNzE0OTc4OH0.vw2EyPQh_uogDDTfLfLk0KiyHVUptTm2ihMtRilSxLo';
 var sbAuth = null;
 
 
