@@ -13448,6 +13448,8 @@ function enterApp(target){
   try{ document.documentElement.classList.add('app-entered'); }catch(e){}
   try{ sessionStorage.setItem('ab_entered','1'); }catch(e){}
   try{ window.scrollTo(0,0); }catch(e){}
+  // Always navigate to home and load products first
+  try { if(typeof showPage==='function') showPage('home'); } catch(e) {}
   // Show splash for first-time visitors who don't have a session
   try {
     var seenSplash = localStorage.getItem('ab_seen_splash');
@@ -13457,8 +13459,6 @@ function enterApp(target){
       return;
     }
   } catch(e) {}
-  // Always land on home and load products
-  try { if(typeof showPage==='function') showPage('home'); } catch(e) {}
   if(target==='login' && typeof openModal==='function') openModal('loginModal');
   else if(target==='register' && typeof openModal==='function') openModal('registerModal');
 }
