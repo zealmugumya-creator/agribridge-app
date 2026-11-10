@@ -1342,17 +1342,66 @@ html.is-web:not(.app-entered) body{overflow:hidden}
 .wl-foot-copy{font-size:.8rem;color:rgba(255,255,255,.4)}
 .wl-foot-socials{display:flex;gap:8px}
 
+/* ── CATEGORY TILES ── */
+.wl-cats{background:var(--wl-cream);padding:clamp(28px,5vw,52px) clamp(16px,5vw,52px)}
+.wl-cats-inner{max-width:1180px;margin:0 auto}
+.wl-cats-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:24px
+}
+.wl-cat-tile{
+  position:relative;overflow:hidden;border-radius:18px;cursor:pointer;
+  aspect-ratio:1;display:flex;align-items:flex-end;
+  box-shadow:0 4px 20px rgba(26,122,60,.12);
+  transition:transform .22s,box-shadow .22s
+}
+.wl-cat-tile:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 10px 36px rgba(26,122,60,.22)}
+.wl-cat-tile img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform .45s cubic-bezier(.4,0,.2,1)
+}
+.wl-cat-tile:hover img{transform:scale(1.08)}
+.wl-cat-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 35%,rgba(10,25,14,.72) 100%)
+}
+.wl-cat-label{
+  position:relative;z-index:2;padding:14px 16px;width:100%
+}
+.wl-cat-label b{
+  display:block;font-size:clamp(.9rem,2.5vw,1.1rem);font-weight:800;
+  color:#fff;font-family:'Syne',sans-serif;letter-spacing:.01em
+}
+.wl-cat-label small{
+  display:block;font-size:.72rem;color:rgba(255,255,255,.75);margin-top:2px;font-weight:500
+}
+/* animate tiles on scroll */
+.wl-cat-tile{opacity:0;transform:translateY(24px);transition:opacity .5s,transform .5s,box-shadow .22s}
+.wl-cat-tile.wl-visible{opacity:1;transform:translateY(0)}
+.wl-cat-tile.wl-visible:hover{transform:translateY(-4px) scale(1.01)}
+/* stagger delays */
+.wl-cat-tile:nth-child(1){transition-delay:.05s}
+.wl-cat-tile:nth-child(2){transition-delay:.12s}
+.wl-cat-tile:nth-child(3){transition-delay:.19s}
+.wl-cat-tile:nth-child(4){transition-delay:.26s}
+.wl-cat-tile:nth-child(5){transition-delay:.33s}
+.wl-cat-tile:nth-child(6){transition-delay:.40s}
+
 /* ── RESPONSIVE ── */
+@media(min-width:480px){
+  .wl-cats-grid{grid-template-columns:repeat(3,1fr)}
+}
 @media(min-width:600px){
   .wl-prod-grid{grid-template-columns:repeat(3,1fr)}
   .wl-slide-art{display:flex}
   .wl-slide-inner{grid-template-columns:1fr auto}
   .wl-arrow{display:flex}
+  .wl-cats-grid{grid-template-columns:repeat(3,1fr)}
 }
 @media(min-width:860px){
   .wl-navlinks>a{display:inline-block}
   .wl-prod-grid{grid-template-columns:repeat(4,1fr)}
   .wl-foot-grid{grid-template-columns:1.6fr 1fr 1fr 1fr}
+  .wl-cats-grid{grid-template-columns:repeat(6,1fr)}
 }
 @media(min-width:1000px){
   .wl-slide-h{font-size:3.2rem}
@@ -2213,6 +2262,48 @@ html.is-web:not(.app-entered) body{overflow:hidden}
     </div>
   </section>
 
+  <!-- ══ CATEGORY TILES ══ -->
+  <section class="wl-cats" id="wl-categories">
+    <div class="wl-cats-inner">
+      <div style="text-align:center;margin-bottom:8px">
+        <h2 class="wl-h2">Shop by Category</h2>
+        <p class="wl-h2-sub">Fresh produce from every corner of Uganda</p>
+      </div>
+      <div class="wl-cats-grid">
+        <div class="wl-cat-tile" onclick="enterApp('vegetables')">
+          <img src="/img/cat-vegetables.jpg" alt="Vegetables" loading="lazy">
+          <div class="wl-cat-overlay"></div>
+          <div class="wl-cat-label"><b>Vegetables</b><small>Tomatoes, pepper, greens &amp; more</small></div>
+        </div>
+        <div class="wl-cat-tile" onclick="enterApp('fruits')">
+          <img src="/img/cat-fruits.jpg" alt="Fruits" loading="lazy">
+          <div class="wl-cat-overlay"></div>
+          <div class="wl-cat-label"><b>Fruits</b><small>Mangoes, bananas, pawpaw &amp; more</small></div>
+        </div>
+        <div class="wl-cat-tile" onclick="enterApp('grains')">
+          <img src="/img/cat-grains.jpg" alt="Grains" loading="lazy">
+          <div class="wl-cat-overlay"></div>
+          <div class="wl-cat-label"><b>Grains</b><small>Maize, millet, sorghum &amp; rice</small></div>
+        </div>
+        <div class="wl-cat-tile" onclick="enterApp('livestock')">
+          <img src="/img/cat-livestock.jpg" alt="Livestock" loading="lazy">
+          <div class="wl-cat-overlay"></div>
+          <div class="wl-cat-label"><b>Livestock</b><small>Cattle, goats, poultry &amp; eggs</small></div>
+        </div>
+        <div class="wl-cat-tile" onclick="enterApp('dairy')">
+          <img src="/img/cat-dairy.jpg" alt="Dairy" loading="lazy">
+          <div class="wl-cat-overlay"></div>
+          <div class="wl-cat-label"><b>Dairy</b><small>Fresh milk, yoghurt &amp; cheese</small></div>
+        </div>
+        <div class="wl-cat-tile" onclick="enterApp('staples')">
+          <img src="/img/cat-staples.jpg" alt="Staples" loading="lazy">
+          <div class="wl-cat-overlay"></div>
+          <div class="wl-cat-label"><b>Staples</b><small>Beans, cassava, sweet potato</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ══ HOW IT WORKS ══ -->
   <section class="wl-how" id="wl-how">
     <div class="wl-how-inner">
@@ -2448,6 +2539,17 @@ html.is-web:not(.app-entered) body{overflow:hidden}
         if(typeof wlLoadLandingData==='function') wlLoadLandingData();
       });
     }
+
+    // ── Scroll-reveal for category tiles ──
+    (function(){
+      if(!window.IntersectionObserver) return;
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting){ e.target.classList.add('wl-visible'); io.unobserve(e.target); }
+        });
+      },{threshold:0.12});
+      document.querySelectorAll('.wl-cat-tile').forEach(function(el){ io.observe(el); });
+    })();
   })();
   </script>
 
@@ -10134,6 +10236,8 @@ function splashLogin() {
 function splashBrowseGuest() {
   hideSplash();
   try { localStorage.setItem('ab_seen_splash', '1'); } catch(e) {}
+  // Fix: load home products after guest dismisses splash (was showing dark skeleton cards)
+  try { if(typeof loadHomeStats==='function') setTimeout(loadHomeStats, 100); } catch(e) {}
 }
 
 // ─────────────────────────────────────────────────────────────────
