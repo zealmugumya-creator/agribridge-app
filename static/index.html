@@ -2348,7 +2348,7 @@ html.is-web:not(.app-entered) body{overflow:hidden}
       <div class="wl-foot-grid">
         <!-- Brand -->
         <div class="wl-foot-brand">
-          <img src="/logo.png" alt="AgriBridge" style="height:56px;width:auto;object-fit:contain;filter:brightness(0) invert(1) opacity(.9)" onerror="this.style.display='none'">
+          <img src="/logo.png" alt="AgriBridge" style="height:56px;width:auto;object-fit:contain" onerror="this.style.display='none'">
           <p>Uganda's all-in-one agricultural marketplace — connecting farmers, buyers, and transporters across East Africa.</p>
         </div>
         <!-- Locations -->
@@ -4252,9 +4252,19 @@ function showPage(name) {
   if (name === 'orders')   loadBuyerOrders();
   if (name === 'profile-buyer') renderBuyerProfile();
 }
-// Android back button
+// Android back button — also handles returning to landing page
 history.pushState({ ab:1 }, '', window.location.href);
-window.addEventListener('popstate', () => {
+window.addEventListener('popstate', (e) => {
+  // If we came from the app (abApp state) and are now back at root → show landing
+  if(e.state && e.state.abApp) {
+    try{
+      document.documentElement.classList.remove('app-entered');
+      sessionStorage.removeItem('ab_entered');
+      window.scrollTo(0,0);
+    }catch(err){}
+    return;
+  }
+  // Normal in-app back navigation
   if (_navHistory.length > 1) {
     _navHistory.pop();
     const prev = _navHistory[_navHistory.length-1];
@@ -4266,6 +4276,14 @@ window.addEventListener('popstate', () => {
     if (nb) nb.classList.add('active');
     window.scrollTo(0,0);
     history.pushState({ ab:1 }, '', window.location.href);
+  } else if(document.documentElement.classList.contains('app-entered') &&
+            document.documentElement.classList.contains('is-web')) {
+    // Last page in app stack on web — go back to landing
+    try{
+      document.documentElement.classList.remove('app-entered');
+      sessionStorage.removeItem('ab_entered');
+      window.scrollTo(0,0);
+    }catch(err){}
   }
 });
 
@@ -13316,6 +13334,12 @@ document.addEventListener('DOMContentLoaded', function() {
 // Reveal the app shell from the marketing landing (browser visitors). Installed
 // app users never see the landing, so this is a no-op for them.
 function enterApp(target){
+  // Push a history state so the browser back button returns to the landing page
+  try{
+    if(!document.documentElement.classList.contains('app-entered')){
+      history.pushState({ abApp:1 }, '', window.location.href);
+    }
+  }catch(e){}
   try{ document.documentElement.classList.add('app-entered'); }catch(e){}
   try{ sessionStorage.setItem('ab_entered','1'); }catch(e){}
   try{ window.scrollTo(0,0); }catch(e){}
