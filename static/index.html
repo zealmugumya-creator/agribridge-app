@@ -1208,6 +1208,7 @@ html.is-web:not(.app-entered) body{overflow:hidden}
 .wl-prod-badge.new{background:#f4a022;color:#fff}
 .wl-prod-badge.boost{background:linear-gradient(90deg,#f4a022,#e85d04);color:#fff;box-shadow:0 2px 8px rgba(248,160,34,.4)}
 .wl-boosted{box-shadow:0 4px 20px rgba(248,160,34,.25);border-color:#f4a022 !important}
+@keyframes wlShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .wl-prod-body{padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:4px}
 .wl-prod-name{font-size:.95rem;font-weight:700;color:var(--wl-text);line-height:1.25}
 .wl-prod-farm{font-size:.74rem;color:var(--wl-text3)}
@@ -2154,50 +2155,50 @@ html.is-web:not(.app-entered) body{overflow:hidden}
     <!-- live product cards injected here by wlRefreshProducts() -->
     <div class="wl-prod-grid">
       <div class="wl-prod-card" onclick="enterApp()">
-        <div class="wl-prod-img" style="padding:0;background:#e8f7ee">
-          <img src="/img/maize.jpg" alt="Fresh Maize" style="width:100%;height:100%;object-fit:cover;display:block">
+        <div class="wl-prod-img" style="padding:0">
+          <img src="https://lvloaweijidgcuezdnmu.supabase.co/storage/v1/object/public/uploads/admin-listings/2473aaaa15c64afd9e9dd5c6dff485aa.jpg" alt="Cassava" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy">
           <div class="wl-prod-badge fresh">Fresh</div>
         </div>
         <div class="wl-prod-body">
-          <div class="wl-prod-name">Fresh Maize</div>
-          <div class="wl-prod-farm">Mayuge Farm Co-op</div>
-          <div class="wl-prod-price">UGX 850<small>/kg</small></div>
+          <div class="wl-prod-name">Cassava</div>
+          <div class="wl-prod-farm">Northern Uganda</div>
+          <div class="wl-prod-price">UGX 400–700<small>/kg</small></div>
         </div>
         <div class="wl-prod-foot"><button class="wl-prod-btn" onclick="enterApp();event.stopPropagation()">Order now</button></div>
       </div>
       <div class="wl-prod-card" onclick="enterApp()">
-        <div class="wl-prod-img" style="padding:0;background:#f5e8dc">
-          <img src="/img/beans.jpg" alt="Red Kidney Beans" style="width:100%;height:100%;object-fit:cover;display:block">
+        <div class="wl-prod-img" style="padding:0">
+          <img src="https://lvloaweijidgcuezdnmu.supabase.co/storage/v1/object/public/uploads/admin-listings/d9776a4041234f1db41fb90f4a60f8b8.jpg" alt="Mango" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy">
           <div class="wl-prod-badge fresh">Fresh</div>
         </div>
         <div class="wl-prod-body">
-          <div class="wl-prod-name">Red Kidney Beans</div>
-          <div class="wl-prod-farm">Kabale Highlands Farm</div>
-          <div class="wl-prod-price">UGX 1,200<small>/kg</small></div>
+          <div class="wl-prod-name">Mango</div>
+          <div class="wl-prod-farm">Eastern Uganda</div>
+          <div class="wl-prod-price">UGX 500<small>/kg</small></div>
         </div>
         <div class="wl-prod-foot"><button class="wl-prod-btn" onclick="enterApp();event.stopPropagation()">Order now</button></div>
       </div>
       <div class="wl-prod-card" onclick="enterApp()">
-        <div class="wl-prod-img" style="padding:0;background:#fde8e8">
-          <img src="/img/tomatoes.jpg" alt="Fresh Tomatoes" style="width:100%;height:100%;object-fit:cover;display:block">
+        <div class="wl-prod-img" style="padding:0">
+          <img src="https://lvloaweijidgcuezdnmu.supabase.co/storage/v1/object/public/uploads/admin-listings/a89030c2212b430b9730d22721295bd5.jpg" alt="Green Pepper" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy">
           <div class="wl-prod-badge fresh">Fresh</div>
         </div>
         <div class="wl-prod-body">
-          <div class="wl-prod-name">Tomatoes</div>
-          <div class="wl-prod-farm">Mukono Organic Farm</div>
-          <div class="wl-prod-price">UGX 2,000<small>/crate</small></div>
+          <div class="wl-prod-name">Green Pepper</div>
+          <div class="wl-prod-farm">Central Uganda</div>
+          <div class="wl-prod-price">UGX 3,000<small>/kg</small></div>
         </div>
         <div class="wl-prod-foot"><button class="wl-prod-btn" onclick="enterApp();event.stopPropagation()">Order now</button></div>
       </div>
       <div class="wl-prod-card" onclick="enterApp()">
-        <div class="wl-prod-img" style="padding:0;background:#e8f5dc">
-          <img src="/img/matooke.jpg" alt="Matooke Bananas" style="width:100%;height:100%;object-fit:cover;display:block">
+        <div class="wl-prod-img" style="padding:0">
+          <img src="https://lvloaweijidgcuezdnmu.supabase.co/storage/v1/object/public/uploads/admin-listings/b3bda803b8404714866bf33c6d0d0cba.jpg" alt="Pumpkin" style="width:100%;height:100%;object-fit:cover;display:block" loading="lazy">
           <div class="wl-prod-badge new">New</div>
         </div>
         <div class="wl-prod-body">
-          <div class="wl-prod-name">Matooke Bananas</div>
-          <div class="wl-prod-farm">Mbarara Valley Farm</div>
-          <div class="wl-prod-price">UGX 15,000<small>/bunch</small></div>
+          <div class="wl-prod-name">Pumpkin</div>
+          <div class="wl-prod-farm">Western Uganda</div>
+          <div class="wl-prod-price">UGX 1,500<small>/kg</small></div>
         </div>
         <div class="wl-prod-foot"><button class="wl-prod-btn" onclick="enterApp();event.stopPropagation()">Order now</button></div>
       </div>
@@ -8182,19 +8183,31 @@ async function wlRefreshProducts() {
   const grid = document.querySelector('.wl-prod-grid');
   if (!grid) return;
 
-  // Priority 1 — paid boost slots (active, not expired, approved)
-  const now = new Date().toISOString();
-  const boostRows = await sb('listing_boosts', {
-    select:'listing_id,slot_position,listings(id,crop_name,category,price_per_kg,unit,district,is_organic,is_verified,image_url,quantity_kg,reserved_qty,farmers(full_name))',
-    filters:[['status','eq.approved'],['starts_at','lte.'+now],['ends_at','gte.'+now],['order','slot_position.asc'],['limit','4']]
-  });
+  // Show skeleton immediately so static placeholder cards disappear at once
+  grid.innerHTML = Array(4).fill(0).map(()=>`<div class="wl-prod-card" style="pointer-events:none">
+    <div class="wl-prod-img" style="background:linear-gradient(90deg,#e8f0ea 25%,#d4e8d8 50%,#e8f0ea 75%);background-size:200% 100%;animation:wlShimmer 1.4s infinite"></div>
+    <div class="wl-prod-body" style="padding:12px">
+      <div style="height:14px;background:#e8f0ea;border-radius:6px;margin-bottom:8px;animation:wlShimmer 1.4s infinite"></div>
+      <div style="height:11px;background:#e8f0ea;border-radius:6px;width:60%;animation:wlShimmer 1.4s infinite"></div>
+    </div>
+  </div>`).join('');
+
   let listings = [];
-  if (Array.isArray(boostRows) && boostRows.length) {
-    listings = boostRows
-      .filter(r => r.listings?.id)
-      .map(r => ({ ...r.listings, _boosted: true, _slot: r.slot_position }))
-      .filter(l => l.id);
-  }
+
+  // Priority 1 — paid boost slots (active, not expired, approved)
+  try {
+    const now = new Date().toISOString();
+    const boostRows = await sb('listing_boosts', {
+      select:'listing_id,slot_position,listings(id,crop_name,category,price_per_kg,unit,district,is_organic,is_verified,image_url,quantity_kg,reserved_qty,farmers(full_name))',
+      filters:[['status','eq.approved'],['starts_at','lte.'+now],['ends_at','gte.'+now],['order','slot_position.asc'],['limit','4']]
+    });
+    if (Array.isArray(boostRows) && boostRows.length) {
+      listings = boostRows
+        .filter(r => r.listings?.id)
+        .map(r => ({ ...r.listings, _boosted: true, _slot: r.slot_position }))
+        .filter(l => l.id);
+    }
+  } catch(e) { /* listing_boosts table may not exist yet — skip */ }
 
   // Priority 2 — admin-pinned IDs (fill remaining slots)
   if (listings.length < 4) {
@@ -8213,20 +8226,25 @@ async function wlRefreshProducts() {
     } catch(e) {}
   }
 
-  // Priority 3 — newest available listings (fill any remaining slots)
+  // Priority 3 — newest available listings with real images (fill any remaining slots)
   if (listings.length < 4) {
-    const usedIds = listings.map(l => l.id);
-    const newest = await sb('listings', {
-      select:'id,crop_name,category,price_per_kg,unit,district,is_organic,is_verified,image_url,quantity_kg,reserved_qty,farmers(full_name)',
-      filters:[['is_available','eq.true'],['order','created_at.desc'],['limit','8']]
-    });
-    if (Array.isArray(newest)) {
-      const fresh = newest.filter(l => !usedIds.includes(l.id));
-      listings = listings.concat(fresh).slice(0, 4);
-    }
+    try {
+      const usedIds = listings.map(l => l.id);
+      const newest = await sb('listings', {
+        select:'id,crop_name,category,price_per_kg,unit,district,is_organic,is_verified,image_url,quantity_kg,reserved_qty,farmers(full_name)',
+        filters:[['is_available','eq.true'],['order','created_at.desc'],['limit','12']]
+      });
+      if (Array.isArray(newest)) {
+        // Prefer listings that have a real image_url
+        const withImg = newest.filter(l => l.image_url && l.image_url.startsWith('http') && !usedIds.includes(l.id));
+        const noImg   = newest.filter(l => (!l.image_url || !l.image_url.startsWith('http')) && !usedIds.includes(l.id));
+        const fresh   = [...withImg, ...noImg];
+        listings = listings.concat(fresh).slice(0, 4);
+      }
+    } catch(e) {}
   }
 
-  if (!listings.length) return;
+  if (!listings.length) return; // keep skeletons if DB totally unreachable
 
   grid.innerHTML = listings.slice(0,4).map(wlProdCard).join('');
 
