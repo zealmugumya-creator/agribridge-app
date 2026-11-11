@@ -4322,7 +4322,15 @@ let _navHistory = ['home'];
 function openMore(){ if(typeof renderMoreGrid==='function') renderMoreGrid(); var o=document.getElementById('moreOverlay'),s=document.getElementById('moreSheet'); if(o)o.classList.add('open'); if(s)s.classList.add('open'); }
 function closeMore(){ var o=document.getElementById('moreOverlay'),s=document.getElementById('moreSheet'); if(o)o.classList.remove('open'); if(s)s.classList.remove('open'); }
 function mnav(n){ closeMore(); showPage(n); }
+// Pages that require the user to be signed in
+var _AUTH_REQUIRED_PAGES = ['cart','orders','dashboard','farmer-produce','farmer-orders','farmer-earnings','farmer-profile','buyer-orders','boost','pitch'];
 function showPage(name) {
+  // Auth gate — redirect guests to login for protected pages
+  if (_AUTH_REQUIRED_PAGES.indexOf(name) !== -1 && !currentUser) {
+    showToast('Please sign in to continue 🔐');
+    if (typeof openModal === 'function') openModal('loginModal');
+    return;
+  }
   if (_navHistory[_navHistory.length-1] !== name) _navHistory.push(name);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -5612,6 +5620,11 @@ function saveBasket() {
 function toggleBasket() { basketOpen ? closeBasket() : openBasket(); }
 
 function openBasket() {
+  if (!currentUser) {
+    showToast('Please sign in to view your cart 🔐');
+    if (typeof openModal === 'function') openModal('loginModal');
+    return;
+  }
   basketOpen = true;
   const d = document.getElementById('basketDrawer');
   const o = document.getElementById('basketOverlay');
@@ -5643,6 +5656,12 @@ function basketQtyBounds(item) {
 // Main add-to-basket: works for both produce AND animals, fully automatic.
 // qty/meta are optional so every existing caller keeps working.
 function addToBasket(id, name, price, unit, emoji, category, sellerId, qty, meta, opts) {
+  // Auth gate — buyers must be signed in to add items to cart
+  if (!currentUser) {
+    showToast('Please sign in to add items to your cart 🔐');
+    if (typeof openModal === 'function') openModal('loginModal');
+    return;
+  }
   unit     = unit     || 'kg';
   emoji    = emoji    || '🌾';
   category = category || 'produce';
@@ -7530,6 +7549,11 @@ function openMyAccount() {
 // ORDERS
 // ─────────────────────────────────────────────────────────────────
 function openOrderModal(id,name,farmer,price) {
+  if (!currentUser) {
+    showToast('Please sign in to place an order 🔐');
+    if (typeof openModal === 'function') openModal('loginModal');
+    return;
+  }
   currentListingId=id;
   const el=document.getElementById('orderDetails');
   if(el) el.innerHTML=`<strong>${getCropEmoji(name)} ${name}</strong><br>Seller: ${farmer}<br>Price: <strong style="color:var(--green)">UGX ${Number(price).toLocaleString()}/kg</strong>`;
