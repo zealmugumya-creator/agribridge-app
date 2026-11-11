@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- AB_BUILD:20261111_091000 -->
 <html lang="en">
 <head>
 <script src="business-config.js"></script>
@@ -4403,7 +4404,7 @@ window.addEventListener('popstate', (e) => {
 // HOME
 // ─────────────────────────────────────────────────────────────────
 async function loadHomeStats() {
-  // v5.1.3 — farmer_ratings isolated so missing table can't break the grid
+  // v5.2.0 — force-deploy build 20261111; farmer_ratings isolated so missing table can't break the grid
   console.log('[AB] loadHomeStats called');
   const [farmerCount, listingCount, animalCount, listings] = await Promise.all([
     sb('farmers',  { count:true }),

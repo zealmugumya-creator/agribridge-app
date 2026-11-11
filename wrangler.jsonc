@@ -1,9 +1,1 @@
-{
-  // Cloudflare Workers Builds: serves the static web app in ./static.
-  // "name" must match the Worker's name in the Cloudflare dashboard.
-  "name": "agribridge",
-  "compatibility_date": "2026-10-06",
-  "assets": {
-    "directory": "./static"
-  }
-}
+{"name":"agribridge","compatibility_date":"2026-10-06","account_id":"7a6752557859ee5998bdc81c0989743b","assets":{"directory":"./static"}}
